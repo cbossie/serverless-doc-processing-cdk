@@ -1,0 +1,32 @@
+1. Run CDK Synth from CDK directory
+
+
+2. Go to CDK directory (cdk.out)
+sam build -t .\{template}
+
+
+3. sam deploy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+s
