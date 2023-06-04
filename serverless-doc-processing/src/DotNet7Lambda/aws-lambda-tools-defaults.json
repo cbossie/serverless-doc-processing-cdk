@@ -1,0 +1,28 @@
+
+{
+    "Information" : [
+        "This file provides default values for the deployment wizard inside Visual Studio and the AWS Lambda commands added to the .NET Core CLI.",
+        "To learn more about the Lambda commands with the .NET Core CLI execute the following command at the command line in the project root directory.",
+        "dotnet lambda help",
+        "All the command line options for the Lambda command can be specified in this file."
+    ],
+    "profile"     : "dotnet-oregon",
+    "region"      : "us-east-2",
+    "configuration" : "Release",
+    "function-runtime" : "provided.al2",
+    "function-memory-size" : 128,
+    "function-timeout"     : 3,
+    "function-handler"     : "bootstrap",
+    "msbuild-parameters"   : "--self-contained true",
+    "framework"            : "net7.0",
+    "function-name"        : "DOTNET7TEST",
+    "function-description" : "",
+    "package-type"         : "Zip",
+    "function-role"        : "arn:aws:iam::425173371283:role/test-app19-dotnet7FucntionServiceRoleDC0D53E1-1BU9Q13CV5VT7",
+    "function-architecture" : "x86_64",
+    "function-subnets"      : "",
+    "function-security-groups" : "",
+    "tracing-mode"             : "PassThrough",
+    "environment-variables"    : "",
+    "image-tag"                : ""
+}

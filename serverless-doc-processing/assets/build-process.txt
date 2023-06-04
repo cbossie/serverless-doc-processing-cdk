@@ -1,16 +1,23 @@
 1. Run CDK Synth from CDK directory
 
+cdk synth
+
 
 2. Go to CDK directory (cdk.out)
-sam build -t .\{template}
+
+sam-nightly build -t .\cdk.out\ServerlessDocProcessingStack.template.json --use-container --mount-with WRITE
+(add --use-container for .net7)
+(use sam-nightly because of recent issue)
 
 
 3. sam deploy
 
+1st time around:
+sam-deploy --guided
 
 
-
-
+subsequent:
+sam-deploy
 
 
 
