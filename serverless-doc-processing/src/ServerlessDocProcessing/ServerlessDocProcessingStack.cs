@@ -21,13 +21,11 @@ namespace ServerlessDocProcessing
             var fcn = new Function(this, "dotnet7Fucntion", new FunctionProps
             {
                 Handler = "bootstrap",
-                Runtime = Runtime.PROVIDED_AL2,
+                Runtime = Runtime.PROVIDED,
                 Architecture = Architecture.X86_64,
-                Code = Code.FromAsset("./src/DotNet7Lambda"),
-                
+                Code = Code.FromAsset("./src/DotNet7Lambda"),                
             });
-            fcn.Node.AddMetadata("BuildMethod", "dotnet7");
-            
+                        
             var cfnFcn = (CfnFunction)fcn.Node.DefaultChild;
             cfnFcn.AddMetadata("BuildMethod", "dotnet7");
 

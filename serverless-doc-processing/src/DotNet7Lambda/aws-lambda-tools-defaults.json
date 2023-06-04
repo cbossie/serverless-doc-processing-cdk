@@ -9,7 +9,7 @@
     "profile"     : "dotnet-oregon",
     "region"      : "us-east-2",
     "configuration" : "Release",
-    "function-runtime" : "provided.al2",
+    "function-runtime" : "provided",
     "function-memory-size" : 128,
     "function-timeout"     : 3,
     "function-handler"     : "bootstrap",

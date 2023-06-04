@@ -23,7 +23,9 @@ sam-deploy
 
 
 
-
+Overall
+cdk synth
+sam-nightly build -t .\cdk.out\ServerlessDocProcessingStack.template.json --use-container --mount-with WRITE
 
 
 
