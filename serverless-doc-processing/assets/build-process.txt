@@ -29,7 +29,7 @@ Overall
 cdk synth
 
 
-sam- build -t .\cdk.out\ServerlessDocProcessingStack.template.json
+sam build -t .\cdk.out\ServerlessDocProcessingStack.template.json
 
 
 sam deploy
