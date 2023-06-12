@@ -1,0 +1,4 @@
+make
+.net 7
+cdk
+sam

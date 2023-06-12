@@ -18,8 +18,10 @@ namespace ServerlessDocProcessing
 
             //});
 
-            var fcn = new Function(this, "dotnet7Fucntion", new FunctionProps
+            var fcn = new Function(this, "DotNet7Lambda", new FunctionProps
             {
+
+                FunctionName = "DotNet7Lambda",
                 Handler = "bootstrap",
                 Runtime = Runtime.PROVIDED,
                 Architecture = Architecture.X86_64,
@@ -27,8 +29,8 @@ namespace ServerlessDocProcessing
             });
                         
             var cfnFcn = (CfnFunction)fcn.Node.DefaultChild;
-            cfnFcn.AddMetadata("BuildMethod", "dotnet7");
-
+            cfnFcn.AddMetadata("BuildMethod", "makefile");
+            cfnFcn.OverrideLogicalId("DotNet7Lambda");
 
         }
     }
