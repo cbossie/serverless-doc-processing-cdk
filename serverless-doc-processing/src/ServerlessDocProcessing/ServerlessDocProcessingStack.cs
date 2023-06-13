@@ -53,14 +53,12 @@ public class ServerlessDocProcessingStack : Stack
         // Messaging (SQS / SNS / Event Bridge)
         Queue successQueue = new (this, "successQueue", new QueueProps
         {
-            QueueName = GetQueueName("successQueue"),
-            Fifo = false,
+            QueueName = GetQueueName("successQueue")
         }) ;
 
         Queue failureQueue = new (this, "failureQueue", new QueueProps
         {
-            QueueName = GetQueueName("failureQueue"),
-            Fifo = false,
+            QueueName = GetQueueName("failureQueue")
         });
 
         Topic textractSuccessTopic = new(this, "textractSuccessTopic", new TopicProps
