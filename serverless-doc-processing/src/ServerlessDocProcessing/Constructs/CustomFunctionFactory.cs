@@ -1,6 +1,9 @@
-﻿using Amazon.CDK.AWS.SES;
+﻿using Amazon.CDK.AWS.Lambda;
+using Amazon.CDK.AWS.S3.Assets;
+using Amazon.CDK.AWS.SES;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,9 +16,9 @@ internal class CustomFunctionFactory
 	public CustomFunctionFactory(Construct scope)
 	{
 		Scope = scope;
-	}
+    }
 
-	public CustomFunction CreateCustomFUnction(string functionName, bool compileAot = false, bool useArm = false)
+	public CustomFunction CreateCustomFunction(string functionName, bool compileAot = false, bool useArm = false)
 	{
 		CustomFunctionProps customProps = new()
 		{
@@ -23,23 +26,11 @@ internal class CustomFunctionFactory
 			FunctionName = functionName,
 			Handler = "bootstrap",
 			Architecture = useArm ? Architecture.ARM_64 : Architecture.X86_64,
-			Code = Code.FromAsset($"./src/{functionName}")
+			Code = Code.FromAsset($"./functions/{functionName}.zip"),
+			Runtime = compileAot ? Runtime.PROVIDED_AL2 : Runtime.PROVIDED
 		};
-
-		if(compileAot)
-		{
-			customProps.Runtime = Runtime.PROVIDED_AL2;
-			customProps.BuildMethod = "dotnet7";
-		}
-		else
-		{
-			customProps.Runtime = Runtime.PROVIDED;
-			customProps.BuildMethod = "makefile";
-		}
 
 		return new CustomFunction(Scope, functionName, customProps);
 
 	}
-
-
 }

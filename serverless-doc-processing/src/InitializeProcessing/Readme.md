@@ -41,13 +41,13 @@ If already installed check if new version is available.
 
 Execute unit tests
 ```
-    cd "DotNet7Lambda/test/DotNet7Lambda.Tests"
+    cd "InitializeProcessing/test/InitializeProcessing.Tests"
     dotnet test
 ```
 
 Deploy function to AWS Lambda
 ```
-    cd "DotNet7Lambda/src/DotNet7Lambda"
+    cd "InitializeProcessing/src/InitializeProcessing"
     dotnet lambda deploy-function
 ```
 

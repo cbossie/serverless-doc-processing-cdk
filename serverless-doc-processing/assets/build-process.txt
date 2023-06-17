@@ -50,4 +50,7 @@ build-DotNet7Lambda:
 
 
 
-s
+
+cdk synth  --build build.bat
+
+cdk deploy --build build.bat --require-approval never

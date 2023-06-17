@@ -12,6 +12,7 @@ public class CustomFunction : Function
 		: base(scope, id, props)
 	{
 		var cfnFcn = (CfnFunction)Node.DefaultChild;
+		// For Future Use with SAM
 		cfnFcn.AddMetadata("BuildMethod", props.BuildMethod);
 		cfnFcn.OverrideLogicalId(props.FunctionName);
 	}

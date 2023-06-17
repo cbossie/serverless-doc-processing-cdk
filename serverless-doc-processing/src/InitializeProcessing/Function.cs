@@ -1,8 +1,10 @@
+using Amazon.Lambda.CloudWatchEvents.S3Events;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using DocProcessing.Shared;
 
-namespace DotNet7Lambda;
+namespace InitializeProcessing;
 
 public class Function
 {
@@ -12,7 +14,7 @@ public class Function
     /// <param name="args"></param>
     private static async Task Main(string[] args)
     {
-        Func<string, ILambdaContext, string> handler = FunctionHandler;
+        Func<S3ObjectCreateEvent, ILambdaContext, Task<Payload>> handler = FunctionHandler;
         await LambdaBootstrapBuilder.Create(handler, new DefaultLambdaJsonSerializer())
             .Build()
             .RunAsync();
@@ -28,8 +30,11 @@ public class Function
     /// <param name="input"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public static string FunctionHandler(string input, ILambdaContext context)
+    public static async Task<Payload> FunctionHandler(S3ObjectCreateEvent input, ILambdaContext context)
     {
-        return input.ToUpper();
+        Payload pl = new();
+        pl.Id = Guid.NewGuid().ToString();
+        return pl;
+
     }
 }
