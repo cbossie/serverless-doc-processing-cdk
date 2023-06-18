@@ -20,16 +20,13 @@ Dictionary<string, string> _defaultDimensions = new Dictionary<string, string>{
     };
 
 
-
 [Tracing]
 [Metrics(CaptureColdStart = true)]
 [Logging(LogEvent = true)]
 async Task<Payload> FunctionHandler(Payload input, ILambdaContext context)
 {
-    Logger.AppendKey("id", input.Id);
     Metrics.AddMetric("HandlerStartTime", context.RemainingTime.Milliseconds, MetricUnit.Milliseconds, MetricResolution.Standard);
-    Metrics.AddMetadata("externalId", input.Id);
-    Metrics.SetDefaultDimensions(_defaultDimensions);
+    
 
     Tracing.AddAnnotation("fcn", context.FunctionName);
 

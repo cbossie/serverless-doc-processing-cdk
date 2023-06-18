@@ -25,7 +25,7 @@ public class ServerlessDocProcessingStack : Stack
     internal ServerlessDocProcessingStack(Construct scope, string id, ServerlessDocProcessingStackProps props = null) : base(scope, id, props)
     {
         EnvironmentName = props.EnvironmentName;
-        
+
         // Function Factory
         FunctionFactory = new(this, EnvironmentName);
         FunctionFactory.Timeout = 30;
@@ -108,7 +108,7 @@ public class ServerlessDocProcessingStack : Stack
         LogGroup stepFunctionLogGroup = new(this, "stepFunctionLogGroup", new Amazon.CDK.AWS.Logs.LogGroupProps
         {
             LogGroupName = GetLogGroupName("docProcessingWorkflow"),
-            RemovalPolicy= RemovalPolicy.DESTROY
+            RemovalPolicy = RemovalPolicy.DESTROY
         });
 
 
@@ -143,8 +143,8 @@ public class ServerlessDocProcessingStack : Stack
         {
             Queue = failureQueue,
             Comment = "Send Failure Message",
-            MessageBody = TaskInput.FromJsonPathAt("$"),           
-        }) ;
+            MessageBody = TaskInput.FromJsonPathAt("$"),
+        });
 
 
 
@@ -160,7 +160,7 @@ public class ServerlessDocProcessingStack : Stack
         initializeState.Next(textractState);
         initializeState.AddCatch(sendFailureState, new CatchProps
         {
-            Errors = new[] {"States.ALL"},
+            Errors = new[] { "States.ALL" },
             ResultPath = "$.error"
         });
         textractState.Next(sendSuccessState);
@@ -173,9 +173,9 @@ public class ServerlessDocProcessingStack : Stack
 
         StateMachine docProcessingStepFunction = new(this, "docProcessing", new StateMachineProps
         {
-            TracingEnabled= true,
+            TracingEnabled = true,
             Logs = new LogOptions
-            { 
+            {
                 Destination = stepFunctionLogGroup,
                 IncludeExecutionData = true,
                 Level = LogLevel.ALL
@@ -198,10 +198,11 @@ public class ServerlessDocProcessingStack : Stack
                      {
                          "bucket", new Dictionary<string, object> { {"name", new [] {inputBucket.BucketName } }
                      } },
-            }}
+            }
+            }
         });
 
-        Queue inputDlq = new(this, "inputDlq", new QueueProps 
+        Queue inputDlq = new(this, "inputDlq", new QueueProps
         {
             Encryption = QueueEncryption.SQS_MANAGED,
             EnforceSSL = true,

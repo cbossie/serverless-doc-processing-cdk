@@ -20,7 +20,7 @@ Dictionary<string, string> _defaultDimensions = new Dictionary<string, string>{
         {"Environment", "Prod"},
         {"Another", "One"}
     };
-Metrics.SetDefaultDimensions(_defaultDimensions);
+
 
 [Metrics(CaptureColdStart = true)]
 [Logging(LogEvent = true)]
