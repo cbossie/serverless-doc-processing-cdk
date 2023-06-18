@@ -13,21 +13,28 @@ using System.Threading.Tasks;
 
 namespace DocProcessing.Shared;
 
-public static class Common
+public class Common
 {
-    private static ServiceCollection Services { get; } = new();
+    private ServiceCollection Services { get; } = new();
 
 
-    public static ServiceProvider? ServiceProvider { get; private set; }
+    public ServiceProvider? ServiceProvider { get; private set; }
 
 
-    static Common()
+    public static Common Instance { get; } = new();
+
+    private Common()
     {
         Services = new ServiceCollection();
     }
 
+    public async Task Initialize()
+    {
+        ConfigureServices();
+    }
 
-    public static void ConfigureServices()
+
+    private void ConfigureServices()
     {
         Services.AddAWSService<IAmazonS3>();
         Services.AddAWSService<IAmazonTextract>();

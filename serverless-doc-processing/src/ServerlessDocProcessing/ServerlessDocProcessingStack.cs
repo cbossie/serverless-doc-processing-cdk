@@ -12,6 +12,7 @@ using StepFunctionTasks = Amazon.CDK.AWS.StepFunctions.Tasks;
 using Amazon.CDK.AWS.StepFunctions.Tasks;
 using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.EC2;
+using System.Diagnostics.Contracts;
 
 namespace ServerlessDocProcessing;
 
@@ -24,17 +25,17 @@ public class ServerlessDocProcessingStack : Stack
     internal ServerlessDocProcessingStack(Construct scope, string id, ServerlessDocProcessingStackProps props = null) : base(scope, id, props)
     {
         EnvironmentName = props.EnvironmentName;
-
-        FunctionFactory = new(this, EnvironmentName);
-
-        // Functions
-        var initializeFunction = FunctionFactory.CreateCustomFunction("InitializeProcessing");
         
+        // Function Factory
+        FunctionFactory = new(this, EnvironmentName);
+        FunctionFactory.Timeout = 30;
+        FunctionFactory.Memory = 512;
+
 
         // Tables
-        Table configTable = new(this, "configTable", new TableProps
+        Table configTable = new(this, "queryData", new TableProps
         {
-            TableName = GetTableName("config"),
+            TableName = GetTableName("QueryData"),
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute() { Name = "query", Type = AttributeType.STRING },
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY
@@ -42,7 +43,7 @@ public class ServerlessDocProcessingStack : Stack
 
         Table dataTable = new(this, "dataTable", new TableProps
         {
-            TableName = GetTableName("data"),
+            TableName = GetTableName("ProcessData"),
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute() { Name = "id", Type = AttributeType.STRING },
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY
@@ -103,19 +104,61 @@ public class ServerlessDocProcessingStack : Stack
         });
 
 
-        // StepFunction Tasks
-        Pass nullState = new(this, "nullState", new PassProps
-        {
-        });
+        // Functions
+        var initializeFunction = FunctionFactory.CreateCustomFunction("InitializeProcessing");
+        var textractFunction = FunctionFactory.CreateCustomFunction("SubmitToTextract")
+            .AddEnvironment("SUCCESS_TOPIC", textractSuccessTopic.TopicArn)
+            .AddEnvironment("FAIL_TOPIC", textractFailureTopic.TopicArn);
 
+
+
+        // Step Functions Tasks
         StepFunctionTasks.LambdaInvoke initializeState = new(this, "initializeState", new LambdaInvokeProps
         {
             LambdaFunction = initializeFunction,
             Comment = "Initializes the Document Processing Workflow",
-            InputPath = "$.detail"
+            OutputPath = "$.Payload",
+            Payload = TaskInput.FromJsonPathAt("$"),
         });
-        
 
+        StepFunctionTasks.LambdaInvoke textractState = new(this, "textractState", new LambdaInvokeProps
+        {
+            LambdaFunction = textractFunction,
+            Comment = "Function to send document to textract asynchronously",
+            OutputPath = "$.Payload",
+            Payload = TaskInput.FromJsonPathAt("$"),
+        });
+
+        StepFunctionTasks.SqsSendMessage sendFailureState = new(this, "sendFailureState", new SqsSendMessageProps
+        {
+            Queue = failureQueue,
+            Comment = "Send Failure Message",
+            MessageBody = TaskInput.FromJsonPathAt("$"),           
+        }) ;
+
+
+
+        StepFunctionTasks.SqsSendMessage sendSuccessState = new(this, "sendSuccessState", new SqsSendMessageProps
+        {
+            Queue = successQueue,
+            Comment = "Send Success Message",
+            MessageBody = TaskInput.FromJsonPathAt("$")
+        });
+
+
+        // Compose the workflow sequence
+        initializeState.Next(textractState);
+        initializeState.AddCatch(sendFailureState, new CatchProps
+        {
+            Errors = new[] {"States.ALL"},
+            ResultPath = "$.error"
+        });
+        textractState.Next(sendSuccessState);
+        textractState.AddCatch(sendFailureState, new CatchProps
+        {
+            Errors = new[] { "States.ALL" },
+            ResultPath = "$.error"
+        });
 
 
         StateMachine docProcessingStepFunction = new(this, "docProcessing", new StateMachineProps
@@ -166,13 +209,14 @@ public class ServerlessDocProcessingStack : Stack
             Role = eventRole
         }));
 
+
+        //Assign permissions
         docProcessingStepFunction.GrantStartExecution(eventRole);
         stepFunctionLogGroup.GrantWrite(docProcessingStepFunction);
-
-
+               
 
         // Outputs
-        new CfnOutput(this, "inputBucket", new CfnOutputProps
+        new CfnOutput(this, "inputBucketOutput", new CfnOutputProps
         {
             Description = "Input Bucket",
             Value = inputBucket.BucketName

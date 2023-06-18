@@ -3,19 +3,26 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using DocProcessing.Shared;
+using System.Net.Http.Headers;
 
 //Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
-
 await Common.Instance.Initialize();
 
 
-var functionHandler = async (S3ObjectCreateEvent input, ILambdaContext context) =>
+var functionHandler = async (Payload input, ILambdaContext context) =>
 {
-    Payload pl = new();
-    pl.Id = Guid.NewGuid().ToString();
-    return pl;
+    input.Queries.Add(new() 
+    {
+        QueryId = "poopy",
+        QueryText = "What Time is it",
+        IsValidQuery= true,
+        Processed = false,
+        Results = new[] { "CRIAG" }
+    });
+    
+    return input;
 };
 
 
@@ -23,8 +30,6 @@ var functionHandler = async (S3ObjectCreateEvent input, ILambdaContext context) 
 await LambdaBootstrapBuilder.Create(functionHandler, new DefaultLambdaJsonSerializer())
         .Build()
         .RunAsync();
-
-
 
 
 

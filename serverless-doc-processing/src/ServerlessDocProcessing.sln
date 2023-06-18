@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocProcessing.Shared", "Doc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InitializeProcessing", "InitializeProcessing\InitializeProcessing.csproj", "{D4F2100F-0725-415C-BEAD-41F61DFFB903}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubmitToTextract", "SubmitToTextract\SubmitToTextract.csproj", "{135EB5C3-3410-4185-B620-211BC61D6A84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,18 @@ Global
 		{D4F2100F-0725-415C-BEAD-41F61DFFB903}.Release|x64.Build.0 = Release|Any CPU
 		{D4F2100F-0725-415C-BEAD-41F61DFFB903}.Release|x86.ActiveCfg = Release|Any CPU
 		{D4F2100F-0725-415C-BEAD-41F61DFFB903}.Release|x86.Build.0 = Release|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Debug|x64.Build.0 = Debug|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Debug|x86.Build.0 = Debug|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Release|x64.ActiveCfg = Release|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Release|x64.Build.0 = Release|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Release|x86.ActiveCfg = Release|Any CPU
+		{135EB5C3-3410-4185-B620-211BC61D6A84}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +88,7 @@ Global
 		{00AD5CF0-EDBD-4EAC-8186-86191A2FC50D} = {2484D070-8BC5-4377-94F1-F43EEAD5DB75}
 		{A6E6E0BC-87C9-4FB6-AA7D-E2795F6735E2} = {1412036F-CBE5-4DCC-AD41-0C954E8711C9}
 		{D4F2100F-0725-415C-BEAD-41F61DFFB903} = {1412036F-CBE5-4DCC-AD41-0C954E8711C9}
+		{135EB5C3-3410-4185-B620-211BC61D6A84} = {1412036F-CBE5-4DCC-AD41-0C954E8711C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C188C153-6109-4166-8005-96323A3D3897}
