@@ -13,9 +13,11 @@ namespace ServerlessDocProcessing;
 internal class CustomFunctionFactory
 {
 	Construct Scope { get; }
-	public CustomFunctionFactory(Construct scope)
+	string EnvironmentName { get; }
+	public CustomFunctionFactory(Construct scope, string environmentName)
 	{
 		Scope = scope;
+		EnvironmentName = environmentName;
     }
 
 	public CustomFunction CreateCustomFunction(string functionName, bool compileAot = false, bool useArm = false)
@@ -27,10 +29,12 @@ internal class CustomFunctionFactory
 			Handler = "bootstrap",
 			Architecture = useArm ? Architecture.ARM_64 : Architecture.X86_64,
 			Code = Code.FromAsset($"./functions/{functionName}.zip"),
-			Runtime = compileAot ? Runtime.PROVIDED_AL2 : Runtime.PROVIDED
+			Runtime = compileAot ? Runtime.PROVIDED_AL2 : Runtime.PROVIDED,
 		};
 
-		return new CustomFunction(Scope, functionName, customProps);
+		var fcn = new CustomFunction(Scope, functionName, customProps);
+			fcn.AddEnvironment("ENVIRONMENT_NAME", EnvironmentName);
 
+		return fcn;
 	}
 }

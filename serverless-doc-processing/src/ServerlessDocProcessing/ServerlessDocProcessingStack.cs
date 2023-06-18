@@ -25,7 +25,7 @@ public class ServerlessDocProcessingStack : Stack
     {
         EnvironmentName = props.EnvironmentName;
 
-        FunctionFactory = new(this);
+        FunctionFactory = new(this, EnvironmentName);
 
         // Functions
         var initializeFunction = FunctionFactory.CreateCustomFunction("InitializeProcessing");
@@ -168,6 +168,17 @@ public class ServerlessDocProcessingStack : Stack
 
         docProcessingStepFunction.GrantStartExecution(eventRole);
         stepFunctionLogGroup.GrantWrite(docProcessingStepFunction);
+
+
+
+        // Outputs
+        new CfnOutput(this, "inputBucket", new CfnOutputProps
+        {
+            Description = "Input Bucket",
+            Value = inputBucket.BucketName
+        });
+
+
     }
 
     // Functions to create unique names
