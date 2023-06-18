@@ -30,6 +30,14 @@ public class ServerlessDocProcessingStack : Stack
         FunctionFactory = new(this, EnvironmentName);
         FunctionFactory.Timeout = 30;
         FunctionFactory.Memory = 512;
+        FunctionFactory.AddEnvironmentVariable("POWERTOOLS_SERVICE_NAME", $"docprocessing-{EnvironmentName}");
+        FunctionFactory.AddEnvironmentVariable("POWERTOOLS_LOG_LEVEL", $"Debug");
+        FunctionFactory.AddEnvironmentVariable("POWERTOOLS_LOGGER_CASE", $"SnakeCase");
+        FunctionFactory.AddEnvironmentVariable("POWERTOOLS_LOGGER_LOG_EVENT", $"true");
+        FunctionFactory.AddEnvironmentVariable("POWERTOOLS_LOGGER_SAMPLE_RATE", $"0");
+        FunctionFactory.AddEnvironmentVariable("POWERTOOLS_TRACE_DISABLED", $"false");
+        FunctionFactory.AddEnvironmentVariable("POWERTOOLS_TRACER_CAPTURE_RESPONSE", $"true");
+        FunctionFactory.AddEnvironmentVariable("POWERTOOLS_TRACER_CAPTURE_ERROR", $"true");
 
 
         // Tables
@@ -105,10 +113,12 @@ public class ServerlessDocProcessingStack : Stack
 
 
         // Functions
-        var initializeFunction = FunctionFactory.CreateCustomFunction("InitializeProcessing");
+        var initializeFunction = FunctionFactory.CreateCustomFunction("InitializeProcessing")
+            .AddEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"InitializeProcessing");
         var textractFunction = FunctionFactory.CreateCustomFunction("SubmitToTextract")
             .AddEnvironment("SUCCESS_TOPIC", textractSuccessTopic.TopicArn)
-            .AddEnvironment("FAIL_TOPIC", textractFailureTopic.TopicArn);
+            .AddEnvironment("FAIL_TOPIC", textractFailureTopic.TopicArn)
+            .AddEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract");
 
 
 
@@ -163,6 +173,7 @@ public class ServerlessDocProcessingStack : Stack
 
         StateMachine docProcessingStepFunction = new(this, "docProcessing", new StateMachineProps
         {
+            TracingEnabled= true,
             Logs = new LogOptions
             { 
                 Destination = stepFunctionLogGroup,
@@ -206,14 +217,14 @@ public class ServerlessDocProcessingStack : Stack
         {
             DeadLetterQueue = inputDlq,
             RetryAttempts = 3,
-            Role = eventRole
+            Role = eventRole,
         }));
 
 
         //Assign permissions
         docProcessingStepFunction.GrantStartExecution(eventRole);
         stepFunctionLogGroup.GrantWrite(docProcessingStepFunction);
-               
+        inputBucket.GrantReadWrite(initializeFunction);
 
         // Outputs
         new CfnOutput(this, "inputBucketOutput", new CfnOutputProps
@@ -234,5 +245,5 @@ public class ServerlessDocProcessingStack : Stack
 
     private string GetTableName(string baseName) => $"{EnvironmentName}-{baseName}";
 
-    private string GetLogGroupName(string baseName) => $"lg{StackName}-{EnvironmentName}-{baseName}-{Account}";
+    private string GetLogGroupName(string baseName) => $"lg-{EnvironmentName}-{baseName}-{Account}";
 }

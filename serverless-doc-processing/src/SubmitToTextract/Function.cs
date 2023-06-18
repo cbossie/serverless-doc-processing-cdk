@@ -2,6 +2,9 @@ using Amazon.Lambda.CloudWatchEvents.S3Events;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using AWS.Lambda.Powertools.Logging;
+using AWS.Lambda.Powertools.Metrics;
+using AWS.Lambda.Powertools.Tracing;
 using DocProcessing.Shared;
 using System.Net.Http.Headers;
 
@@ -11,8 +14,35 @@ using System.Net.Http.Headers;
 await Common.Instance.Initialize();
 
 
-var functionHandler = async (Payload input, ILambdaContext context) =>
+Dictionary<string, string> _defaultDimensions = new Dictionary<string, string>{
+        {"Environment", "Prod"},
+        {"Another", "One"}
+    };
+
+
+
+[Tracing]
+[Metrics(CaptureColdStart = true)]
+[Logging(LogEvent = true)]
+async Task<Payload> FunctionHandler(Payload input, ILambdaContext context)
 {
+    Logger.AppendKey("id", input.Id);
+    Metrics.AddMetric("HandlerStartTime", context.RemainingTime.Milliseconds, MetricUnit.Milliseconds, MetricResolution.Standard);
+    Metrics.AddMetadata("externalId", input.Id);
+    Metrics.SetDefaultDimensions(_defaultDimensions);
+
+    Tracing.AddAnnotation("fcn", context.FunctionName);
+
+    Tracing.WithSubsegment("delaytime", async (subsegment) => 
+    {
+        await Task.Delay(DateTime.Now.Millisecond);
+    });
+
+    Tracing.WithSubsegment("runtime", async (subsegment) =>
+    {
+        await Task.Delay(DateTime.Now.Millisecond);
+    });
+
     input.Queries.Add(new() 
     {
         QueryId = "poopy",
@@ -26,8 +56,11 @@ var functionHandler = async (Payload input, ILambdaContext context) =>
 };
 
 
+var functionHandlerDelegate = FunctionHandler;
+
+
 // to .NET types.
-await LambdaBootstrapBuilder.Create(functionHandler, new DefaultLambdaJsonSerializer())
+await LambdaBootstrapBuilder.Create(functionHandlerDelegate, new DefaultLambdaJsonSerializer())
         .Build()
         .RunAsync();
 

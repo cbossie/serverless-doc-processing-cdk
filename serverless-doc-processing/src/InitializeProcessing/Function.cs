@@ -2,7 +2,13 @@ using Amazon.Lambda.CloudWatchEvents.S3Events;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using Amazon.S3;
+
+using AWS.Lambda.Powertools.Logging;
+using AWS.Lambda.Powertools.Metrics;
+using AWS.Lambda.Powertools.Tracing;
 using DocProcessing.Shared;
+using Microsoft.Extensions.DependencyInjection;
 
 //Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
@@ -10,17 +16,65 @@ using DocProcessing.Shared;
 
 await Common.Instance.Initialize();
 
+Dictionary<string, string> _defaultDimensions = new Dictionary<string, string>{
+        {"Environment", "Prod"},
+        {"Another", "One"}
+    };
+Metrics.SetDefaultDimensions(_defaultDimensions);
 
-var functionHandler = async (S3ObjectCreateEvent input, ILambdaContext context) =>
+[Metrics(CaptureColdStart = true)]
+[Logging(LogEvent = true)]
+async Task<Payload> FunctionHandler (S3ObjectCreateEvent input, ILambdaContext context)
 {
+    var s3Client = Common.Instance.ServiceProvider.GetRequiredService<IAmazonS3>();
+
+    var id = Guid.NewGuid().ToString();
+    Metrics.AddMetric("HandlerStartTime", context.RemainingTime.Milliseconds, MetricUnit.Milliseconds, MetricResolution.High);
+
+    Tracing.AddAnnotation("fcn", context.FunctionName);
+
+    Tracing.WithSubsegment("delaytime", async (subsegment) =>
+    {
+        await Task.Delay(DateTime.Now.Millisecond);
+    });
+
+    Tracing.WithSubsegment("runtime", async (subsegment) =>
+    {
+        await Task.Delay(DateTime.Now.Millisecond);
+    });
+
+
+
     Payload pl = new();
-    pl.Id = Guid.NewGuid().ToString();
+
+    pl.InputDocKey = input.Detail.Object.Key;
+
+    var data = await s3Client.GetObjectMetadataAsync(new Amazon.S3.Model.GetObjectMetadataRequest
+    { 
+        BucketName= input.Detail.Bucket.Name,
+        Key = input.Detail.Object.Key
+    });
+
+    var md = data.Metadata;
+    foreach(var l in md.Keys)
+    {
+        Logger.LogInformation($"Key {l} : {md[l]}");
+    }
+
+    
+    pl.Id = id;
+
+    
+
     return pl;
 };
 
+var functionHandlerDelegate = FunctionHandler;
+
+
 
 // to .NET types.
-await LambdaBootstrapBuilder.Create(functionHandler, new DefaultLambdaJsonSerializer())
+await LambdaBootstrapBuilder.Create(functionHandlerDelegate, new DefaultLambdaJsonSerializer())
         .Build()
         .RunAsync();
 

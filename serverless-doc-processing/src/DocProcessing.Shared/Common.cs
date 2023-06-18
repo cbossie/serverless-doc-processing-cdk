@@ -1,8 +1,10 @@
-﻿using Amazon.DynamoDBv2;
+﻿using Amazon;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.S3;
 using Amazon.StepFunctions;
 using Amazon.Textract;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -31,6 +33,7 @@ public class Common
     public async Task Initialize()
     {
         ConfigureServices();
+        AWSSDKHandler.RegisterXRayForAllServices();
     }
 
 

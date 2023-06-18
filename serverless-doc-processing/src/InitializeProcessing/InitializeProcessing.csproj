@@ -29,13 +29,19 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.CloudWatchEvents" Version="4.3.0" />
-    <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.8.7" />
+    <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.8.8" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
+    <PackageReference Include="AWS.Lambda.Powertools.Common" Version="1.1.0" />
+    <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.1.0" />
+    <PackageReference Include="AWS.Lambda.Powertools.Metrics" Version="1.2.0" />
+    <PackageReference Include="AWS.Lambda.Powertools.Tracing" Version="1.1.0" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.103.22" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.106" />
     <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.102.119" />
     <PackageReference Include="AWSSDK.Textract" Version="3.7.105.48" />
+    <PackageReference Include="AWSSDK.XRay" Version="3.7.102.127" />
+    <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.12.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DocProcessing.Shared\DocProcessing.Shared.csproj" />
