@@ -16,12 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 await Common.Instance.Initialize();
 
-Dictionary<string, string> _defaultDimensions = new Dictionary<string, string>{
-        {"Environment", "Prod"},
-        {"Another", "One"}
-    };
-
-
+[Tracing]
 [Metrics(CaptureColdStart = true)]
 [Logging(LogEvent = true)]
 async Task<Payload> FunctionHandler (S3ObjectCreateEvent input, ILambdaContext context)
@@ -31,17 +26,6 @@ async Task<Payload> FunctionHandler (S3ObjectCreateEvent input, ILambdaContext c
     var id = Guid.NewGuid().ToString();
     Metrics.AddMetric("HandlerStartTime", context.RemainingTime.Milliseconds, MetricUnit.Milliseconds, MetricResolution.High);
 
-    Tracing.AddAnnotation("fcn", context.FunctionName);
-
-    Tracing.WithSubsegment("delaytime", async (subsegment) =>
-    {
-        await Task.Delay(DateTime.Now.Millisecond);
-    });
-
-    Tracing.WithSubsegment("runtime", async (subsegment) =>
-    {
-        await Task.Delay(DateTime.Now.Millisecond);
-    });
 
 
 

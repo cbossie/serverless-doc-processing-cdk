@@ -13,42 +13,11 @@ using System.Net.Http.Headers;
 
 await Common.Instance.Initialize();
 
-
-Dictionary<string, string> _defaultDimensions = new Dictionary<string, string>{
-        {"Environment", "Prod"},
-        {"Another", "One"}
-    };
-
-
 [Tracing]
 [Metrics(CaptureColdStart = true)]
-[Logging(LogEvent = true)]
+[Logging]
 async Task<Payload> FunctionHandler(Payload input, ILambdaContext context)
-{
-    Metrics.AddMetric("HandlerStartTime", context.RemainingTime.Milliseconds, MetricUnit.Milliseconds, MetricResolution.Standard);
-    
-
-    Tracing.AddAnnotation("fcn", context.FunctionName);
-
-    Tracing.WithSubsegment("delaytime", async (subsegment) => 
-    {
-        await Task.Delay(DateTime.Now.Millisecond);
-    });
-
-    Tracing.WithSubsegment("runtime", async (subsegment) =>
-    {
-        await Task.Delay(DateTime.Now.Millisecond);
-    });
-
-    input.Queries.Add(new() 
-    {
-        QueryId = "poopy",
-        QueryText = "What Time is it",
-        IsValidQuery= true,
-        Processed = false,
-        Results = new[] { "CRIAG" }
-    });
-    
+{  
     return input;
 };
 
