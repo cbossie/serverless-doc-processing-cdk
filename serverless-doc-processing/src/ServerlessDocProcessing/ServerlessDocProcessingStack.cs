@@ -115,6 +115,7 @@ public class ServerlessDocProcessingStack : Stack
         // Functions
         var initializeFunction = FunctionFactory.CreateCustomFunction("InitializeProcessing")
             .AddEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"InitializeProcessing");
+
         var textractFunction = FunctionFactory.CreateCustomFunction("SubmitToTextract")
             .AddEnvironment("SUCCESS_TOPIC", textractSuccessTopic.TopicArn)
             .AddEnvironment("FAIL_TOPIC", textractFailureTopic.TopicArn)
@@ -226,7 +227,12 @@ public class ServerlessDocProcessingStack : Stack
         docProcessingStepFunction.GrantStartExecution(eventRole);
         stepFunctionLogGroup.GrantWrite(docProcessingStepFunction);
         inputBucket.GrantReadWrite(initializeFunction);
+        configTable.GrantDocumentObjectModelPermissions(initializeFunction);
+        dataTable.GrantDocumentObjectModelPermissions(initializeFunction);
+        dataTable.GrantDocumentObjectModelPermissions(textractFunction);
 
+        textractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
+        
         // Outputs
         new CfnOutput(this, "inputBucketOutput", new CfnOutputProps
         {
@@ -248,3 +254,4 @@ public class ServerlessDocProcessingStack : Stack
 
     private string GetLogGroupName(string baseName) => $"lg-{EnvironmentName}-{baseName}-{Account}";
 }
+
