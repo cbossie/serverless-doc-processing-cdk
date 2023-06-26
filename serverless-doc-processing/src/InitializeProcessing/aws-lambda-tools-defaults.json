@@ -8,7 +8,7 @@
     ],
     "profile"     : "default",
     "region"      : "us-east-2",
-    "configuration" : "Release",
+    "configuration" : "Debug",
     "function-runtime" : "provided.al2",
     "function-memory-size" : 512,
     "function-timeout"     : 30,

@@ -29,13 +29,17 @@ namespace DocProcessing.Shared.Service
 
         public async Task<IEnumerable<QueryData>> GetQueries(IEnumerable<string> queryKeys)
         {
-            if(queryKeys is null || queryKeys.Any())
+            if(queryKeys is null || !queryKeys.Any())
             {
                 return await GetAllQueries();
             }
 
-            var asyncData = DbContext.ScanAsync<QueryData>(queryKeys.Select(k => new ScanCondition("query", ScanOperator.Equal, k)).ToList());
-            return await asyncData.GetRemainingAsync();
+            var batchGet = DbContext.CreateBatchGet<QueryData>();
+            foreach(var key in queryKeys) { batchGet.AddKey(key); }
+
+            await batchGet.ExecuteAsync();
+
+            return batchGet.Results;
 
         }
 
