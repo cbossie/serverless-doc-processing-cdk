@@ -16,11 +16,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		..\samconfig.toml = ..\samconfig.toml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocProcessing.Shared", "DocProcessing.Shared\DocProcessing.Shared.csproj", "{A6E6E0BC-87C9-4FB6-AA7D-E2795F6735E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocProcessing.Shared", "DocProcessing.Shared\DocProcessing.Shared.csproj", "{A6E6E0BC-87C9-4FB6-AA7D-E2795F6735E2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InitializeProcessing", "InitializeProcessing\InitializeProcessing.csproj", "{D4F2100F-0725-415C-BEAD-41F61DFFB903}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubmitToTextract", "SubmitToTextract\SubmitToTextract.csproj", "{135EB5C3-3410-4185-B620-211BC61D6A84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constants", "Constants\Constants.csproj", "{ACC6E3EF-6038-4366-BABB-15B995298538}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +82,18 @@ Global
 		{135EB5C3-3410-4185-B620-211BC61D6A84}.Release|x64.Build.0 = Release|Any CPU
 		{135EB5C3-3410-4185-B620-211BC61D6A84}.Release|x86.ActiveCfg = Release|Any CPU
 		{135EB5C3-3410-4185-B620-211BC61D6A84}.Release|x86.Build.0 = Release|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Debug|x64.Build.0 = Debug|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Debug|x86.Build.0 = Debug|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Release|x64.ActiveCfg = Release|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Release|x64.Build.0 = Release|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Release|x86.ActiveCfg = Release|Any CPU
+		{ACC6E3EF-6038-4366-BABB-15B995298538}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

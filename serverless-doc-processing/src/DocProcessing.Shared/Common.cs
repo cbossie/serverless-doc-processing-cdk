@@ -5,6 +5,7 @@ using Amazon.S3;
 using Amazon.StepFunctions;
 using Amazon.Textract;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using DocProcessing.Shared.Service;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -39,16 +40,19 @@ public class Common
 
     private void ConfigureServices()
     {
-        Services.AddAWSService<IAmazonS3>();
-        Services.AddAWSService<IAmazonTextract>();
-        Services.AddAWSService<IAmazonStepFunctions>();
-        Services.AddAWSService<IAmazonDynamoDB>();
-        Services.AddTransient<IDynamoDBContext>(c => new
-            DynamoDBContext(c.GetService<IAmazonDynamoDB>(),
-                new DynamoDBContextConfig
-                {
-                    TableNamePrefix = $"{Environment.GetEnvironmentVariable("ENVIRONMENT_NAME")}-"
-                }));
-        ServiceProvider = Services.BuildServiceProvider();
+        ServiceProvider = 
+        Services
+            .AddSingleton<IDataService, DataService>()
+            .AddAWSService<IAmazonS3>()
+            .AddAWSService<IAmazonTextract>()
+            .AddAWSService<IAmazonStepFunctions>()
+            .AddAWSService<IAmazonDynamoDB>()
+            .AddTransient<IDynamoDBContext>(c => new
+                DynamoDBContext(c.GetService<IAmazonDynamoDB>(),
+                    new DynamoDBContextConfig
+                    {
+                        TableNamePrefix = $"{Environment.GetEnvironmentVariable(Constants.ConstantValues.ENVIRONMENT_NAME_VARIABLE)}-"
+                    }))
+            .BuildServiceProvider();
     }
 }

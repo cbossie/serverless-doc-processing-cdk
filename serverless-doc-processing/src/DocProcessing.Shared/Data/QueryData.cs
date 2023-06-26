@@ -13,7 +13,7 @@ namespace DocProcessing.Shared.Data
         [DynamoDBHashKey("query")]
         public string QueryId { get; set; }
 
-        [DynamoDBProperty("QueryText")]
+        [DynamoDBProperty("queryText")]
         public string QueryText { get; set; }
     }
 }

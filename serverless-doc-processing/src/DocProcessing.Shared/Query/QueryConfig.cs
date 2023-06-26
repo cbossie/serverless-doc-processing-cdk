@@ -22,6 +22,6 @@ namespace DocProcessing.Shared.Query
         public bool Processed { get; set; }
 
         [JsonPropertyName("queryResults")]
-        public IEnumerable<string> Results { get; set; } = new List<string>();
+        public List<string> Results { get; set; } = new List<string>();
     }
 }

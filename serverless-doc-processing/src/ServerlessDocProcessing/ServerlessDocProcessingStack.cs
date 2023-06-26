@@ -14,6 +14,7 @@ using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.EC2;
 using System.Diagnostics.Contracts;
 
+
 namespace ServerlessDocProcessing;
 
 public class ServerlessDocProcessingStack : Stack
@@ -43,7 +44,7 @@ public class ServerlessDocProcessingStack : Stack
         // Tables
         Table configTable = new(this, "queryData", new TableProps
         {
-            TableName = GetTableName("QueryData"),
+            TableName = GetTableName(Constants.ResourceNames.QUERY_DATA_TABLE),
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute() { Name = "query", Type = AttributeType.STRING },
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY
@@ -51,7 +52,7 @@ public class ServerlessDocProcessingStack : Stack
 
         Table dataTable = new(this, "dataTable", new TableProps
         {
-            TableName = GetTableName("ProcessData"),
+            TableName = GetTableName(Constants.ResourceNames.PROCESS_DATA_TABLE),
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute() { Name = "id", Type = AttributeType.STRING },
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY
@@ -114,6 +115,7 @@ public class ServerlessDocProcessingStack : Stack
 
         // Functions
         var initializeFunction = FunctionFactory.CreateCustomFunction("InitializeProcessing")
+            .AddEnvironment(Constants.ConstantValues.QUERY_TAG_KEY, Constants.ConstantValues.QUERY_TAG)
             .AddEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"InitializeProcessing");
 
         var textractFunction = FunctionFactory.CreateCustomFunction("SubmitToTextract")
@@ -231,6 +233,7 @@ public class ServerlessDocProcessingStack : Stack
         dataTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(textractFunction);
 
+
         textractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
         
         // Outputs
@@ -245,13 +248,9 @@ public class ServerlessDocProcessingStack : Stack
 
     // Functions to create unique names
     private string GetBucketName(string baseName) => $"{baseName}-{EnvironmentName}-{Account}";
-
     private string GetQueueName(string baseName) => $"{baseName}-{EnvironmentName}-{Account}";
-
     private string GetTopicname(string baseName) => $"{baseName}-{EnvironmentName}-{Account}";
-
     private string GetTableName(string baseName) => $"{EnvironmentName}-{baseName}";
-
     private string GetLogGroupName(string baseName) => $"lg-{EnvironmentName}-{baseName}-{Account}";
 }
 

@@ -15,4 +15,7 @@
     -->
     <Content Include="ServerlessDocProcessingStack.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Constants\Constants.csproj" />
+  </ItemGroup>
 </Project>

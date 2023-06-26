@@ -50,7 +50,7 @@ internal class CustomFunctionFactory
 		};
 
 		var fcn = new CustomFunction(Scope, functionName, customProps);
-			fcn.AddEnvironment("ENVIRONMENT_NAME", EnvironmentName);
+			fcn.AddEnvironment(Constants.ConstantValues.ENVIRONMENT_NAME_VARIABLE, EnvironmentName);
 
 		foreach(var variable in environmentVariables) 
 		{
