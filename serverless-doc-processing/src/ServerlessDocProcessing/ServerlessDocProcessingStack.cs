@@ -71,7 +71,7 @@ public class ServerlessDocProcessingStack : Stack
         Bucket textractBucket = new(this, "textractBucket", new BucketProps
         {
             Encryption = BucketEncryption.S3_MANAGED,
-            BucketName = GetBucketName("extracted-data-bucket"),
+            BucketName = GetBucketName("textract-data-bucket"),
             RemovalPolicy = RemovalPolicy.DESTROY
         });
 
@@ -118,8 +118,14 @@ public class ServerlessDocProcessingStack : Stack
             Resources = new[] { textractTopic.TopicArn },
             Effect = Effect.ALLOW
         }));
-            
-            
+
+        textractRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
+        {
+            Actions = new[] { "s3:Get*", "s3:Write*" },
+            Resources = new[] { textractBucket.BucketArn },
+            Effect = Effect.ALLOW
+        }));
+
 
 
         // Logging

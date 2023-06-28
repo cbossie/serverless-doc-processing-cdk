@@ -27,6 +27,7 @@ async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext contex
     {
         ClientRequestToken = input.Id,
         JobTag = input.Id,
+        FeatureTypes = new List<string> { FeatureType.TABLES, FeatureType.QUERIES, FeatureType.FORMS },
         NotificationChannel = new Amazon.Textract.Model.NotificationChannel
         {
             SNSTopicArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
