@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.103.22" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.104.1" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.7" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.106" />
-    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.102.119" />
-    <PackageReference Include="AWSSDK.Textract" Version="3.7.105.48" />
-    <PackageReference Include="AWSSDK.XRay" Version="3.7.102.127" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.106.1" />
+    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.103" />
+    <PackageReference Include="AWSSDK.Textract" Version="3.7.105.49" />
+    <PackageReference Include="AWSSDK.XRay" Version="3.7.102.128" />
     <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.12.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.5.23280.8" />
   </ItemGroup>

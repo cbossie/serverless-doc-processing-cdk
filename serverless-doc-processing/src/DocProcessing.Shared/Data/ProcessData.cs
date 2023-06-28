@@ -46,5 +46,9 @@ namespace DocProcessing.Shared
         [JsonPropertyName("fileExtension")]
         public string FileExtension { get; set; }
 
+        [DynamoDBProperty("textractTaskToken")]
+        [JsonPropertyName("textractTaskToken")]
+        public string TextractTaskToken { get; set; }
+
     }
 }

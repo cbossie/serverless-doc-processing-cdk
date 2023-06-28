@@ -39,6 +39,7 @@ public class ServerlessDocProcessingStack : Stack
         FunctionFactory.AddEnvironmentVariable("POWERTOOLS_TRACE_DISABLED", $"false");
         FunctionFactory.AddEnvironmentVariable("POWERTOOLS_TRACER_CAPTURE_RESPONSE", $"true");
         FunctionFactory.AddEnvironmentVariable("POWERTOOLS_TRACER_CAPTURE_ERROR", $"true");
+        FunctionFactory.AddEnvironmentVariable("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract-{EnvironmentName}");
 
 
         // Tables
@@ -67,7 +68,7 @@ public class ServerlessDocProcessingStack : Stack
             RemovalPolicy = RemovalPolicy.DESTROY,
         });
 
-        Bucket extractedDataBucket = new(this, "extractedData", new BucketProps
+        Bucket textractBucket = new(this, "textractBucket", new BucketProps
         {
             Encryption = BucketEncryption.S3_MANAGED,
             BucketName = GetBucketName("extracted-data-bucket"),
@@ -86,23 +87,39 @@ public class ServerlessDocProcessingStack : Stack
 
         });
 
-        Topic textractSuccessTopic = new(this, "textractSuccessTopic", new TopicProps
+        Topic textractTopic = new(this, "textractSuccessTopic", new TopicProps
         {
             Fifo = false,
             TopicName = GetTopicname("TextractSuccess"),
             DisplayName = "Textract Success Topic"
         });
 
-        Topic textractFailureTopic = new(this, "textractFailureTopic", new TopicProps
+        Queue inputDlq = new(this, "inputDlq", new QueueProps
         {
-            Fifo = false,
-            TopicName = GetTopicname("TextractFailure"),
-            DisplayName = "Textract Failure Topic"
+            Encryption = QueueEncryption.SQS_MANAGED,
+            EnforceSSL = true,
         });
 
 
+        //IAM
+        Role eventRole = new Role(this, "inputEventRole", new RoleProps
+        {
+            AssumedBy = new ServicePrincipal("events.amazonaws.com")
+        });
 
+        Role textractRole = new Role(this, "textractRole", new RoleProps 
+        {
+            AssumedBy = new ServicePrincipal("textract.amazonaws.com")
+        });
 
+        textractRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
+        {
+            Actions = new[] { "sns:Publish" },
+            Resources = new[] { textractTopic.TopicArn },
+            Effect = Effect.ALLOW
+        }));
+            
+            
 
 
         // Logging
@@ -115,15 +132,14 @@ public class ServerlessDocProcessingStack : Stack
 
         // Functions
         var initializeFunction = FunctionFactory.CreateCustomFunction("InitializeProcessing")
-            .AddEnvironment(Constants.ConstantValues.QUERY_TAG_KEY, Constants.ConstantValues.QUERY_TAG)
-            .AddEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"InitializeProcessing");
+            .AddEnvironment(Constants.ConstantValues.QUERY_TAG_KEY, Constants.ConstantValues.QUERY_TAG);
 
         var textractFunction = FunctionFactory.CreateCustomFunction("SubmitToTextract")
-            .AddEnvironment("SUCCESS_TOPIC", textractSuccessTopic.TopicArn)
-            .AddEnvironment("FAIL_TOPIC", textractFailureTopic.TopicArn)
-            .AddEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract");
+            .AddEnvironment(Constants.ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
+            .AddEnvironment(Constants.ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
+            .AddEnvironment(Constants.ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
 
-
+        var processTextractResultFunction = FunctionFactory.CreateCustomFunction("ProcessTextractResults");
 
         // Step Functions Tasks
         StepFunctionTasks.LambdaInvoke initializeState = new(this, "initializeState", new LambdaInvokeProps
@@ -136,10 +152,29 @@ public class ServerlessDocProcessingStack : Stack
 
         StepFunctionTasks.LambdaInvoke textractState = new(this, "textractState", new LambdaInvokeProps
         {
+            IntegrationPattern = IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+            TaskTimeout = Timeout.Duration(Duration.Seconds(30)),
             LambdaFunction = textractFunction,
             Comment = "Function to send document to textract asynchronously",
             OutputPath = "$.Payload",
-            Payload = TaskInput.FromJsonPathAt("$"),
+            Payload = TaskInput.FromObject(new Dictionary<string, object> {
+                { "id", JsonPath.StringAt("$.id") },
+                { "externalId", JsonPath.StringAt("$.externalId")  },
+                { "isValid", JsonPath.StringAt("$.isValid") },
+                { "queries", JsonPath.ListAt("$.queries") },
+                { "inputDocBucket", JsonPath.StringAt("$.inputDocBucket")  },
+                { "inputDocKey", JsonPath.StringAt("$.inputDocKey")  },
+                { "fileExtension", JsonPath.StringAt("$.fileExtension")  },
+                { "textractTaskToken", JsonPath.TaskToken}
+                })
+
+        });
+
+        StepFunctionTasks.LambdaInvoke processTextractResultsState = new(this, "processTextractResults", new LambdaInvokeProps
+        {
+            LambdaFunction = processTextractResultFunction,
+            Comment = "Function to process textract results asynchronously",
+            OutputPath = "$.Payload"
         });
 
         StepFunctionTasks.SqsSendMessage sendFailureState = new(this, "sendFailureState", new SqsSendMessageProps
@@ -148,8 +183,6 @@ public class ServerlessDocProcessingStack : Stack
             Comment = "Send Failure Message",
             MessageBody = TaskInput.FromJsonPathAt("$"),
         });
-
-
 
         StepFunctionTasks.SqsSendMessage sendSuccessState = new(this, "sendSuccessState", new SqsSendMessageProps
         {
@@ -166,8 +199,15 @@ public class ServerlessDocProcessingStack : Stack
             Errors = new[] { "States.ALL" },
             ResultPath = "$.error"
         });
-        textractState.Next(sendSuccessState);
+        textractState.Next(processTextractResultsState);
         textractState.AddCatch(sendFailureState, new CatchProps
+        {
+            Errors = new[] { "States.ALL" },
+            ResultPath = "$.error"
+        });
+
+        processTextractResultsState.Next(sendSuccessState);
+        processTextractResultsState.AddCatch(sendFailureState, new CatchProps
         {
             Errors = new[] { "States.ALL" },
             ResultPath = "$.error"
@@ -183,7 +223,7 @@ public class ServerlessDocProcessingStack : Stack
                 IncludeExecutionData = true,
                 Level = LogLevel.ALL
             },
-            Definition = initializeState
+            DefinitionBody = DefinitionBody.FromChainable(initializeState)
         });
 
 
@@ -205,16 +245,7 @@ public class ServerlessDocProcessingStack : Stack
             }
         });
 
-        Queue inputDlq = new(this, "inputDlq", new QueueProps
-        {
-            Encryption = QueueEncryption.SQS_MANAGED,
-            EnforceSSL = true,
-        });
 
-        Role eventRole = new Role(this, "inputEventRole", new RoleProps
-        {
-            AssumedBy = new ServicePrincipal("events.amazonaws.com")
-        });
 
 
         rule.AddTarget(new SfnStateMachine(docProcessingStepFunction, new SfnStateMachineProps
@@ -235,7 +266,7 @@ public class ServerlessDocProcessingStack : Stack
 
 
         textractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
-        
+
         // Outputs
         new CfnOutput(this, "inputBucketOutput", new CfnOutputProps
         {
