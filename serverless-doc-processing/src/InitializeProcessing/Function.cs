@@ -22,7 +22,7 @@ await Common.Instance.Initialize();
 
 [Tracing]
 [Metrics(CaptureColdStart = true)]
-[Logging(LogEvent = true)]
+[Logging(LogEvent = true, ClearState = true)]
 async Task<ProcessData> FunctionHandler (S3ObjectCreateEvent input, ILambdaContext context)
 {
     var s3Client = Common.Instance.ServiceProvider.GetRequiredService<IAmazonS3>();

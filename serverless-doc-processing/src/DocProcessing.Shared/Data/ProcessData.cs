@@ -50,5 +50,9 @@ namespace DocProcessing.Shared
         [JsonPropertyName("textractTaskToken")]
         public string TextractTaskToken { get; set; }
 
+        [DynamoDBProperty("textractJobId")]
+        [JsonPropertyName("textractJobId")]
+        public string TextractJobId { get; set; }
+
     }
 }

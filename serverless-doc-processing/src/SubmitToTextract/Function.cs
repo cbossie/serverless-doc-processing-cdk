@@ -1,3 +1,4 @@
+using Amazon.DynamoDBv2.Model.Internal.MarshallTransformations;
 using Amazon.Lambda.CloudWatchEvents.S3Events;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
@@ -8,6 +9,7 @@ using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
 using DocProcessing.Shared;
+using DocProcessing.Shared.Service;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 
@@ -18,12 +20,15 @@ await Common.Instance.Initialize();
 
 [Tracing]
 [Metrics(CaptureColdStart = true)]
-[Logging]
+[Logging(ClearState = true, LogEvent = true)]
 async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext context)
 {
-    IAmazonTextract textract = Common.Instance.ServiceProvider.GetRequiredService<IAmazonTextract>();
+    IAmazonTextract textractCli = Common.Instance.ServiceProvider.GetRequiredService<IAmazonTextract>();
+    IDataService dataSvc = Common.Instance.ServiceProvider.GetService<IDataService>();
 
-    await textract.StartDocumentAnalysisAsync(new Amazon.Textract.Model.StartDocumentAnalysisRequest
+    var data = await dataSvc.GetData<ProcessData>(input.Id);
+
+    var textractResult = await textractCli.StartDocumentAnalysisAsync(new Amazon.Textract.Model.StartDocumentAnalysisRequest
     {
         ClientRequestToken = input.Id,
         JobTag = input.Id,
@@ -31,7 +36,7 @@ async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext contex
         NotificationChannel = new Amazon.Textract.Model.NotificationChannel
         {
             SNSTopicArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
-            RoleArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY)
+            RoleArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
         },
         DocumentLocation = new Amazon.Textract.Model.DocumentLocation
         {
@@ -52,13 +57,17 @@ async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext contex
         },
         OutputConfig = new OutputConfig
         {
-            S3Bucket = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_BUCKET_KEY)
+            S3Bucket = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_BUCKET_KEY),
+            S3Prefix = "/"
         }
-    }) ;
+    });
 
+    data.TextractJobId = textractResult.JobId;
+    data.TextractTaskToken = input.TextractTaskToken;
 
+    await dataSvc.SaveData(data);
 
-    return input;
+    return data;
 };
 
 

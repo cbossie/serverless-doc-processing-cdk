@@ -14,5 +14,7 @@ public interface IDataService
 
     string GenerateId(string? id = null);
 
+    Task<T> GetData<T>(string id);
+
     Task<T> SaveData<T>(T data);
 }

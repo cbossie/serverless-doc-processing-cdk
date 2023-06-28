@@ -54,5 +54,10 @@ namespace DocProcessing.Shared.Service
 
             return data;
         }
+
+        public async Task<T> GetData<T>(string id)
+        {
+            return await DbContext.LoadAsync<T>(id);
+        }
     }
 }
