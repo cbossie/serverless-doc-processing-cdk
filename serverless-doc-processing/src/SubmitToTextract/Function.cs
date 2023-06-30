@@ -28,16 +28,16 @@ async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext contex
 
     var data = await dataSvc.GetData<ProcessData>(input.Id);
 
-    var textractResult = await textractCli.StartDocumentAnalysisAsync(new Amazon.Textract.Model.StartDocumentAnalysisRequest
+    var textractRequest = new Amazon.Textract.Model.StartDocumentAnalysisRequest
     {
         ClientRequestToken = input.Id,
         JobTag = input.Id,
         FeatureTypes = new List<string> { FeatureType.TABLES, FeatureType.QUERIES, FeatureType.FORMS },
-        NotificationChannel = new Amazon.Textract.Model.NotificationChannel
-        {
-            SNSTopicArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
-            RoleArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
-        },
+        //NotificationChannel = new Amazon.Textract.Model.NotificationChannel
+        //{
+        //    SNSTopicArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
+        //    RoleArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
+        //},
         DocumentLocation = new Amazon.Textract.Model.DocumentLocation
         {
             S3Object = new Amazon.Textract.Model.S3Object
@@ -58,9 +58,14 @@ async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext contex
         OutputConfig = new OutputConfig
         {
             S3Bucket = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_BUCKET_KEY),
-            S3Prefix = "/"
+            S3Prefix = "output"
         }
-    });
+    };
+
+    Logger.LogInformation("xxxxxxxxxxxxxxxxxxxxx");
+    Logger.LogInformation(textractRequest);
+
+    var textractResult = await textractCli.StartDocumentAnalysisAsync(textractRequest);
 
     data.TextractJobId = textractResult.JobId;
     data.TextractTaskToken = input.TextractTaskToken;

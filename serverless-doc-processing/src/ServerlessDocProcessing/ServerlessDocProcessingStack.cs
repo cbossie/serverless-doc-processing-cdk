@@ -107,7 +107,7 @@ public class ServerlessDocProcessingStack : Stack
             AssumedBy = new ServicePrincipal("events.amazonaws.com")
         });
 
-        Role textractRole = new Role(this, "textractRole", new RoleProps 
+        Role textractRole = new Role(this, "textractRole", new RoleProps
         {
             AssumedBy = new ServicePrincipal("textract.amazonaws.com")
         });
@@ -144,6 +144,30 @@ public class ServerlessDocProcessingStack : Stack
             .AddEnvironment(Constants.ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
             .AddEnvironment(Constants.ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
             .AddEnvironment(Constants.ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
+
+
+        
+        textractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
+        {
+            Actions = new[] { "s3:Get*" },
+            Resources = new[] 
+            {
+                inputBucket.BucketArn,
+                inputBucket.ArnForObjects("*")
+            },
+            Effect = Effect.ALLOW
+        }));
+
+        textractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
+        {
+            Actions = new[] { "s3:Put*" },
+            Resources = new[]
+    {
+                textractBucket.BucketArn,
+                textractBucket.ArnForObjects("*")
+            },
+            Effect = Effect.ALLOW
+        }));
 
         var processTextractResultFunction = FunctionFactory.CreateCustomFunction("ProcessTextractResults");
 
