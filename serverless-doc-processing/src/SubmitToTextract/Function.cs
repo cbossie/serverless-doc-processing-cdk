@@ -33,11 +33,11 @@ async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext contex
         ClientRequestToken = input.Id,
         JobTag = input.Id,
         FeatureTypes = new List<string> { FeatureType.TABLES, FeatureType.QUERIES, FeatureType.FORMS },
-        //NotificationChannel = new Amazon.Textract.Model.NotificationChannel
-        //{
-        //    SNSTopicArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
-        //    RoleArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
-        //},
+        NotificationChannel = new Amazon.Textract.Model.NotificationChannel
+        {
+            SNSTopicArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
+            RoleArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_ROLE_KEY),
+        },
         DocumentLocation = new Amazon.Textract.Model.DocumentLocation
         {
             S3Object = new Amazon.Textract.Model.S3Object
