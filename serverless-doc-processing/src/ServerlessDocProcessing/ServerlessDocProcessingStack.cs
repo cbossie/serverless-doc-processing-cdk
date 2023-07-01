@@ -13,7 +13,9 @@ using Amazon.CDK.AWS.StepFunctions.Tasks;
 using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.EC2;
 using System.Diagnostics.Contracts;
-
+using Amazon.CDK.AWS.SNS.Subscriptions;
+using Constants;
+using ServerlessDocProcessing.Constructs;
 
 namespace ServerlessDocProcessing;
 
@@ -171,6 +173,20 @@ public class ServerlessDocProcessingStack : Stack
 
         var processTextractResultFunction = FunctionFactory.CreateCustomFunction("ProcessTextractResults");
 
+        var restartStepFunction = FunctionFactory.CreateCustomFunction("RestartStepFunction");
+        restartStepFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps 
+        {
+            Effect = Effect.ALLOW,
+            Actions = new[] { "states:SendTaskSuccess", "states:SendTaskFailure" },
+            Resources = new[] {"*"}
+        }));
+        
+        textractTopic.AddSubscription(new LambdaSubscription(restartStepFunction));
+        textractTopic.AddSubscription(new EmailSubscription("cbossie@gmail.com", new EmailSubscriptionProps 
+        {
+            Json = false
+        }));
+
         // Step Functions Tasks
         StepFunctionTasks.LambdaInvoke initializeState = new(this, "initializeState", new LambdaInvokeProps
         {
@@ -183,7 +199,7 @@ public class ServerlessDocProcessingStack : Stack
         StepFunctionTasks.LambdaInvoke textractState = new(this, "textractState", new LambdaInvokeProps
         {
             IntegrationPattern = IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-            TaskTimeout = Timeout.Duration(Duration.Seconds(30)),
+            TaskTimeout = Timeout.Duration(Duration.Seconds(DefaultValues.TEXTRACT_STEP_TIME_OUT)),
             LambdaFunction = textractFunction,
             Comment = "Function to send document to textract asynchronously",
             OutputPath = "$.Payload",
@@ -198,13 +214,12 @@ public class ServerlessDocProcessingStack : Stack
                 { "textractTaskToken", JsonPath.TaskToken}
                 })
 
-        });
+        }) ;
 
         StepFunctionTasks.LambdaInvoke processTextractResultsState = new(this, "processTextractResults", new LambdaInvokeProps
         {
             LambdaFunction = processTextractResultFunction,
-            Comment = "Function to process textract results asynchronously",
-            OutputPath = "$.Payload"
+            Comment = "Function to process textract results asynchronously"
         });
 
         StepFunctionTasks.SqsSendMessage sendFailureState = new(this, "sendFailureState", new SqsSendMessageProps
@@ -293,6 +308,7 @@ public class ServerlessDocProcessingStack : Stack
         configTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(textractFunction);
+        dataTable.GrantDocumentObjectModelPermissions(restartStepFunction);
 
 
         textractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));

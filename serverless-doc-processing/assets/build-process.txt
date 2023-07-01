@@ -53,4 +53,4 @@ build-DotNet7Lambda:
 
 cdk synth  --build build.bat
 
-cdk deploy --build build.bat --require-approval never
+cdk deploy --build build.bat --require-approval never --profile dotnet-ohio

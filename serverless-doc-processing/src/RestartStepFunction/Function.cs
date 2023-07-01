@@ -1,35 +1,94 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using Amazon.Lambda.SNSEvents;
+using Amazon.Runtime;
+using Amazon.StepFunctions;
+using Amazon.StepFunctions.Model;
+using AWS.Lambda.Powertools.Logging;
+using AWS.Lambda.Powertools.Metrics;
+using AWS.Lambda.Powertools.Tracing;
+using DocProcessing.Shared;
+using DocProcessing.Shared.Service;
+using Microsoft.Extensions.DependencyInjection;
+using RestartStepFunction.Exceptions;
+using RestartStepFunction.Model;
+using System.Text.Json;
 
-namespace RestartStepFunction;
+//Configure the Serializer
+[assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
-public class Function
+await Common.Instance.Initialize();
+
+[Tracing]
+[Metrics(CaptureColdStart = true)]
+[Logging(ClearState = true, LogEvent = true)]
+async Task FunctionHandler(SNSEvent input, ILambdaContext context)
 {
-    /// <summary>
-    /// The main entry point for the custom runtime.
-    /// </summary>
-    /// <param name="args"></param>
-    private static async Task Main(string[] args)
+    var record = input.Records.FirstOrDefault();
+    var dataSvc = Common.Instance.ServiceProvider.GetRequiredService<IDataService>();
+    var stepFunctionCli = Common.Instance.ServiceProvider.GetRequiredService<IAmazonStepFunctions>();
+
+    //If there is no message, throw an error
+    if (record is null)
     {
-        Func<string, ILambdaContext, string> handler = FunctionHandler;
-        await LambdaBootstrapBuilder.Create(handler, new DefaultLambdaJsonSerializer())
-            .Build()
-            .RunAsync();
+        Logger.LogError(input);
+        throw new RestartStepFunctionException("No message received");        
     }
 
-    /// <summary>
-    /// A simple function that takes a string and does a ToUpper
-    ///
-    /// To use this handler to respond to an AWS event, reference the appropriate package from 
-    /// https://github.com/aws/aws-lambda-dotnet#events
-    /// and change the string input parameter to the desired event type.
-    /// </summary>
-    /// <param name="input"></param>
-    /// <param name="context"></param>
-    /// <returns></returns>
-    public static string FunctionHandler(string input, ILambdaContext context)
+    // Deserialize the Message
+    var message = JsonSerializer.Deserialize<TextractCompletionModel>(record.Sns.Message);
+
+    // Get the Task Token
+    var processData = await dataSvc.GetData<ProcessData>(message.JobTag);
+
+    if(processData.TextractTaskToken is null)
     {
-        return input.ToUpper();
+        throw new RestartStepFunctionException("Missing Task Token");
+    }
+
+    var responseMessage = JsonSerializer.Serialize(new IdMessage 
+    {
+        Id = message.JobTag 
+    });
+
+    AmazonWebServiceResponse response;
+
+    if (message.IsSuccess)
+    {
+        response = await stepFunctionCli.SendTaskSuccessAsync(new() 
+        {
+            TaskToken = processData.TextractTaskToken,
+            Output = JsonSerializer.Serialize(processData)
+        });
+    }
+    else
+    {
+        response = await stepFunctionCli.SendTaskFailureAsync(new()
+        {
+            TaskToken = processData.TextractTaskToken,
+            Error = $"{message.API} {message.Status}",
+            Cause = record.Sns.Message
+        });
+    }
+
+    // Log the output
+    if(response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+    {
+        Logger.LogInformation($"Successfully sent Step Function Completion");
+        Logger.LogInformation(response);
+    }
+    else
+    {
+        Logger.LogError($"Error sending Step Function Completion");
+        Logger.LogError(response);
     }
 }
+
+var functionHandlerDelegate = FunctionHandler;
+
+
+// to .NET types.
+await LambdaBootstrapBuilder.Create(functionHandlerDelegate, new DefaultLambdaJsonSerializer())
+        .Build()
+        .RunAsync();

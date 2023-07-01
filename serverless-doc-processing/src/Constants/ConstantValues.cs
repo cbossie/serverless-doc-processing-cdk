@@ -16,7 +16,6 @@ namespace Constants
         public const string TEXTRACT_TOPIC_KEY = "TEXTRACT_TOPIC";
         public const string TEXTRACT_ROLE_KEY = "TEXTRACT_ROLE";
         public const string TEXTRACT_BUCKET_KEY = "TEXTRACT_BUCKET_KEY";
-
     }
 
     public static class ResourceNames
@@ -24,4 +23,9 @@ namespace Constants
         public const string PROCESS_DATA_TABLE = "ProcessData";
         public const string QUERY_DATA_TABLE = "QueryData";
     }
+    public static class DefaultValues
+    {
+        public const int TEXTRACT_STEP_TIME_OUT = 300;
+    }
+
 }

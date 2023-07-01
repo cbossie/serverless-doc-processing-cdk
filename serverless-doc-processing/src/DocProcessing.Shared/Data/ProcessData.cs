@@ -5,8 +5,8 @@ using System.Text.Json.Serialization;
 namespace DocProcessing.Shared
 {
     [DynamoDBTable(Constants.ResourceNames.PROCESS_DATA_TABLE)]
-    public class ProcessData
-    {
+    public class ProcessData : IdMessage
+    { 
         public ProcessData()
         {
 
@@ -19,7 +19,7 @@ namespace DocProcessing.Shared
 
         [DynamoDBHashKey("id")]
         [JsonPropertyName("id")]
-        public string Id { get; set; }
+        public override string Id { get; set; }
 
         [DynamoDBProperty("externalId")]
         [JsonPropertyName("externalId")]

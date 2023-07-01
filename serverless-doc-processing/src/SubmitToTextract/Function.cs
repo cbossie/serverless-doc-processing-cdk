@@ -62,9 +62,6 @@ async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext contex
         }
     };
 
-    Logger.LogInformation("xxxxxxxxxxxxxxxxxxxxx");
-    Logger.LogInformation(textractRequest);
-
     var textractResult = await textractCli.StartDocumentAnalysisAsync(textractRequest);
 
     data.TextractJobId = textractResult.JobId;
