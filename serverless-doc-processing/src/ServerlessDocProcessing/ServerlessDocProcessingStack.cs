@@ -160,7 +160,7 @@ public class ServerlessDocProcessingStack : Stack
 
         textractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
         {
-            Actions = new[] { "s3:Put*" },
+            Actions = new[] { "s3:Put*", "s3:Get*" },
             Resources = new[]
     {
                 textractBucket.BucketArn,
