@@ -51,11 +51,14 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
     {
         Id = message.JobTag 
     });
+    processData.OutputBucket = message.DocumentLocation.S3Object.Bucket;
+    processData.OutputKey = message.DocumentLocation.S3Object.Name;
 
     AmazonWebServiceResponse response;
 
     if (message.IsSuccess)
     {
+        Logger.LogInformation("Success!");
         response = await stepFunctionCli.SendTaskSuccessAsync(new() 
         {
             TaskToken = processData.TextractTaskToken,
@@ -64,6 +67,7 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
     }
     else
     {
+        Logger.LogInformation("Failure!");
         response = await stepFunctionCli.SendTaskFailureAsync(new()
         {
             TaskToken = processData.TextractTaskToken,
@@ -83,6 +87,10 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
         Logger.LogError($"Error sending Step Function Completion");
         Logger.LogError(response);
     }
+
+    await dataSvc.SaveData(processData);
+
+
 }
 
 var functionHandlerDelegate = FunctionHandler;

@@ -6,7 +6,7 @@ namespace DocProcessing.Shared
 {
     [DynamoDBTable(Constants.ResourceNames.PROCESS_DATA_TABLE)]
     public class ProcessData : IdMessage
-    { 
+    {
         public ProcessData()
         {
 
@@ -53,6 +53,16 @@ namespace DocProcessing.Shared
         [DynamoDBProperty("textractJobId")]
         [JsonPropertyName("textractJobId")]
         public string TextractJobId { get; set; }
+
+
+        [DynamoDBProperty("outputBucket")]
+        [JsonPropertyName("outputBucket")]
+        public string OutputBucket  { get;set;}
+
+    [DynamoDBProperty("outputKey")]
+    [JsonPropertyName("outputKey")]
+    public string OutputKey { get; set; }
+
 
     }
 }

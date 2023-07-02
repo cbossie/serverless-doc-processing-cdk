@@ -10,12 +10,20 @@ using Microsoft.Extensions.DependencyInjection;
 //Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
-await Common.Instance.Initialize();
+//await Common.Instance.Initialize();
 
 [Tracing]
 [Metrics(CaptureColdStart = true)]
 [Logging(LogEvent = true)]
-async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext context) 
+async Task<string> FunctionHandler(string input, ILambdaContext context) 
 {
     return input;
 }
+
+var functionHandlerDelegate = FunctionHandler;
+
+
+// to .NET types.
+await LambdaBootstrapBuilder.Create(functionHandlerDelegate, new DefaultLambdaJsonSerializer())
+        .Build()
+        .RunAsync();

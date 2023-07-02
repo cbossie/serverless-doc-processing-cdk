@@ -202,7 +202,6 @@ public class ServerlessDocProcessingStack : Stack
             TaskTimeout = Timeout.Duration(Duration.Seconds(DefaultValues.TEXTRACT_STEP_TIME_OUT)),
             LambdaFunction = textractFunction,
             Comment = "Function to send document to textract asynchronously",
-            OutputPath = "$.Payload",
             Payload = TaskInput.FromObject(new Dictionary<string, object> {
                 { "id", JsonPath.StringAt("$.id") },
                 { "externalId", JsonPath.StringAt("$.externalId")  },
