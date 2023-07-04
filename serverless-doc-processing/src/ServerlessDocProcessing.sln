@@ -13,7 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 	ProjectSection(SolutionItems) = preProject
 		..\assets\build-process.txt = ..\assets\build-process.txt
 		..\build.bat = ..\build.bat
-		..\samconfig.toml = ..\samconfig.toml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocProcessing.Shared", "DocProcessing.Shared\DocProcessing.Shared.csproj", "{A6E6E0BC-87C9-4FB6-AA7D-E2795F6735E2}"
@@ -27,6 +26,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessTextractResults", "ProcessTextractResults\ProcessTextractResults.csproj", "{6EF3006D-E0F7-4AB5-9A09-CD4D81D3897F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestartStepFunction", "RestartStepFunction\RestartStepFunction.csproj", "{2B5DA10E-7B62-418F-A34E-C31DB3F35297}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{A001A31D-D4FB-4C6A-8D62-5A1A93E79451}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocProcessingTest", "DocProcessingTest\DocProcessingTest.csproj", "{871C3FBA-656F-4A18-AF50-219275AD789A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{A05FD6E7-AC7B-48DE-AB86-E43FCEC7A056}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -122,17 +127,31 @@ Global
 		{2B5DA10E-7B62-418F-A34E-C31DB3F35297}.Release|x64.Build.0 = Release|Any CPU
 		{2B5DA10E-7B62-418F-A34E-C31DB3F35297}.Release|x86.ActiveCfg = Release|Any CPU
 		{2B5DA10E-7B62-418F-A34E-C31DB3F35297}.Release|x86.Build.0 = Release|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Debug|x64.Build.0 = Debug|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Debug|x86.Build.0 = Debug|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Release|x64.ActiveCfg = Release|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Release|x64.Build.0 = Release|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Release|x86.ActiveCfg = Release|Any CPU
+		{871C3FBA-656F-4A18-AF50-219275AD789A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{00AD5CF0-EDBD-4EAC-8186-86191A2FC50D} = {2484D070-8BC5-4377-94F1-F43EEAD5DB75}
-		{A6E6E0BC-87C9-4FB6-AA7D-E2795F6735E2} = {1412036F-CBE5-4DCC-AD41-0C954E8711C9}
+		{A6E6E0BC-87C9-4FB6-AA7D-E2795F6735E2} = {A05FD6E7-AC7B-48DE-AB86-E43FCEC7A056}
 		{D4F2100F-0725-415C-BEAD-41F61DFFB903} = {1412036F-CBE5-4DCC-AD41-0C954E8711C9}
 		{135EB5C3-3410-4185-B620-211BC61D6A84} = {1412036F-CBE5-4DCC-AD41-0C954E8711C9}
+		{ACC6E3EF-6038-4366-BABB-15B995298538} = {A05FD6E7-AC7B-48DE-AB86-E43FCEC7A056}
 		{6EF3006D-E0F7-4AB5-9A09-CD4D81D3897F} = {1412036F-CBE5-4DCC-AD41-0C954E8711C9}
 		{2B5DA10E-7B62-418F-A34E-C31DB3F35297} = {1412036F-CBE5-4DCC-AD41-0C954E8711C9}
+		{871C3FBA-656F-4A18-AF50-219275AD789A} = {A001A31D-D4FB-4C6A-8D62-5A1A93E79451}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C188C153-6109-4166-8005-96323A3D3897}

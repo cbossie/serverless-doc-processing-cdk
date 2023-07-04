@@ -9,6 +9,7 @@ using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
 using DocProcessing.Shared;
+using DocProcessing.Shared.Model.Data;
 using DocProcessing.Shared.Service;
 using Microsoft.Extensions.DependencyInjection;
 using RestartStepFunction.Exceptions;
@@ -39,6 +40,9 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
     // Deserialize the Message
     var message = JsonSerializer.Deserialize<TextractCompletionModel>(record.Sns.Message);
 
+    Logger.LogInformation("Message:");
+    Logger.LogInformation(message);
+
     // Get the Task Token
     var processData = await dataSvc.GetData<ProcessData>(message.JobTag);
 
@@ -47,12 +51,10 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
         throw new RestartStepFunctionException("Missing Task Token");
     }
 
-    var responseMessage = JsonSerializer.Serialize(new IdMessage 
+    var responseMessage = new IdMessage 
     {
         Id = message.JobTag 
-    });
-    processData.OutputBucket = message.DocumentLocation.S3Object.Bucket;
-    processData.OutputKey = message.DocumentLocation.S3Object.Name;
+    };
 
     AmazonWebServiceResponse response;
 
@@ -62,7 +64,7 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
         response = await stepFunctionCli.SendTaskSuccessAsync(new() 
         {
             TaskToken = processData.TextractTaskToken,
-            Output = JsonSerializer.Serialize(processData)
+            Output = JsonSerializer.Serialize(responseMessage)
         });
     }
     else

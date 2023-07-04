@@ -11,7 +11,8 @@ using DocProcessing.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using DocProcessing.Shared.AwsSdkUtilities;
 using DocProcessing.Shared.Service;
-using DocProcessing.Shared.Query;
+using DocProcessing.Shared.Model.Data;
+using DocProcessing.Shared.Model.Data;
 
 
 //Configure the Serializer
@@ -23,7 +24,7 @@ await Common.Instance.Initialize();
 [Tracing]
 [Metrics(CaptureColdStart = true)]
 [Logging(LogEvent = true, ClearState = true)]
-async Task<ProcessData> FunctionHandler (S3ObjectCreateEvent input, ILambdaContext context)
+async Task<IdMessage> FunctionHandler (S3ObjectCreateEvent input, ILambdaContext context)
 {
     var s3Client = Common.Instance.ServiceProvider.GetRequiredService<IAmazonS3>();
     IDataService dataSvc = Common.Instance.ServiceProvider.GetRequiredService<IDataService>();
@@ -48,12 +49,12 @@ async Task<ProcessData> FunctionHandler (S3ObjectCreateEvent input, ILambdaConte
     var queryTagValue = data.Tagging.GetTagValueList(Constants.ConstantValues.QUERY_TAG);
     var queries = await dataSvc.GetQueries(queryTagValue);
 
-    pl.Queries.AddRange(queries.Select(q => new QueryConfig
+    pl.Queries.AddRange(queries.Select(q => new DocumentQuery
     {
         QueryId = q.QueryId,
         QueryText = q.QueryText,
         Processed = false,
-        IsValidQuery= true
+        IsValid = true
     }));
 
     // If there is a tag for external id, get it. Otherwise, we won't use it
@@ -61,7 +62,9 @@ async Task<ProcessData> FunctionHandler (S3ObjectCreateEvent input, ILambdaConte
 
 
     //Save the payload
-    return await dataSvc.SaveData(pl);
+    await dataSvc.SaveData(pl);
+
+    return IdMessage.Create(pl.Id);
 };
 
 var functionHandlerDelegate = FunctionHandler;

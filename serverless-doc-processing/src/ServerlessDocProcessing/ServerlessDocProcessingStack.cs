@@ -145,14 +145,13 @@ public class ServerlessDocProcessingStack : Stack
         var textractFunction = FunctionFactory.CreateCustomFunction("SubmitToTextract")
             .AddEnvironment(Constants.ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
             .AddEnvironment(Constants.ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
+            .AddEnvironment(Constants.ConstantValues.TEXTRACT_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_OUTPUT_KEY)
             .AddEnvironment(Constants.ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
 
-
-        
         textractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
         {
             Actions = new[] { "s3:Get*" },
-            Resources = new[] 
+            Resources = new[]
             {
                 inputBucket.BucketArn,
                 inputBucket.ArnForObjects("*")
@@ -174,15 +173,15 @@ public class ServerlessDocProcessingStack : Stack
         var processTextractResultFunction = FunctionFactory.CreateCustomFunction("ProcessTextractResults");
 
         var restartStepFunction = FunctionFactory.CreateCustomFunction("RestartStepFunction");
-        restartStepFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps 
+        restartStepFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
         {
             Effect = Effect.ALLOW,
             Actions = new[] { "states:SendTaskSuccess", "states:SendTaskFailure" },
-            Resources = new[] {"*"}
+            Resources = new[] { "*" }
         }));
-        
+
         textractTopic.AddSubscription(new LambdaSubscription(restartStepFunction));
-        textractTopic.AddSubscription(new EmailSubscription("cbossie@gmail.com", new EmailSubscriptionProps 
+        textractTopic.AddSubscription(new EmailSubscription("cbossie@gmail.com", new EmailSubscriptionProps
         {
             Json = false
         }));
@@ -204,21 +203,15 @@ public class ServerlessDocProcessingStack : Stack
             Comment = "Function to send document to textract asynchronously",
             Payload = TaskInput.FromObject(new Dictionary<string, object> {
                 { "id", JsonPath.StringAt("$.id") },
-                { "externalId", JsonPath.StringAt("$.externalId")  },
-                { "isValid", JsonPath.StringAt("$.isValid") },
-                { "queries", JsonPath.ListAt("$.queries") },
-                { "inputDocBucket", JsonPath.StringAt("$.inputDocBucket")  },
-                { "inputDocKey", JsonPath.StringAt("$.inputDocKey")  },
-                { "fileExtension", JsonPath.StringAt("$.fileExtension")  },
-                { "textractTaskToken", JsonPath.TaskToken}
+                { "taskToken", JsonPath.TaskToken}
                 })
-
-        }) ;
+        });
 
         StepFunctionTasks.LambdaInvoke processTextractResultsState = new(this, "processTextractResults", new LambdaInvokeProps
         {
             LambdaFunction = processTextractResultFunction,
-            Comment = "Function to process textract results asynchronously"
+            Comment = "Function to process textract results asynchronously",
+            OutputPath = "$.Payload",
         });
 
         StepFunctionTasks.SqsSendMessage sendFailureState = new(this, "sendFailureState", new SqsSendMessageProps

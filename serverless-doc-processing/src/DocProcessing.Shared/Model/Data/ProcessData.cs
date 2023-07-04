@@ -1,17 +1,11 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
-using DocProcessing.Shared.Query;
 using System.Text.Json.Serialization;
 
-namespace DocProcessing.Shared
+namespace DocProcessing.Shared.Model.Data
 {
     [DynamoDBTable(Constants.ResourceNames.PROCESS_DATA_TABLE)]
     public class ProcessData : IdMessage
     {
-        public ProcessData()
-        {
-
-        }
-
         public ProcessData(string id)
         {
             Id = id;
@@ -27,7 +21,7 @@ namespace DocProcessing.Shared
 
         [DynamoDBProperty("queries")]
         [JsonPropertyName("queries")]
-        public List<QueryConfig> Queries { get; set; } = new List<QueryConfig>();
+        public List<DocumentQuery> Queries { get; set; } = new();
 
         [DynamoDBProperty("isValid")]
         [JsonPropertyName("isValid")]
@@ -54,15 +48,13 @@ namespace DocProcessing.Shared
         [JsonPropertyName("textractJobId")]
         public string TextractJobId { get; set; }
 
-
         [DynamoDBProperty("outputBucket")]
         [JsonPropertyName("outputBucket")]
-        public string OutputBucket  { get;set;}
+        public string OutputBucket { get; set; }
 
-    [DynamoDBProperty("outputKey")]
-    [JsonPropertyName("outputKey")]
-    public string OutputKey { get; set; }
-
+        [DynamoDBProperty("outputKey")]
+        [JsonPropertyName("outputKey")]
+        public string OutputKey { get; set; }
 
     }
 }

@@ -9,6 +9,7 @@ using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
 using DocProcessing.Shared;
+using DocProcessing.Shared.Model.Data;
 using DocProcessing.Shared.Service;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
@@ -21,7 +22,7 @@ await Common.Instance.Initialize();
 [Tracing]
 [Metrics(CaptureColdStart = true)]
 [Logging(ClearState = true, LogEvent = true)]
-async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext context)
+async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
 {
     IAmazonTextract textractCli = Common.Instance.ServiceProvider.GetRequiredService<IAmazonTextract>();
     IDataService dataSvc = Common.Instance.ServiceProvider.GetService<IDataService>();
@@ -42,13 +43,13 @@ async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext contex
         {
             S3Object = new Amazon.Textract.Model.S3Object
             {
-                Bucket = input.InputDocBucket,
-                Name = input.InputDocKey
+                Bucket = data.InputDocBucket,
+                Name = data.InputDocKey
             }
         },
         QueriesConfig = new Amazon.Textract.Model.QueriesConfig
         {
-            Queries = input.Queries.Select(q => new Query
+            Queries = data.Queries.Select(q => new Query
             {
                 Alias = q.QueryId,
                 Pages = new List<string> { "*" },
@@ -65,11 +66,13 @@ async Task<ProcessData> FunctionHandler(ProcessData input, ILambdaContext contex
     var textractResult = await textractCli.StartDocumentAnalysisAsync(textractRequest);
 
     data.TextractJobId = textractResult.JobId;
-    data.TextractTaskToken = input.TextractTaskToken;
+    data.TextractTaskToken = input.TaskToken;
+    data.OutputKey = textractResult.JobId;
+    data.OutputBucket = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_BUCKET_KEY);
 
     await dataSvc.SaveData(data);
 
-    return data;
+    return IdMessage.Create(data.Id);
 };
 
 

@@ -1,4 +1,4 @@
-﻿using DocProcessing.Shared.Data;
+﻿using DocProcessing.Shared.Model.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +9,8 @@ namespace DocProcessing.Shared.Service;
 
 public interface IDataService
 {
-    Task<IEnumerable<QueryData>> GetAllQueries();
-    Task<IEnumerable<QueryData>> GetQueries(IEnumerable<string> queryKeys);
+    Task<IEnumerable<DocumentQuery>> GetAllQueries();
+    Task<IEnumerable<DocumentQuery>> GetQueries(IEnumerable<string> queryKeys);
 
     string GenerateId(string? id = null);
 

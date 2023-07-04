@@ -10,6 +10,7 @@ namespace RestartStepFunction.Model;
 
 public class TextractCompletionModel
 {
+
     public const string SUCCESS_STATUS = "SUCCEEDED";
 
     [JsonPropertyName("JobId")]
@@ -28,7 +29,7 @@ public class TextractCompletionModel
     public long Timestamp { get; set; }
 
     [JsonPropertyName("DocumentLocation")]
-    public DocumentLocation DocumentLocation { get; set; }
+    public DocumentLocationModel DocumentLocation { get; set; }
 
     [JsonIgnore]
     public bool IsSuccess => Status == SUCCESS_STATUS;

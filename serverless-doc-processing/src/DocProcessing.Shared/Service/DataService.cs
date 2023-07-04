@@ -2,7 +2,7 @@
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using Amazon.XRay.Model.Internal.MarshallTransformations;
-using DocProcessing.Shared.Data;
+using DocProcessing.Shared.Model.Data;
 using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
@@ -21,20 +21,20 @@ namespace DocProcessing.Shared.Service
             DbContext = dbContext;
         }
 
-        public async  Task<IEnumerable<QueryData>> GetAllQueries()
+        public async  Task<IEnumerable<DocumentQuery>> GetAllQueries()
         {
-            var asyncData = DbContext.ScanAsync<QueryData>(Enumerable.Empty<ScanCondition>());
+            var asyncData = DbContext.ScanAsync<DocumentQuery>(Enumerable.Empty<ScanCondition>());
             return await asyncData.GetRemainingAsync();
         }
 
-        public async Task<IEnumerable<QueryData>> GetQueries(IEnumerable<string> queryKeys)
+        public async Task<IEnumerable<DocumentQuery>> GetQueries(IEnumerable<string> queryKeys)
         {
             if(queryKeys is null || !queryKeys.Any())
             {
                 return await GetAllQueries();
             }
 
-            var batchGet = DbContext.CreateBatchGet<QueryData>();
+            var batchGet = DbContext.CreateBatchGet<DocumentQuery>();
             foreach(var key in queryKeys) { batchGet.AddKey(key); }
 
             await batchGet.ExecuteAsync();
