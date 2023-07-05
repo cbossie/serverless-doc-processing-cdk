@@ -60,4 +60,8 @@ public class Block
 
     [JsonPropertyName("TextType")]
     public string? TextType { get; set; }
+
+
+    public List<string> GetRelationshipsByType(string relationshipType) => Relationships?.Where(r => r.Type == relationshipType).SelectMany(r => r.Ids).ToList() ?? new ();
+
 }

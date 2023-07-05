@@ -13,7 +13,7 @@ public class TextractAnalysisResult
     public string AnalyzeDocumentModelVersion { get; set; }
 
     [JsonPropertyName("Blocks")]
-    public List<Block> Blocks { get; set; }
+    public List<Block> Blocks { get; set; } = new();
 
     [JsonPropertyName("DocumentMetadata")]
     public DocumentMetadata DocumentMetadata { get; set; }
@@ -29,4 +29,6 @@ public class TextractAnalysisResult
 
     [JsonPropertyName("Warnings")]
     public object Warnings { get; set; }
+
+    public int GetBlockCount() => Blocks.Count;
 }

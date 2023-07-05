@@ -14,4 +14,6 @@ public class Relationship
 
     [JsonPropertyName("Type")]
     public string Type { get; set; }
+
+
 }

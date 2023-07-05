@@ -1,3 +1,4 @@
+using Amazon.S3.Model;
 using Amazon.Textract.Model;
 using DocProcessing.Shared.Model.Textract;
 using System.Text.Json;
@@ -9,40 +10,42 @@ namespace DocProcessingTest;
 public class TestTextractResult
 {
     private TextractDataModel TextractData { get; set; }
+    private TextractAnalysisResult TextractResult { get; set; }
 
 
-    public TestTextractResult()
-    {
-
-    }
-
-    [ClassInitialize()]
+    [TestInitialize()]
     public async Task Setup()
-    { 
+    {
         using FileStream jsonStream = File.OpenRead(@"TestAssets/TextractResults.json");
 
-        try
-        {
-            var blocks = JsonSerializer.Deserialize<TextractAnalysisResult>(jsonStream);
+        TextractResult = JsonSerializer.Deserialize<TextractAnalysisResult>(jsonStream);
 
-            TextractData = new TextractDataModel();
-            TextractData.TextractBlocks.AddRange(blocks.Blocks);
-        }
-        catch(Exception ex)
-        {
+        TextractData = new TextractDataModel(TextractResult.Blocks);
 
-            int r = 5;
-        }
-
-        int a = 3;
     }
 
 
-    [TestMethod]
-    public void TestGetQueryData()
+    [TestMethod("Test Block Count")]
+    public void TestBlockCount()
     {
-        Assert.IsTrue(TextractData.TextractBlocks.Count == 10000);
+        Assert.IsTrue(TextractResult.GetBlockCount() == 1000);
 
     }
+
+    [TestMethod("Get Query Result")]
+    public void TestQueryResults()
+    {
+        var queryResult = TextractData.GetQueryResults("patientname");
+
+        Assert.IsTrue(queryResult.Count() == 2); 
+
+        Assert.AreEqual(queryResult.Where(a => a.Text == "Edward Sang").Count(), 1);
+
+        Assert.AreEqual(queryResult.Where(a => a.Text == "Denis Roegel").Count(), 1);
+
+
+
+    }
+
 
 }

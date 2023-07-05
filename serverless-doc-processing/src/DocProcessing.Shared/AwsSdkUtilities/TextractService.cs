@@ -1,11 +1,14 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime.Internal.Util;
+using Amazon.S3;
 using Amazon.Textract;
 using DocProcessing.Shared.Model.Data;
 using DocProcessing.Shared.Model.Textract;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DocProcessing.Shared.AwsSdkUtilities;
@@ -21,10 +24,8 @@ public class TextractService : ITextractService
 		TextractClient = textractClient;
 	}
 
-    public async Task<List<Block>> GetBlocksForAnalysis(string jobId, string bucket, string prefix)
+    public async Task<TextractDataModel> GetBlocksForAnalysis(string jobId, string bucket, string prefix)
     {
-        List<Block> blocks = new();
-
         // Get the S3 objects
         var objects = await S3Client.ListObjectsV2Async(new() 
         {
@@ -32,23 +33,15 @@ public class TextractService : ITextractService
              Prefix = $"{prefix}/{jobId}"
         });
 
+
         // Get all of the data and parse to keys
-        foreach(var item in objects.S3Objects.Where(a => !a.Key.StartsWith(".")))
+        List<Block> blocks = new();
+        foreach (var item in objects.S3Objects.Where(a => !a.Key.StartsWith(".")))
         {
-            
-
-
-
+            var s3data = await S3Client.GetObjectAsync(bucket, $"{prefix}/{jobId}");
+            var data = await JsonSerializer.DeserializeAsync<TextractAnalysisResult>(new BufferedStream(s3data.ResponseStream));
+            blocks.AddRange(data.Blocks);
         }
-
-
-
-
-
-
-
-
-        return blocks;
-
+        return new TextractDataModel(blocks);
     }
 }

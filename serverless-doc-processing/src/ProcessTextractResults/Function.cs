@@ -29,7 +29,6 @@ async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
     var processData = await dataSvc.GetData<ProcessData>(input.Id);
 
     // Get the step functions Result
-    var textractResult = await textractSvc.GetQueryResults(processData.TextractJobId);
 
 
 
