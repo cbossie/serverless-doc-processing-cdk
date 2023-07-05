@@ -42,9 +42,6 @@ public class TestTextractResult
         Assert.AreEqual(queryResult.Where(a => a.Text == "Edward Sang").Count(), 1);
 
         Assert.AreEqual(queryResult.Where(a => a.Text == "Denis Roegel").Count(), 1);
-
-
-
     }
 
 
