@@ -7,16 +7,16 @@ using System.Text.Json;
 namespace DocProcessingTest;
 
 [TestClass]
+[DeploymentItem(@"TestAssets\TextractResults.json")]
 public class TestTextractResult
 {
     private TextractDataModel TextractData { get; set; }
     private TextractAnalysisResult TextractResult { get; set; }
 
-
     [TestInitialize()]
     public async Task Setup()
     {
-        using FileStream jsonStream = File.OpenRead(@"TestAssets/TextractResults.json");
+        using FileStream jsonStream = File.OpenRead(@"TextractResults.json");
 
         TextractResult = JsonSerializer.Deserialize<TextractAnalysisResult>(jsonStream);
 

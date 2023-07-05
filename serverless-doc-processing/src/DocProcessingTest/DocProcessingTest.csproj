@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestAssets\TextractResults.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="TestAssets\TextractResults.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.0-preview.23280.1" />
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="17.7.0-preview.23280.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.0.4" />
@@ -24,16 +34,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DocProcessing.Shared\DocProcessing.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="TestAssets\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="TestAssets\TextractResults.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
