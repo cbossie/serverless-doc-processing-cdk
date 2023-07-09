@@ -17,11 +17,8 @@ public class TestTextractResult
     public async Task Setup()
     {
         using FileStream jsonStream = File.OpenRead(@"TextractResults.json");
-
         TextractResult = JsonSerializer.Deserialize<TextractAnalysisResult>(jsonStream);
-
         TextractData = new TextractDataModel(TextractResult.Blocks);
-
     }
 
 
