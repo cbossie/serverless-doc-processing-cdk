@@ -10,6 +10,6 @@ namespace DocProcessing.Shared.AwsSdkUtilities;
 
 public interface ITextractService
 {
-    public Task<TextractDataModel> GetBlocksForAnalysis(string jobId, string bucket, string prefix);
+    public Task<TextractDataModel> GetBlocksForAnalysis(string bucket, string key);
  
 }

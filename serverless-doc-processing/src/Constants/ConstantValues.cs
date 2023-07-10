@@ -15,8 +15,8 @@ namespace Constants
 
         public const string TEXTRACT_TOPIC_KEY = "TEXTRACT_TOPIC";
         public const string TEXTRACT_ROLE_KEY = "TEXTRACT_ROLE";
-        public const string TEXTRACT_BUCKET_KEY = "TEXTRACT_BUCKET_KEY";
-        public const string TEXTRACT_OUTPUT_KEY_KEY = "TEXTRACT_BUCKET_KEY";
+        public const string TEXTRACT_BUCKET_KEY = "TEXTRACT_BUCKET";
+        public const string TEXTRACT_OUTPUT_KEY_KEY = "TEXTRACT_OUTPUT_KEY";
         public const string TEXTRACT_OUTPUT_KEY = "results";
     }
 

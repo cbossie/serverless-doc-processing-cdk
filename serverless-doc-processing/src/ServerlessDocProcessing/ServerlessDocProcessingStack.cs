@@ -142,13 +142,13 @@ public class ServerlessDocProcessingStack : Stack
         var initializeFunction = FunctionFactory.CreateCustomFunction("InitializeProcessing")
             .AddEnvironment(Constants.ConstantValues.QUERY_TAG_KEY, Constants.ConstantValues.QUERY_TAG);
 
-        var textractFunction = FunctionFactory.CreateCustomFunction("SubmitToTextract")
+        var submitToTextractFunction = FunctionFactory.CreateCustomFunction("SubmitToTextract")
             .AddEnvironment(Constants.ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
             .AddEnvironment(Constants.ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
             .AddEnvironment(Constants.ConstantValues.TEXTRACT_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_OUTPUT_KEY)
             .AddEnvironment(Constants.ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
 
-        textractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
+        submitToTextractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
         {
             Actions = new[] { "s3:Get*" },
             Resources = new[]
@@ -159,7 +159,7 @@ public class ServerlessDocProcessingStack : Stack
             Effect = Effect.ALLOW
         }));
 
-        textractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
+        submitToTextractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
         {
             Actions = new[] { "s3:Put*", "s3:Get*" },
             Resources = new[]
@@ -199,7 +199,7 @@ public class ServerlessDocProcessingStack : Stack
         {
             IntegrationPattern = IntegrationPattern.WAIT_FOR_TASK_TOKEN,
             TaskTimeout = Timeout.Duration(Duration.Seconds(DefaultValues.TEXTRACT_STEP_TIME_OUT)),
-            LambdaFunction = textractFunction,
+            LambdaFunction = submitToTextractFunction,
             Comment = "Function to send document to textract asynchronously",
             Payload = TaskInput.FromObject(new Dictionary<string, object> {
                 { "id", JsonPath.StringAt("$.id") },
@@ -299,11 +299,11 @@ public class ServerlessDocProcessingStack : Stack
         inputBucket.GrantReadWrite(initializeFunction);
         configTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(initializeFunction);
-        dataTable.GrantDocumentObjectModelPermissions(textractFunction);
+        dataTable.GrantDocumentObjectModelPermissions(submitToTextractFunction);
         dataTable.GrantDocumentObjectModelPermissions(restartStepFunction);
+        dataTable.GrantDocumentObjectModelPermissions(processTextractResultFunction);
 
-
-        textractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
+        submitToTextractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
 
         // Outputs
         new CfnOutput(this, "inputBucketOutput", new CfnOutputProps

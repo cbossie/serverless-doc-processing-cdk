@@ -56,4 +56,6 @@ public class TextractDataModel
 
         }
     }
+
+    public int BlockCount => BlockMap?.Count ?? 0;
 }

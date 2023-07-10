@@ -22,23 +22,24 @@ public class TextractService : ITextractService
 	public TextractService(IAmazonTextract textractClient, IAmazonS3 s3Client)
 	{
 		TextractClient = textractClient;
+        S3Client = s3Client;
 	}
 
-    public async Task<TextractDataModel> GetBlocksForAnalysis(string jobId, string bucket, string prefix)
+    public async Task<TextractDataModel> GetBlocksForAnalysis(string bucket, string key)
     {
         // Get the S3 objects
         var objects = await S3Client.ListObjectsV2Async(new() 
         {
              BucketName = bucket,
-             Prefix = $"{prefix}/{jobId}"
+             Prefix = key
         });
 
 
         // Get all of the data and parse to keys
         List<Block> blocks = new();
-        foreach (var item in objects.S3Objects.Where(a => !a.Key.StartsWith(".")))
+        foreach (var item in objects.S3Objects.Where(a => !a.Key.EndsWith("_access_check")))
         {
-            var s3data = await S3Client.GetObjectAsync(bucket, $"{prefix}/{jobId}");
+            var s3data = await S3Client.GetObjectAsync(item.BucketName, item.Key);
             var data = await JsonSerializer.DeserializeAsync<TextractAnalysisResult>(new BufferedStream(s3data.ResponseStream));
             blocks.AddRange(data.Blocks);
         }

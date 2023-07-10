@@ -7,8 +7,14 @@ namespace DocProcessing.Shared.Model.Data
     public class ProcessData : IdMessage
     {
         public ProcessData(string id)
+            : this()
         {
             Id = id;
+        }
+
+        public ProcessData()
+        {
+
         }
 
         [DynamoDBHashKey("id")]

@@ -5,6 +5,7 @@ using Amazon.S3;
 using Amazon.StepFunctions;
 using Amazon.Textract;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using DocProcessing.Shared.AwsSdkUtilities;
 using DocProcessing.Shared.Service;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -42,7 +43,8 @@ public class Common
     {
         ServiceProvider = 
         Services
-            .AddSingleton<IDataService, DataService>()
+            .AddTransient<IDataService, DataService>()
+            .AddTransient<ITextractService, TextractService>()
             .AddAWSService<IAmazonS3>()
             .AddAWSService<IAmazonTextract>()
             .AddAWSService<IAmazonStepFunctions>()
