@@ -297,6 +297,7 @@ public class ServerlessDocProcessingStack : Stack
         docProcessingStepFunction.GrantStartExecution(eventRole);
         stepFunctionLogGroup.GrantWrite(docProcessingStepFunction);
         inputBucket.GrantReadWrite(initializeFunction);
+        textractBucket.GrantRead(processTextractResultFunction);
         configTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(submitToTextractFunction);

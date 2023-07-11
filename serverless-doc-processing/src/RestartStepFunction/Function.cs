@@ -19,7 +19,7 @@ using System.Text.Json;
 //Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
-await Common.Instance.Initialize();
+await Common.Instance.Initialize().ConfigureAwait(false);
 
 [Tracing]
 [Metrics(CaptureColdStart = true)]
@@ -44,7 +44,7 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
     Logger.LogInformation(message);
 
     // Get the Task Token
-    var processData = await dataSvc.GetData<ProcessData>(message.JobTag);
+    var processData = await dataSvc.GetData<ProcessData>(message.JobTag).ConfigureAwait(false);
 
     if(processData.TextractTaskToken is null)
     {
@@ -65,7 +65,7 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
         {
             TaskToken = processData.TextractTaskToken,
             Output = JsonSerializer.Serialize(responseMessage)
-        });
+        }).ConfigureAwait(false);
     }
     else
     {
@@ -75,7 +75,7 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
             TaskToken = processData.TextractTaskToken,
             Error = $"{message.API} {message.Status}",
             Cause = record.Sns.Message
-        });
+        }).ConfigureAwait(false);
     }
 
     // Log the output
@@ -90,7 +90,7 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
         Logger.LogError(response);
     }
 
-    await dataSvc.SaveData(processData);
+    await dataSvc.SaveData(processData).ConfigureAwait(false);
 
 
 }
@@ -101,4 +101,5 @@ var functionHandlerDelegate = FunctionHandler;
 // to .NET types.
 await LambdaBootstrapBuilder.Create(functionHandlerDelegate, new DefaultLambdaJsonSerializer())
         .Build()
-        .RunAsync();
+        .RunAsync()
+        .ConfigureAwait(false);

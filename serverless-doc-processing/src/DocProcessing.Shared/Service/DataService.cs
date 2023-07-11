@@ -24,20 +24,20 @@ namespace DocProcessing.Shared.Service
         public async  Task<IEnumerable<DocumentQuery>> GetAllQueries()
         {
             var asyncData = DbContext.ScanAsync<DocumentQuery>(Enumerable.Empty<ScanCondition>());
-            return await asyncData.GetRemainingAsync();
+            return await asyncData.GetRemainingAsync().ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<DocumentQuery>> GetQueries(IEnumerable<string> queryKeys)
         {
             if(queryKeys is null || !queryKeys.Any())
             {
-                return await GetAllQueries();
+                return await GetAllQueries().ConfigureAwait(false);
             }
 
             var batchGet = DbContext.CreateBatchGet<DocumentQuery>();
             foreach(var key in queryKeys) { batchGet.AddKey(key); }
 
-            await batchGet.ExecuteAsync();
+            await batchGet.ExecuteAsync().ConfigureAwait(false);
 
             return batchGet.Results;
 
@@ -50,14 +50,14 @@ namespace DocProcessing.Shared.Service
 
         public async Task<T> SaveData<T>(T data)
         {
-            await DbContext.SaveAsync(data);
+            await DbContext.SaveAsync(data).ConfigureAwait(false);
 
             return data;
         }
 
         public async Task<T> GetData<T>(string id)
         {
-            return await DbContext.LoadAsync<T>(id);
+            return await DbContext.LoadAsync<T>(id).ConfigureAwait(false);
         }
     }
 }

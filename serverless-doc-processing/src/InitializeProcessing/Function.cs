@@ -19,7 +19,7 @@ using DocProcessing.Shared.Model.Data;
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
 
-await Common.Instance.Initialize();
+await Common.Instance.Initialize().ConfigureAwait(false);
 
 [Tracing]
 [Metrics(CaptureColdStart = true)]
@@ -43,11 +43,11 @@ async Task<IdMessage> FunctionHandler (S3ObjectCreateEvent input, ILambdaContext
     { 
         BucketName= input.Detail.Bucket.Name,
         Key = input.Detail.Object.Key
-    });
+    }).ConfigureAwait(false);
 
     // If there is a tag for queries get them
     var queryTagValue = data.Tagging.GetTagValueList(Constants.ConstantValues.QUERY_TAG);
-    var queries = await dataSvc.GetQueries(queryTagValue);
+    var queries = await dataSvc.GetQueries(queryTagValue).ConfigureAwait(false);
 
     pl.Queries.AddRange(queries.Select(q => new DocumentQuery
     {
@@ -62,7 +62,7 @@ async Task<IdMessage> FunctionHandler (S3ObjectCreateEvent input, ILambdaContext
 
 
     //Save the payload
-    await dataSvc.SaveData(pl);
+    await dataSvc.SaveData(pl).ConfigureAwait(false);
 
     return IdMessage.Create(pl.Id);
 };
@@ -74,7 +74,8 @@ var functionHandlerDelegate = FunctionHandler;
 // to .NET types.
 await LambdaBootstrapBuilder.Create(functionHandlerDelegate, new DefaultLambdaJsonSerializer())
         .Build()
-        .RunAsync();
+        .RunAsync()
+        .ConfigureAwait(false);
 
 
 

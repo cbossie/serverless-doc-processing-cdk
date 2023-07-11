@@ -21,11 +21,7 @@ public class DocumentQuery
 
     [DynamoDBProperty("result")]
     [JsonPropertyName("result")]
-    public string Result { get; set; }
-
-    [DynamoDBProperty("confidence")]
-    [JsonPropertyName("confidence")]
-    public double Confidence { get; set; }
+    public List<DocumentQueryResult> Result { get; set; } = new();
 
     [DynamoDBProperty("isValid")]
     [JsonPropertyName("isValid")]

@@ -32,15 +32,15 @@ public class TextractService : ITextractService
         {
              BucketName = bucket,
              Prefix = key
-        });
+        }).ConfigureAwait(false);
 
 
         // Get all of the data and parse to keys
         List<Block> blocks = new();
         foreach (var item in objects.S3Objects.Where(a => !a.Key.EndsWith("_access_check")))
         {
-            var s3data = await S3Client.GetObjectAsync(item.BucketName, item.Key);
-            var data = await JsonSerializer.DeserializeAsync<TextractAnalysisResult>(new BufferedStream(s3data.ResponseStream));
+            var s3data = await S3Client.GetObjectAsync(item.BucketName, item.Key).ConfigureAwait(false);
+            var data = await JsonSerializer.DeserializeAsync<TextractAnalysisResult>(new BufferedStream(s3data.ResponseStream)).ConfigureAwait(false);
             blocks.AddRange(data.Blocks);
         }
         return new TextractDataModel(blocks);

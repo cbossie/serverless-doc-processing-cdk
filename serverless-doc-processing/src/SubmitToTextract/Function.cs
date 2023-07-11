@@ -17,7 +17,7 @@ using System.Net.Http.Headers;
 //Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
-await Common.Instance.Initialize();
+await Common.Instance.Initialize().ConfigureAwait(false);
 
 [Tracing]
 [Metrics(CaptureColdStart = true)]
@@ -27,7 +27,7 @@ async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
     IAmazonTextract textractCli = Common.Instance.ServiceProvider.GetRequiredService<IAmazonTextract>();
     IDataService dataSvc = Common.Instance.ServiceProvider.GetService<IDataService>();
 
-    var data = await dataSvc.GetData<ProcessData>(input.Id);
+    var data = await dataSvc.GetData<ProcessData>(input.Id).ConfigureAwait(false);
 
     var textractRequest = new Amazon.Textract.Model.StartDocumentAnalysisRequest
     {
@@ -63,14 +63,14 @@ async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
         }
     };
 
-    var textractResult = await textractCli.StartDocumentAnalysisAsync(textractRequest);
+    var textractResult = await textractCli.StartDocumentAnalysisAsync(textractRequest).ConfigureAwait(false);
 
     data.TextractJobId = textractResult.JobId;
     data.TextractTaskToken = input.TaskToken;
     data.OutputKey = $"{Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
     data.OutputBucket = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_BUCKET_KEY);
 
-    await dataSvc.SaveData(data);
+    await dataSvc.SaveData(data).ConfigureAwait(false);
 
     return IdMessage.Create(data.Id);
 };
@@ -82,7 +82,8 @@ var functionHandlerDelegate = FunctionHandler;
 // to .NET types.
 await LambdaBootstrapBuilder.Create(functionHandlerDelegate, new DefaultLambdaJsonSerializer())
         .Build()
-        .RunAsync();
+        .RunAsync()
+        .ConfigureAwait(false);
 
 
 

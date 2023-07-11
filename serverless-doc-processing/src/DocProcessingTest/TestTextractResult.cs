@@ -32,14 +32,27 @@ public class TestTextractResult
     [TestMethod("Get Query Result")]
     public void TestQueryResults()
     {
-        var queryResult = TextractData.GetQueryResults("patientname");
+        var queryResultPatientName = TextractData.GetQueryResults("patientname");
 
-        Assert.IsTrue(queryResult.Count() == 2); 
+        Assert.IsTrue(queryResultPatientName.Count() == 2); 
 
-        Assert.AreEqual(queryResult.Where(a => a.Text == "Edward Sang").Count(), 1);
+        Assert.AreEqual(queryResultPatientName.Where(a => a.Text == "Edward Sang").Count(), 1);
 
-        Assert.AreEqual(queryResult.Where(a => a.Text == "Denis Roegel").Count(), 1);
+        Assert.AreEqual(queryResultPatientName.Where(a => a.Text == "Denis Roegel").Count(), 1);
+
+        var queryResultDateOfService = TextractData.GetQueryResults("dateofservice");
+
+        Assert.AreEqual(queryResultDateOfService.Where(a => a.Text == "20 July 1865").Count(), 1);
+
+        Assert.AreEqual(queryResultDateOfService.Where(a => a.Text == "11 january 2021").Count(), 1);
     }
 
+    [TestMethod("Get Invalid Query Result")]
+    public void TestInvalidQueryResults()
+    {
+        var queryResultPatientName = TextractData.GetQueryResults("baadvalue");
+
+        Assert.IsTrue(queryResultPatientName.Count() == 0);
+    }
 
 }
