@@ -1,10 +1,4 @@
 ﻿using Amazon.S3.Model;
-using System.Linq;
-using System;
-using System.Collections.Generic;
-
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DocProcessing.Shared.AwsSdkUtilities
 {

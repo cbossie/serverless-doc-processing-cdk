@@ -20,7 +20,7 @@ await Common.Instance.Initialize().ConfigureAwait(false);
 [Tracing]
 [Metrics(CaptureColdStart = true)]
 [Logging(ClearState = true, LogEvent = true)]
-async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
+static async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
 {
     IAmazonTextract textractCli = Common.Instance.ServiceProvider.GetRequiredService<IAmazonTextract>();
     IDataService dataSvc = Common.Instance.ServiceProvider.GetService<IDataService>();

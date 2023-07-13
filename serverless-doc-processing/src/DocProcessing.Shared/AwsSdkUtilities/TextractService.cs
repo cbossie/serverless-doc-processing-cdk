@@ -1,37 +1,25 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Amazon.S3;
-using Amazon.Textract;
-using DocProcessing.Shared.Model.Data;
+﻿using Amazon.S3;
 using DocProcessing.Shared.Model.Textract;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace DocProcessing.Shared.AwsSdkUtilities;
 
 public class TextractService : ITextractService
 {
-    IAmazonTextract TextractClient { get; }
-
     IAmazonS3 S3Client { get; }
 
-	public TextractService(IAmazonTextract textractClient, IAmazonS3 s3Client)
-	{
-		TextractClient = textractClient;
+    public TextractService(IAmazonS3 s3Client)
+    {
         S3Client = s3Client;
-	}
+    }
 
     public async Task<TextractDataModel> GetBlocksForAnalysis(string bucket, string key)
     {
         // Get the S3 objects
-        var objects = await S3Client.ListObjectsV2Async(new() 
+        var objects = await S3Client.ListObjectsV2Async(new()
         {
-             BucketName = bucket,
-             Prefix = key
+            BucketName = bucket,
+            Prefix = key
         }).ConfigureAwait(false);
 
 

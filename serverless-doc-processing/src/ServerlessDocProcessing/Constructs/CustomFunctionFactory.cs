@@ -1,62 +1,54 @@
-﻿using Amazon.CDK.AWS.Lambda;
-using Amazon.CDK.AWS.S3.Assets;
-using Amazon.CDK.AWS.SES;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace ServerlessDocProcessing;
+namespace ServerlessDocProcessing.Constructs;
 
 internal class CustomFunctionFactory
 {
-	Construct Scope { get; }
-	
-	// Settings for all functions
+    Construct Scope { get; }
 
-	// 1 Environment variables to apply to all functions
-	Dictionary<string, string> environmentVariables = new ();
+    // Settings for all functions
 
-	// 2 Timeout and Memory
-	public int Memory { get; set; } = 1024;
+    // 1 Environment variables to apply to all functions
+    Dictionary<string, string> environmentVariables = new();
+
+    // 2 Timeout and Memory
+    public int Memory { get; set; } = 1024;
     public int Timeout { get; set; } = 30;
 
 
 
     string EnvironmentName { get; }
-	public CustomFunctionFactory(Construct scope, string environmentName)
-	{
-		Scope = scope;
-		EnvironmentName = environmentName;
+    public CustomFunctionFactory(Construct scope, string environmentName)
+    {
+        Scope = scope;
+        EnvironmentName = environmentName;
     }
 
-	public void AddEnvironmentVariable(string key, string value) => environmentVariables[key] = value;
+    public void AddEnvironmentVariable(string key, string value) => environmentVariables[key] = value;
 
 
-	public CustomFunction CreateCustomFunction(string functionName, bool compileAot = false, bool useArm = false)
-	{
-		CustomFunctionProps customProps = new()
-		{
-			Tracing = Tracing.ACTIVE,
-			FunctionName = $"docProcessing{EnvironmentName}{functionName}",
-			Handler = "bootstrap",
-			Architecture = useArm ? Architecture.ARM_64 : Architecture.X86_64,
-			Code = Code.FromAsset($"./functions/{functionName}.zip"),
-			Runtime = compileAot ? Runtime.PROVIDED_AL2 : Runtime.PROVIDED,
-			Timeout = Duration.Seconds(Timeout),
-			MemorySize = Memory,
-		};
+    public CustomFunction CreateCustomFunction(string functionName, bool compileAot = false, bool useArm = false)
+    {
+        CustomFunctionProps customProps = new()
+        {
+            Tracing = Tracing.ACTIVE,
+            FunctionName = $"docProcessing{EnvironmentName}{functionName}",
+            Handler = "bootstrap",
+            Architecture = useArm ? Architecture.ARM_64 : Architecture.X86_64,
+            Code = Code.FromAsset($"./functions/{functionName}.zip"),
+            Runtime = compileAot ? Runtime.PROVIDED_AL2 : Runtime.PROVIDED,
+            Timeout = Duration.Seconds(Timeout),
+            MemorySize = Memory,
+        };
 
-		var fcn = new CustomFunction(Scope, functionName, customProps);
-			fcn.AddEnvironment(Constants.ConstantValues.ENVIRONMENT_NAME_VARIABLE, EnvironmentName);
+        var fcn = new CustomFunction(Scope, functionName, customProps);
+        fcn.AddEnvironment(Constants.ConstantValues.ENVIRONMENT_NAME_VARIABLE, EnvironmentName);
 
-		foreach(var variable in environmentVariables) 
-		{
-			fcn.AddEnvironment(variable.Key, variable.Value);
-		}
+        foreach (var variable in environmentVariables)
+        {
+            fcn.AddEnvironment(variable.Key, variable.Value);
+        }
 
-		return fcn;
-	}
+        return fcn;
+    }
 }

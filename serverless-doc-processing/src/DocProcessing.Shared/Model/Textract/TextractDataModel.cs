@@ -1,13 +1,4 @@
-﻿using Amazon.S3.Model;
-using Amazon.Textract.Model;
-using Microsoft.AspNetCore.OutputCaching;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DocProcessing.Shared.Model.Textract;
+﻿namespace DocProcessing.Shared.Model.Textract;
 
 public class TextractDataModel
 {
@@ -50,13 +41,13 @@ public class TextractDataModel
     {
         if (!string.IsNullOrEmpty(queryAlias) && Queries.TryGetValue(queryAlias, out var blocks))
         {
-            foreach(var blockId in blocks.SelectMany(a => a.GetRelationshipsByType("ANSWER"))) 
+            foreach (var blockId in blocks.SelectMany(a => a.GetRelationshipsByType("ANSWER")))
             {
-                if(BlockMap.TryGetValue(blockId, out var answerBlock))
+                if (BlockMap.TryGetValue(blockId, out var answerBlock))
                 {
                     yield return answerBlock;
                 }
-                
+
             }
 
         }

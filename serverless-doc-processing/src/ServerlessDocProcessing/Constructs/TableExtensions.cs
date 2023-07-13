@@ -1,10 +1,5 @@
 ﻿using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServerlessDocProcessing.Constructs
 {

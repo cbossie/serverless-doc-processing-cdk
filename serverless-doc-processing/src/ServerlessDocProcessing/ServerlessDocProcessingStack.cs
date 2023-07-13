@@ -1,21 +1,16 @@
 using Amazon.CDK.AWS.DynamoDB;
-using Amazon.CDK.AWS.S3;
-using Amazon.CDK.AWS.SNS;
-using Amazon.CDK.AWS.SQS;
-using Amazon.CDK.AWS.StepFunctions;
 using Amazon.CDK.AWS.Events;
-using System.Collections.Generic;
-using Amazon.CDK.AWS.ElasticLoadBalancingV2;
 using Amazon.CDK.AWS.Events.Targets;
 using Amazon.CDK.AWS.IAM;
-using StepFunctionTasks = Amazon.CDK.AWS.StepFunctions.Tasks;
-using Amazon.CDK.AWS.StepFunctions.Tasks;
 using Amazon.CDK.AWS.Logs;
-using Amazon.CDK.AWS.EC2;
-using System.Diagnostics.Contracts;
+using Amazon.CDK.AWS.S3;
+using Amazon.CDK.AWS.SNS;
 using Amazon.CDK.AWS.SNS.Subscriptions;
+using Amazon.CDK.AWS.SQS;
+using Amazon.CDK.AWS.StepFunctions;
+using Amazon.CDK.AWS.StepFunctions.Tasks;
 using Constants;
-using ServerlessDocProcessing.Constructs;
+using System.Collections.Generic;
 
 namespace ServerlessDocProcessing;
 
@@ -30,9 +25,11 @@ public class ServerlessDocProcessingStack : Stack
         EnvironmentName = props.EnvironmentName;
 
         // Function Factory
-        FunctionFactory = new(this, EnvironmentName);
-        FunctionFactory.Timeout = 30;
-        FunctionFactory.Memory = 512;
+        FunctionFactory = new(this, EnvironmentName)
+        {
+            Timeout = FunctionParamaters.TIMEOUT,
+            Memory = FunctionParamaters.MEMORY
+        };
         FunctionFactory.AddEnvironmentVariable("POWERTOOLS_SERVICE_NAME", $"docprocessing-{EnvironmentName}");
         FunctionFactory.AddEnvironmentVariable("POWERTOOLS_LOG_LEVEL", $"Debug");
         FunctionFactory.AddEnvironmentVariable("POWERTOOLS_LOGGER_CASE", $"SnakeCase");
@@ -47,16 +44,16 @@ public class ServerlessDocProcessingStack : Stack
         // Tables
         Table configTable = new(this, "queryData", new TableProps
         {
-            TableName = GetTableName(Constants.ResourceNames.QUERY_DATA_TABLE),
-            PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute() { Name = "query", Type = AttributeType.STRING },
+            TableName = GetTableName(ResourceNames.QUERY_DATA_TABLE),
+            PartitionKey = new Attribute() { Name = "query", Type = AttributeType.STRING },
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY
         });
 
         Table dataTable = new(this, "dataTable", new TableProps
         {
-            TableName = GetTableName(Constants.ResourceNames.PROCESS_DATA_TABLE),
-            PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute() { Name = "id", Type = AttributeType.STRING },
+            TableName = GetTableName(ResourceNames.PROCESS_DATA_TABLE),
+            PartitionKey = new Attribute() { Name = "id", Type = AttributeType.STRING },
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY
         });
@@ -104,12 +101,12 @@ public class ServerlessDocProcessingStack : Stack
 
 
         //IAM
-        Role eventRole = new Role(this, "inputEventRole", new RoleProps
+        Role eventRole = new(this, "inputEventRole", new RoleProps
         {
             AssumedBy = new ServicePrincipal("events.amazonaws.com")
         });
 
-        Role textractRole = new Role(this, "textractRole", new RoleProps
+        Role textractRole = new(this, "textractRole", new RoleProps
         {
             AssumedBy = new ServicePrincipal("textract.amazonaws.com")
         });
@@ -128,8 +125,6 @@ public class ServerlessDocProcessingStack : Stack
             Effect = Effect.ALLOW
         }));
 
-
-
         // Logging
         LogGroup stepFunctionLogGroup = new(this, "stepFunctionLogGroup", new Amazon.CDK.AWS.Logs.LogGroupProps
         {
@@ -143,10 +138,10 @@ public class ServerlessDocProcessingStack : Stack
             .AddEnvironment(Constants.ConstantValues.QUERY_TAG_KEY, Constants.ConstantValues.QUERY_TAG);
 
         var submitToTextractFunction = FunctionFactory.CreateCustomFunction("SubmitToTextract")
-            .AddEnvironment(Constants.ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
-            .AddEnvironment(Constants.ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
-            .AddEnvironment(Constants.ConstantValues.TEXTRACT_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_OUTPUT_KEY)
-            .AddEnvironment(Constants.ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
+            .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
+            .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
+            .AddEnvironment(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_OUTPUT_KEY)
+            .AddEnvironment(ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
 
         submitToTextractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
         {
@@ -187,7 +182,7 @@ public class ServerlessDocProcessingStack : Stack
         }));
 
         // Step Functions Tasks
-        StepFunctionTasks.LambdaInvoke initializeState = new(this, "initializeState", new LambdaInvokeProps
+        LambdaInvoke initializeState = new(this, "initializeState", new LambdaInvokeProps
         {
             LambdaFunction = initializeFunction,
             Comment = "Initializes the Document Processing Workflow",
@@ -195,10 +190,10 @@ public class ServerlessDocProcessingStack : Stack
             Payload = TaskInput.FromJsonPathAt("$"),
         });
 
-        StepFunctionTasks.LambdaInvoke textractState = new(this, "textractState", new LambdaInvokeProps
+        LambdaInvoke textractState = new(this, "textractState", new LambdaInvokeProps
         {
             IntegrationPattern = IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-            TaskTimeout = Timeout.Duration(Duration.Seconds(DefaultValues.TEXTRACT_STEP_TIME_OUT)),
+            TaskTimeout = Timeout.Duration(Duration.Seconds(StepFunctionDefaults.TEXTRACT_STEP_TIME_OUT)),
             LambdaFunction = submitToTextractFunction,
             Comment = "Function to send document to textract asynchronously",
             Payload = TaskInput.FromObject(new Dictionary<string, object> {
@@ -207,21 +202,21 @@ public class ServerlessDocProcessingStack : Stack
                 })
         });
 
-        StepFunctionTasks.LambdaInvoke processTextractResultsState = new(this, "processTextractResults", new LambdaInvokeProps
+        LambdaInvoke processTextractResultsState = new(this, "processTextractResults", new LambdaInvokeProps
         {
             LambdaFunction = processTextractResultFunction,
             Comment = "Function to process textract results asynchronously",
             OutputPath = "$.Payload",
         });
 
-        StepFunctionTasks.SqsSendMessage sendFailureState = new(this, "sendFailureState", new SqsSendMessageProps
+        SqsSendMessage sendFailureState = new(this, "sendFailureState", new SqsSendMessageProps
         {
             Queue = failureQueue,
             Comment = "Send Failure Message",
             MessageBody = TaskInput.FromJsonPathAt("$"),
         });
 
-        StepFunctionTasks.SqsSendMessage sendSuccessState = new(this, "sendSuccessState", new SqsSendMessageProps
+        SqsSendMessage sendSuccessState = new(this, "sendSuccessState", new SqsSendMessageProps
         {
             Queue = successQueue,
             Comment = "Send Success Message",
@@ -282,9 +277,6 @@ public class ServerlessDocProcessingStack : Stack
             }
         });
 
-
-
-
         rule.AddTarget(new SfnStateMachine(docProcessingStepFunction, new SfnStateMachineProps
         {
             DeadLetterQueue = inputDlq,
@@ -293,7 +285,7 @@ public class ServerlessDocProcessingStack : Stack
         }));
 
 
-        //Assign permissions
+        //Assign permissions to resources
         docProcessingStepFunction.GrantStartExecution(eventRole);
         stepFunctionLogGroup.GrantWrite(docProcessingStepFunction);
         inputBucket.GrantReadWrite(initializeFunction);
@@ -303,16 +295,20 @@ public class ServerlessDocProcessingStack : Stack
         dataTable.GrantDocumentObjectModelPermissions(submitToTextractFunction);
         dataTable.GrantDocumentObjectModelPermissions(restartStepFunction);
         dataTable.GrantDocumentObjectModelPermissions(processTextractResultFunction);
-
         submitToTextractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
 
         // Outputs
-        new CfnOutput(this, "inputBucketOutput", new CfnOutputProps
+        _ = new CfnOutput(this, "inputBucketOutput", new CfnOutputProps
         {
             Description = "Input Bucket",
             Value = inputBucket.BucketName
         });
 
+        _ = new CfnOutput(this, "textractBucketOutput", new CfnOutputProps
+        {
+            Description = "Textract Output Bucket",
+            Value = textractBucket.BucketName
+        });
 
     }
 

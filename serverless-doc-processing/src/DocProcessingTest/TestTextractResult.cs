@@ -1,5 +1,3 @@
-using Amazon.S3.Model;
-using Amazon.Textract.Model;
 using DocProcessing.Shared.Model.Textract;
 using System.Text.Json;
 
@@ -17,12 +15,12 @@ public class TestTextractResult
     public void Setup()
     {
         using FileStream jsonStream = File.OpenRead(@"TextractResults.json");
-        if(jsonStream is null)
+        if (jsonStream is null)
         {
             throw new ArgumentNullException(nameof(jsonStream));
         }
         TextractResult = JsonSerializer.Deserialize<TextractAnalysisResult>(jsonStream);
-        if(TextractResult is null) 
+        if (TextractResult is null)
         {
             throw new ArgumentNullException(nameof(TextractResult));
         }
@@ -42,7 +40,7 @@ public class TestTextractResult
     {
         var queryResultPatientName = TextractData?.GetQueryResults("patientname");
 
-        Assert.IsTrue(queryResultPatientName?.Count() == 2); 
+        Assert.IsTrue(queryResultPatientName?.Count() == 2);
 
         Assert.AreEqual(queryResultPatientName.Where(a => a.Text == "Edward Sang").Count(), 1);
 

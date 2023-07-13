@@ -1,6 +1,4 @@
-﻿using Amazon;
-using Amazon.Auth.AccessControlPolicy.ActionIdentifiers;
-using Amazon.DynamoDBv2;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.S3;
 using Amazon.StepFunctions;
@@ -9,12 +7,6 @@ using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using DocProcessing.Shared.AwsSdkUtilities;
 using DocProcessing.Shared.Service;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DocProcessing.Shared;
 
@@ -27,7 +19,7 @@ public class Common
     public static Common Instance { get; } = new();
 
     public static ServiceProvider Services => Instance.ServiceProvider;
-   
+
     static Common()
     {
         Instance = new Common();
@@ -52,7 +44,7 @@ public class Common
 
     private void ConfigureServices()
     {
-        ServiceCollection services = new ServiceCollection();
+        ServiceCollection services = new();
 
         ServiceProvider = services
             .AddTransient<IDataService, DataService>()

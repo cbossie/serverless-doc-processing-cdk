@@ -1,11 +1,5 @@
-﻿using Amazon.Textract.Model;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace DocProcessing.Shared.Model.Textract;
 
@@ -66,6 +60,6 @@ public class Block
     public string? TextType { get; set; }
 
 
-    public List<string> GetRelationshipsByType(string relationshipType) => Relationships?.Where(r => r.Type == relationshipType).SelectMany(r => r.Ids).ToList() ?? new ();
+    public List<string> GetRelationshipsByType(string relationshipType) => Relationships?.Where(r => r.Type == relationshipType).SelectMany(r => r.Ids).ToList() ?? new();
 
 }

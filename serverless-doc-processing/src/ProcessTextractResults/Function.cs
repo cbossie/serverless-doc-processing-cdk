@@ -1,16 +1,14 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
-using DocProcessing.Shared;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
-using Microsoft.Extensions.DependencyInjection;
-using DocProcessing.Shared.Service;
-using Amazon.StepFunctions;
-using Amazon.Textract;
-using DocProcessing.Shared.Model.Data;
+using DocProcessing.Shared;
 using DocProcessing.Shared.AwsSdkUtilities;
+using DocProcessing.Shared.Model.Data;
+using DocProcessing.Shared.Service;
+using Microsoft.Extensions.DependencyInjection;
 
 //Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
@@ -21,7 +19,7 @@ await Common.Instance.Initialize().ConfigureAwait(false);
 [Tracing]
 [Metrics(CaptureColdStart = true)]
 [Logging(LogEvent = true)]
-async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context) 
+static async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
 {
 
     var dataSvc = Common.Instance.ServiceProvider.GetRequiredService<IDataService>();
@@ -31,13 +29,13 @@ async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
 
     // Get the step functions Result
     var textractModel = await textractSvc.GetBlocksForAnalysis(processData.OutputBucket, processData.OutputKey).ConfigureAwait(false);
-    
+
     // Get the query Results
-    foreach(var query in processData.Queries)
+    foreach (var query in processData.Queries)
     {
         var queryResult = textractModel.GetQueryResults(query.QueryId);
-        
-        if (queryResult.Count() == 0)
+
+        if (queryResult.Any())
         {
             query.IsValid = false;
         }
@@ -45,7 +43,7 @@ async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
         {
             query.IsValid = true;
             query.Result.AddRange(queryResult.Select(r => new DocumentQueryResult() { Confidence = r.Confidence, ResultText = r.Text }));
-        }    
+        }
     }
 
     // Save the query results back to the databast

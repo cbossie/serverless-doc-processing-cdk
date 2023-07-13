@@ -1,15 +1,9 @@
-﻿using DocProcessing.Shared.Model.Data;
-using DocProcessing.Shared.Model.Textract;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DocProcessing.Shared.Model.Textract;
 
 namespace DocProcessing.Shared.AwsSdkUtilities;
 
 public interface ITextractService
 {
     public Task<TextractDataModel> GetBlocksForAnalysis(string bucket, string key);
- 
+
 }

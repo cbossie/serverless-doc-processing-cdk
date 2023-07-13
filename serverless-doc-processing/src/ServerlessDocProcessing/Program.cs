@@ -1,7 +1,4 @@
-﻿using Amazon.CDK;
-using ServerlessDocProcessing;
-using System;
-using System.Runtime.CompilerServices;
+﻿using ServerlessDocProcessing;
 
 var app = new App();
 

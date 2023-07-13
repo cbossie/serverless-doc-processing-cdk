@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Constants
+﻿namespace Constants
 {
     public static class ConstantValues
     {
@@ -25,9 +23,16 @@ namespace Constants
         public const string PROCESS_DATA_TABLE = "ProcessData";
         public const string QUERY_DATA_TABLE = "QueryData";
     }
-    public static class DefaultValues
+    public static class StepFunctionDefaults
     {
         public const int TEXTRACT_STEP_TIME_OUT = 300;
     }
+
+    public static class FunctionParamaters
+    {
+        public const int MEMORY = 512;
+        public const int TIMEOUT = 60;
+    }
+
 
 }

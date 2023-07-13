@@ -4,7 +4,6 @@ using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.Lambda.SNSEvents;
 using Amazon.Runtime;
 using Amazon.StepFunctions;
-using Amazon.StepFunctions.Model;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
@@ -25,7 +24,7 @@ await Common.Instance.Initialize().ConfigureAwait(false);
 [Tracing]
 [Metrics(CaptureColdStart = true)]
 [Logging(ClearState = true, LogEvent = true)]
-async Task FunctionHandler(SNSEvent input, ILambdaContext context)
+static async Task FunctionHandler(SNSEvent input, ILambdaContext context)
 {
     var record = input.Records.FirstOrDefault();
     var dataSvc = Common.Instance.ServiceProvider.GetRequiredService<IDataService>();
@@ -35,30 +34,25 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
     if (record is null)
     {
         Logger.LogError(input);
-        throw new RestartStepFunctionException("No message received");        
+        throw new RestartStepFunctionException("No message received");
     }
 
     // Deserialize the Message
-    var message = JsonSerializer.Deserialize<TextractCompletionModel>(record.Sns.Message);
-    if(message is null)
-    {
-        throw new RestartStepFunctionException($"Completion Message is Null");
-    }
-
+    var message = JsonSerializer.Deserialize<TextractCompletionModel>(record.Sns.Message) ?? throw new RestartStepFunctionException($"Completion Message is Null");
     Logger.LogInformation("Message:");
     Logger.LogInformation(message);
 
     // Get the Task Token
     var processData = await dataSvc.GetData<ProcessData>(message.JobTag).ConfigureAwait(false);
 
-    if(processData.TextractTaskToken is null)
+    if (processData.TextractTaskToken is null)
     {
         throw new RestartStepFunctionException("Missing Task Token");
     }
 
-    var responseMessage = new IdMessage 
+    var responseMessage = new IdMessage
     {
-        Id = message.JobTag 
+        Id = message.JobTag
     };
 
     AmazonWebServiceResponse response;
@@ -66,7 +60,7 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
     if (message.IsSuccess)
     {
         Logger.LogInformation("Success!");
-        response = await stepFunctionCli.SendTaskSuccessAsync(new() 
+        response = await stepFunctionCli.SendTaskSuccessAsync(new()
         {
             TaskToken = processData.TextractTaskToken,
             Output = JsonSerializer.Serialize(responseMessage)
@@ -84,7 +78,7 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
     }
 
     // Log the output
-    if(response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+    if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
     {
         Logger.LogInformation($"Successfully sent Step Function Completion");
         Logger.LogInformation(response);
