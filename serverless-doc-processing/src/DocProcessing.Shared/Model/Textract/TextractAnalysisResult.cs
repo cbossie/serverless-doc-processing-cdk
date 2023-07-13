@@ -10,25 +10,19 @@ namespace DocProcessing.Shared.Model.Textract;
 public class TextractAnalysisResult
 {
     [JsonPropertyName("AnalyzeDocumentModelVersion")]
-    public string AnalyzeDocumentModelVersion { get; set; }
+    public string? AnalyzeDocumentModelVersion { get; set; }
 
     [JsonPropertyName("Blocks")]
     public List<Block> Blocks { get; set; } = new();
 
     [JsonPropertyName("DocumentMetadata")]
-    public DocumentMetadata DocumentMetadata { get; set; }
+    public DocumentMetadata? DocumentMetadata { get; set; }
 
     [JsonPropertyName("JobStatus")]
-    public string JobStatus { get; set; }
-
-    [JsonPropertyName("NextToken")]
-    public object NextToken { get; set; }
+    public string? JobStatus { get; set; }
 
     [JsonPropertyName("StatusMessage")]
-    public object StatusMessage { get; set; }
-
-    [JsonPropertyName("Warnings")]
-    public object Warnings { get; set; }
+    public string? StatusMessage { get; set; }
 
     public int GetBlockCount() => Blocks.Count;
 }

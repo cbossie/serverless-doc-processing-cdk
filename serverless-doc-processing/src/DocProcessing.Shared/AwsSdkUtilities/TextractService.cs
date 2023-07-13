@@ -41,7 +41,10 @@ public class TextractService : ITextractService
         {
             var s3data = await S3Client.GetObjectAsync(item.BucketName, item.Key).ConfigureAwait(false);
             var data = await JsonSerializer.DeserializeAsync<TextractAnalysisResult>(new BufferedStream(s3data.ResponseStream)).ConfigureAwait(false);
-            blocks.AddRange(data.Blocks);
+            if (data != null)
+            {
+                blocks.AddRange(data.Blocks);
+            }
         }
         return new TextractDataModel(blocks);
     }

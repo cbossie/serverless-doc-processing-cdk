@@ -16,6 +16,6 @@ public class DocumentQueryResult
 
     [JsonPropertyName("resultText")]
     [DynamoDBProperty("resultText")]
-    public string ResultText { get; set; }
+    public string? ResultText { get; set; }
 
 }

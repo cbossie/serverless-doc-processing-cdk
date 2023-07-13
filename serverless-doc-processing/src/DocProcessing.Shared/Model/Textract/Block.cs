@@ -1,6 +1,7 @@
 ﻿using Amazon.Textract.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -10,8 +11,10 @@ namespace DocProcessing.Shared.Model.Textract;
 
 public class Block
 {
+
+
     [JsonPropertyName("BlockType")]
-    public string BlockType { get; set; }
+    public string BlockType { get; set; } = string.Empty;
 
     [JsonPropertyName("ColumnIndex")]
     public int? ColumnIndex { get; set; }
@@ -23,28 +26,29 @@ public class Block
     public double? Confidence { get; set; }
 
     [JsonPropertyName("EntityTypes")]
-    public List<string> EntityTypes { get; set; }
+    public List<string> EntityTypes { get; set; } = new();
 
     [JsonPropertyName("Geometry")]
-    public Geometry Geometry { get; set; }
+    public Geometry? Geometry { get; set; }
 
     [JsonPropertyName("Hint")]
-    public string Hint { get; set; }
+    public string? Hint { get; set; }
 
     [JsonPropertyName("Id")]
-    public string Id { get; set; }
+    [NotNull]
+    public string? Id { get; set; }
 
     [JsonPropertyName("Page")]
-    public int Page { get; set; }
+    public int? Page { get; set; }
 
     [JsonPropertyName("PageClassification")]
-    public PageClassification PageClassification { get; set; }
+    public PageClassification? PageClassification { get; set; }
 
     [JsonPropertyName("Query")]
-    public Query Query { get; set; }
+    public Query Query { get; set; } = new();
 
     [JsonPropertyName("Relationships")]
-    public List<Relationship> Relationships { get; set; }
+    public List<Relationship> Relationships { get; set; } = new();
 
     [JsonPropertyName("RowIndex")]
     public int? RowIndex { get; set; }
@@ -56,7 +60,7 @@ public class Block
     public string? SelectionStatus { get; set; }
 
     [JsonPropertyName("Text")]
-    public string Text { get; set; }
+    public string? Text { get; set; }
 
     [JsonPropertyName("TextType")]
     public string? TextType { get; set; }

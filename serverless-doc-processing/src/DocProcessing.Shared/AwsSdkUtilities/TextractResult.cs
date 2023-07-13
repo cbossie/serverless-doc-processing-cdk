@@ -10,8 +10,6 @@ namespace DocProcessing.Shared.AwsSdkUtilities
 {
     public class TextractResult
     {
-        private const string QUERY_BLOCK = "QUERY";
-
         private List<Block> Blocks { get; } = new();
 
         private Dictionary<string, DocumentQuery> QueryResults { get; } = new();

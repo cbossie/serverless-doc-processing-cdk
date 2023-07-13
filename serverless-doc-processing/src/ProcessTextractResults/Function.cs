@@ -15,6 +15,7 @@ using DocProcessing.Shared.AwsSdkUtilities;
 //Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
+//Initialize common functionality
 await Common.Instance.Initialize().ConfigureAwait(false);
 
 [Tracing]
@@ -24,7 +25,7 @@ async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
 {
 
     var dataSvc = Common.Instance.ServiceProvider.GetRequiredService<IDataService>();
-    var textractSvc = Common.Instance.ServiceProvider.GetRequiredService<ITextractService>();
+    var textractSvc = Common.Instance.ServiceProvider?.GetRequiredService<ITextractService>();
 
     var processData = await dataSvc.GetData<ProcessData>(input.Id).ConfigureAwait(false);
 

@@ -11,18 +11,18 @@ namespace DocProcessing.Shared.Model.Data;
 public class IdMessage
 {
     [JsonPropertyName("id")]
-    public virtual string Id { get; set; }
+    public virtual string Id { get; set; } = string.Empty;
 
     [JsonPropertyName("success")]
     public bool Success { get; set; }
 
     [JsonPropertyName("message")]
-    public string Message { get; set; }
+    public string? Message { get; set; }
 
     [JsonPropertyName("taskToken")]
-    public string TaskToken { get; set; }
+    public string? TaskToken { get; set; }
 
-    public static IdMessage Create(string id, bool success = true, string message = null) =>
+    public static IdMessage Create(string id, bool success = true, string? message = null) =>
         new IdMessage
         {
             Id = id,

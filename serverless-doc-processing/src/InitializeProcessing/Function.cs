@@ -12,13 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 using DocProcessing.Shared.AwsSdkUtilities;
 using DocProcessing.Shared.Service;
 using DocProcessing.Shared.Model.Data;
-using DocProcessing.Shared.Model.Data;
 
 
 //Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
-
+//Initialize common functionality
 await Common.Instance.Initialize().ConfigureAwait(false);
 
 [Tracing]
@@ -68,8 +67,6 @@ async Task<IdMessage> FunctionHandler (S3ObjectCreateEvent input, ILambdaContext
 };
 
 var functionHandlerDelegate = FunctionHandler;
-
-
 
 // to .NET types.
 await LambdaBootstrapBuilder.Create(functionHandlerDelegate, new DefaultLambdaJsonSerializer())

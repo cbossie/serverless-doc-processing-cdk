@@ -1,4 +1,5 @@
 ﻿using Amazon;
+using Amazon.Auth.AccessControlPolicy.ActionIdentifiers;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.S3;
@@ -19,30 +20,41 @@ namespace DocProcessing.Shared;
 
 public class Common
 {
-    private ServiceCollection Services { get; } = new();
+    private static bool Initialized { get; set; } = false;
 
-
-    public ServiceProvider? ServiceProvider { get; private set; }
-
+    public ServiceProvider ServiceProvider { get; private set; }
 
     public static Common Instance { get; } = new();
 
-    private Common()
+    public static ServiceProvider Services => Instance.ServiceProvider;
+   
+    static Common()
     {
-        Services = new ServiceCollection();
+        Instance = new Common();
     }
 
     public async Task Initialize()
     {
+        if (Initialized)
+        {
+            return;
+        }
         ConfigureServices();
         AWSSDKHandler.RegisterXRayForAllServices();
+        await Prime();
     }
 
+    private async Task Prime()
+    {
+        // TODO - Prime the AWS Services Here
+        await Task.CompletedTask;
+    }
 
     private void ConfigureServices()
     {
-        ServiceProvider = 
-        Services
+        ServiceCollection services = new ServiceCollection();
+
+        ServiceProvider = services
             .AddTransient<IDataService, DataService>()
             .AddTransient<ITextractService, TextractService>()
             .AddAWSService<IAmazonS3>()

@@ -1,5 +1,3 @@
-using Amazon.DynamoDBv2.Model.Internal.MarshallTransformations;
-using Amazon.Lambda.CloudWatchEvents.S3Events;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
@@ -12,11 +10,11 @@ using DocProcessing.Shared;
 using DocProcessing.Shared.Model.Data;
 using DocProcessing.Shared.Service;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http.Headers;
 
 //Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
+//Initialize common functionality
 await Common.Instance.Initialize().ConfigureAwait(false);
 
 [Tracing]

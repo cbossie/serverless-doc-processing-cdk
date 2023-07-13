@@ -19,11 +19,11 @@ namespace DocProcessing.Shared.Model.Data
 
         [DynamoDBHashKey("id")]
         [JsonPropertyName("id")]
-        public override string Id { get; set; }
+        public override string Id { get; set; } = string.Empty;
 
         [DynamoDBProperty("externalId")]
         [JsonPropertyName("externalId")]
-        public string ExternalId { get; set; }
+        public string? ExternalId { get; set; }
 
         [DynamoDBProperty("queries")]
         [JsonPropertyName("queries")]
@@ -36,31 +36,31 @@ namespace DocProcessing.Shared.Model.Data
 
         [DynamoDBProperty("inputDocKey")]
         [JsonPropertyName("inputDocKey")]
-        public string InputDocKey { get; set; }
+        public string? InputDocKey { get; set; }
 
         [DynamoDBProperty("inputDocBucket")]
         [JsonPropertyName("inputDocBucket")]
-        public string InputDocBucket { get; set; }
+        public string? InputDocBucket { get; set; }
 
         [DynamoDBProperty("fileExtension")]
         [JsonPropertyName("fileExtension")]
-        public string FileExtension { get; set; }
+        public string? FileExtension { get; set; }
 
         [DynamoDBProperty("textractTaskToken")]
         [JsonPropertyName("textractTaskToken")]
-        public string TextractTaskToken { get; set; }
+        public string? TextractTaskToken { get; set; }
 
         [DynamoDBProperty("textractJobId")]
         [JsonPropertyName("textractJobId")]
-        public string TextractJobId { get; set; }
+        public string? TextractJobId { get; set; }
 
         [DynamoDBProperty("outputBucket")]
         [JsonPropertyName("outputBucket")]
-        public string OutputBucket { get; set; }
+        public string OutputBucket { get; set; } = string.Empty;
 
         [DynamoDBProperty("outputKey")]
         [JsonPropertyName("outputKey")]
-        public string OutputKey { get; set; }
+        public string OutputKey { get; set; } = string.Empty;
 
     }
 }

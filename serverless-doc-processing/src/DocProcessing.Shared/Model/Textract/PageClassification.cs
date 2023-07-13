@@ -9,10 +9,10 @@ namespace DocProcessing.Shared.Model.Textract;
 
 public class PageClassification
 {
-    [JsonPropertyName("PageNumber")]
-    public List<Prediction> PageNumber { get; set; }
+    [JsonPropertyName("PageNumber")] 
+    public List<Prediction> PageNumber { get; set; } = new();
 
     [JsonPropertyName("PageType")]
-    public List<Prediction> PageType { get; set; }  
+    public List<Prediction> PageType { get; set; } = new();
 
 }

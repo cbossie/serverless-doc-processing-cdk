@@ -19,6 +19,7 @@ using System.Text.Json;
 //Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
+//Initialize common functionality
 await Common.Instance.Initialize().ConfigureAwait(false);
 
 [Tracing]
@@ -39,6 +40,10 @@ async Task FunctionHandler(SNSEvent input, ILambdaContext context)
 
     // Deserialize the Message
     var message = JsonSerializer.Deserialize<TextractCompletionModel>(record.Sns.Message);
+    if(message is null)
+    {
+        throw new RestartStepFunctionException($"Completion Message is Null");
+    }
 
     Logger.LogInformation("Message:");
     Logger.LogInformation(message);

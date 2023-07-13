@@ -11,14 +11,16 @@ namespace DocProcessing.Shared.Model.Textract;
 
 public class TextractDataModel
 {
+    private const string QUERY_TYPE = "QUERY";
+
     Dictionary<string, Block> BlockMap { get; }
 
     private Dictionary<string, List<Block>> Queries = new();
 
     public TextractDataModel(IEnumerable<Block> blocks)
     {
-        BlockMap = blocks.ToDictionary(a => a.Id);
-        if (BlockMap != null && BlockMap.Count > 0)
+        BlockMap = blocks.ToDictionary(a => a.Id) ?? new();
+        if (BlockMap.Count > 0)
         {
             Initialize();
         }
@@ -28,8 +30,11 @@ public class TextractDataModel
     private void Initialize()
     {
 
-        Queries = BlockMap.Values.Where(b => b.BlockType == "QUERY").GroupBy(a => a.Query.Alias).ToDictionary(a => a.Key, b => b.ToList());
-
+        Queries = BlockMap
+            .Values
+            .Where(b => b.BlockType == QUERY_TYPE)
+            .GroupBy(a => a.Query.Alias)
+            .ToDictionary(a => a.Key, b => b.ToList());
     }
 
     public Block? GetBlock(string id)

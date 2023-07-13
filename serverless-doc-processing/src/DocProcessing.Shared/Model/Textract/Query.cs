@@ -13,8 +13,8 @@ public class Query
     public string? Text { get; set; }
 
     [JsonPropertyName("Alias")]
-    public string? Alias { get; set; }
+    public string Alias { get; set; } = string.Empty;
 
     [JsonPropertyName("Pages")]
-    public List<string> Pages { get; set; }
+    public List<string> Pages { get; set; } = new();
 }
