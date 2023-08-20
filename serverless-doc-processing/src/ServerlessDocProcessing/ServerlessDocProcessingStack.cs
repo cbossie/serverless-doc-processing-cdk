@@ -248,6 +248,7 @@ public class ServerlessDocProcessingStack : Stack
 
         StateMachine docProcessingStepFunction = new(this, "docProcessing", new StateMachineProps
         {
+            StateMachineType = StateMachineType.EXPRESS,
             TracingEnabled = true,
             Logs = new LogOptions
             {
