@@ -349,9 +349,11 @@ ASALocalRun/
 
 
 # CDK
-cdk deploy --profile dotnet-oho 
+
 
 
 cdk.context.json
 
 functions/
+
+localdeploy.txt

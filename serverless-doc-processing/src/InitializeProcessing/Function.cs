@@ -12,69 +12,66 @@ using DocProcessing.Shared.Model.Data;
 using DocProcessing.Shared.Service;
 using Microsoft.Extensions.DependencyInjection;
 
-
-//Configure the Serializer
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
-//Initialize common functionality
-await Common.Instance.Initialize().ConfigureAwait(false);
-
-[Tracing]
-[Metrics(CaptureColdStart = true)]
-[Logging(LogEvent = true, ClearState = true)]
-static async Task<IdMessage> FunctionHandler(S3ObjectCreateEvent input, ILambdaContext context)
+public class Function
 {
-    var s3Client = Common.Instance.ServiceProvider.GetRequiredService<IAmazonS3>();
-    IDataService dataSvc = Common.Instance.ServiceProvider.GetRequiredService<IDataService>();
-
-    //Initialize the Payload
-    ProcessData pl = new(dataSvc.GenerateId())
+    private static async Task Main(string[] args)
     {
-        // Get the S3 item to query
-        InputDocKey = input.Detail.Object.Key,
-        InputDocBucket = input.Detail.Bucket.Name
-    };
-    pl.FileExtension = Path.GetExtension(pl.InputDocKey);
+        //Initialize common functionality
+        await Common.Instance.Initialize().ConfigureAwait(false);
 
-    // Retreive the Tags for the S3 object
-    var data = await s3Client.GetObjectTaggingAsync(new Amazon.S3.Model.GetObjectTaggingRequest
+        Func<S3ObjectCreateEvent, ILambdaContext, Task<IdMessage>> handler = FunctionHandler;
+        await LambdaBootstrapBuilder.Create(handler, new DefaultLambdaJsonSerializer())
+            .Build()
+            .RunAsync();
+    }
+
+    [Tracing]
+    [Metrics(CaptureColdStart = true)]
+    [Logging(LogEvent = true, ClearState = true)]
+    static async Task<IdMessage> FunctionHandler(S3ObjectCreateEvent input, ILambdaContext context)
     {
-        BucketName = input.Detail.Bucket.Name,
-        Key = input.Detail.Object.Key
-    }).ConfigureAwait(false);
+        var s3Client = Common.Instance.ServiceProvider.GetRequiredService<IAmazonS3>();
+        IDataService dataSvc = Common.Instance.ServiceProvider.GetRequiredService<IDataService>();
 
-    // If there is a tag for queries get them
-    var queryTagValue = data.Tagging.GetTagValueList(Constants.ConstantValues.QUERY_TAG);
-    var queries = await dataSvc.GetQueries(queryTagValue).ConfigureAwait(false);
+        //Initialize the Payload
+        ProcessData pl = new(dataSvc.GenerateId())
+        {
+            // Get the S3 item to query
+            InputDocKey = input.Detail.Object.Key,
+            InputDocBucket = input.Detail.Bucket.Name
+        };
+        pl.FileExtension = Path.GetExtension(pl.InputDocKey);
 
-    pl.Queries.AddRange(queries.Select(q => new DocumentQuery
-    {
-        QueryId = q.QueryId,
-        QueryText = q.QueryText,
-        Processed = false,
-        IsValid = true
-    }));
+        // Retreive the Tags for the S3 object
+        var data = await s3Client.GetObjectTaggingAsync(new Amazon.S3.Model.GetObjectTaggingRequest
+        {
+            BucketName = input.Detail.Bucket.Name,
+            Key = input.Detail.Object.Key
+        }).ConfigureAwait(false);
 
-    // If there is a tag for external id, get it. Otherwise, we won't use it
-    pl.ExternalId = data.Tagging.GetTagValue(Constants.ConstantValues.ID_TAG) ?? Guid.NewGuid().ToString();
+        // If there is a tag for queries get them
+        var queryTagValue = data.Tagging.GetTagValueList(Constants.ConstantValues.QUERY_TAG);
+        var queries = await dataSvc.GetQueries(queryTagValue).ConfigureAwait(false);
 
+        pl.Queries.AddRange(queries.Select(q => new DocumentQuery
+        {
+            QueryId = q.QueryId,
+            QueryText = q.QueryText,
+            Processed = false,
+            IsValid = true
+        }));
 
-    //Save the payload
-    await dataSvc.SaveData(pl).ConfigureAwait(false);
-
-    return IdMessage.Create(pl.Id);
-};
-
-var functionHandlerDelegate = FunctionHandler;
-
-// to .NET types.
-await LambdaBootstrapBuilder.Create(functionHandlerDelegate, new DefaultLambdaJsonSerializer())
-        .Build()
-        .RunAsync()
-        .ConfigureAwait(false);
-
-
+        // If there is a tag for external id, get it. Otherwise, we won't use it
+        pl.ExternalId = data.Tagging.GetTagValue(Constants.ConstantValues.ID_TAG) ?? Guid.NewGuid().ToString();
 
 
+        //Save the payload
+        await dataSvc.SaveData(pl).ConfigureAwait(false);
+
+        return IdMessage.Create(pl.Id);
+    }
+}
 
 

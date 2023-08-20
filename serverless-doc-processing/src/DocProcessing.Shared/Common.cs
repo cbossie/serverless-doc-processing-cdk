@@ -7,6 +7,7 @@ using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using DocProcessing.Shared.AwsSdkUtilities;
 using DocProcessing.Shared.Service;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DocProcessing.Shared;
 
