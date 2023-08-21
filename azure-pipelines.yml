@@ -15,6 +15,15 @@ pool:
 
 
 steps:
+
+- task: NodeTool@0
+  displayName: 'Install Node Tools'
+  inputs:
+    versionSource: 'spec'
+    versionSpec: 
+    checkLatest: true
+
+
 - task: CmdLine@2
   displayName: 'Install CDK'
   inputs:
