@@ -20,7 +20,7 @@ steps:
   displayName: 'Install Node Tools'
   inputs:
     versionSource: 'spec'
-    versionSpec: 
+    versionSpec: '18.x'
     checkLatest: true
 
 
