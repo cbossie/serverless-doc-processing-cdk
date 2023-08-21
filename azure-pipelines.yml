@@ -31,6 +31,6 @@ steps:
     scriptType: 'inline'
     inlineScript: |
       chmod +x ./build.sh
-      cdk deploy --build ./build.sh
+      cdk deploy --build ./build.sh --context stackName=$(stackname) --context environmentName=$(environmentName)
     disableAutoCwd: true
     workingDirectory: 'serverless-doc-processing'
