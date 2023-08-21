@@ -18,6 +18,12 @@ steps:
   inputs:
     script: 'npm install -g aws-cdk'
 
+- task: CmdLine@2
+  inputs:
+    script: 'dotnet tool install -g Amazon.Lambda.Tools'
+
+
+
 - task: AWSShellScript@1
   inputs:
     awsCredentials: 'AWS-Dotnet-Ohio'
