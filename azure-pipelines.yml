@@ -16,12 +16,12 @@ pool:
 
 steps:
 
-# - task: NodeTool@0
-#   displayName: 'Install Node Tools'
-#   inputs:
-#     versionSource: 'spec'
-#     versionSpec: '18.x'
-#     checkLatest: true
+- task: NodeTool@0
+  displayName: 'Install Node Tools'
+  inputs:
+    versionSource: 'spec'
+    versionSpec: '18.x'
+    checkLatest: true
 
 
 - task: CmdLine@2
