@@ -24,7 +24,7 @@ steps:
     regionName: 'us-east-2'
     scriptType: 'inline'
     inlineScript: |
-      chmod + x ./build.sh
+      chmod +x ./build.sh
       cdk deploy --build ./build.sh
     disableAutoCwd: true
     workingDirectory: 'serverless-doc-processing'
