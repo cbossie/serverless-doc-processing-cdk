@@ -23,4 +23,4 @@ steps:
     awsCredentials: 'AWS-Dotnet-Ohio'
     regionName: 'us-east-2'
     scriptType: 'inline'
-    inlineScript: 'cdk deploy --build ./build.bat'
+    inlineScript: 'cdk deploy --build ./build.sh'
