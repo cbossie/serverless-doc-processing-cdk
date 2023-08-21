@@ -15,16 +15,19 @@ pool:
 
 steps:
 - task: CmdLine@2
+  displayName: 'Install CDK'
   inputs:
     script: 'npm install -g aws-cdk'
 
 - task: CmdLine@2
+  displayName: 'Install AWS .NET Lambda Tools'
   inputs:
     script: 'dotnet tool install -g Amazon.Lambda.Tools'
 
 
 
 - task: AWSShellScript@1
+  displayName: 'Deploy CDK Stack'
   inputs:
     awsCredentials: 'AWS-Dotnet-Ohio'
     regionName: 'us-east-2'
