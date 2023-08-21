@@ -23,6 +23,6 @@ steps:
     awsCredentials: 'AWS-Dotnet-Ohio'
     regionName: 'us-east-2'
     scriptType: 'inline'
-    inlineScript: 'cdk deploy --build build.sh'
+    inlineScript: 'cdk deploy --build ./build.sh'
     disableAutoCwd: true
     workingDirectory: 'serverless-doc-processing'
