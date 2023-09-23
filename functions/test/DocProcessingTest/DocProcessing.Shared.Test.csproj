@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DocProcessing.Shared\DocProcessing.Shared.csproj" />
+    <ProjectReference Include="..\..\src\DocProcessing.Shared\DocProcessing.Shared.csproj" />
   </ItemGroup>
 
 </Project>

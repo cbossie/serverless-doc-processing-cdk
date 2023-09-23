@@ -1,4 +1,4 @@
-﻿namespace Constants
+﻿namespace DocProcessing.Constants
 {
     public static class ConstantValues
     {

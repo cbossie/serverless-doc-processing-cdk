@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Constants\Constants.csproj" />
+    <ProjectReference Include="..\DocProcessing.Constants\DocProcessing.Constants.csproj" />
   </ItemGroup>
 
 </Project>

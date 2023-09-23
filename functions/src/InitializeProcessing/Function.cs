@@ -6,11 +6,6 @@ using Amazon.S3;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
-using DocProcessing.Shared;
-using DocProcessing.Shared.AwsSdkUtilities;
-using DocProcessing.Shared.Model.Data;
-using DocProcessing.Shared.Service;
-using Microsoft.Extensions.DependencyInjection;
 
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
@@ -52,7 +47,7 @@ public class Function
         }).ConfigureAwait(false);
 
         // If there is a tag for queries get them
-        var queryTagValue = data.Tagging.GetTagValueList(Constants.ConstantValues.QUERY_TAG);
+        var queryTagValue = data.Tagging.GetTagValueList(ConstantValues.QUERY_TAG);
         var queries = await dataSvc.GetQueries(queryTagValue).ConfigureAwait(false);
 
         pl.Queries.AddRange(queries.Select(q => new DocumentQuery
@@ -64,7 +59,7 @@ public class Function
         }));
 
         // If there is a tag for external id, get it. Otherwise, we won't use it
-        pl.ExternalId = data.Tagging.GetTagValue(Constants.ConstantValues.ID_TAG) ?? Guid.NewGuid().ToString();
+        pl.ExternalId = data.Tagging.GetTagValue(ConstantValues.ID_TAG) ?? Guid.NewGuid().ToString();
 
 
         //Save the payload

@@ -396,3 +396,17 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+
+
+# Custom
+*.bkp
+localdeploy.txt
+
+build/
+
+
+
+
+
+

@@ -43,8 +43,8 @@ public class Function
             FeatureTypes = new List<string> { FeatureType.TABLES, FeatureType.QUERIES, FeatureType.FORMS },
             NotificationChannel = new Amazon.Textract.Model.NotificationChannel
             {
-                SNSTopicArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_TOPIC_KEY),
-                RoleArn = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_ROLE_KEY),
+                SNSTopicArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_TOPIC_KEY),
+                RoleArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_ROLE_KEY),
             },
             DocumentLocation = new Amazon.Textract.Model.DocumentLocation
             {
@@ -65,8 +65,8 @@ public class Function
             },
             OutputConfig = new OutputConfig
             {
-                S3Bucket = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_BUCKET_KEY),
-                S3Prefix = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)
+                S3Bucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY),
+                S3Prefix = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)
             }
         };
 
@@ -74,8 +74,8 @@ public class Function
 
         data.TextractJobId = textractResult.JobId;
         data.TextractTaskToken = input.TaskToken;
-        data.OutputKey = $"{Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
-        data.OutputBucket = Environment.GetEnvironmentVariable(Constants.ConstantValues.TEXTRACT_BUCKET_KEY);
+        data.OutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
+        data.OutputBucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY);
 
         await dataSvc.SaveData(data).ConfigureAwait(false);
 

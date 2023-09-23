@@ -9,7 +9,6 @@ using Amazon.CDK.AWS.SNS.Subscriptions;
 using Amazon.CDK.AWS.SQS;
 using Amazon.CDK.AWS.StepFunctions;
 using Amazon.CDK.AWS.StepFunctions.Tasks;
-using Constants;
 using System.Collections.Generic;
 
 namespace ServerlessDocProcessing;
@@ -135,7 +134,7 @@ public class ServerlessDocProcessingStack : Stack
 
         // Functions
         var initializeFunction = FunctionFactory.CreateCustomFunction("InitializeProcessing")
-            .AddEnvironment(Constants.ConstantValues.QUERY_TAG_KEY, Constants.ConstantValues.QUERY_TAG);
+            .AddEnvironment(ConstantValues.QUERY_TAG_KEY, ConstantValues.QUERY_TAG);
 
         var submitToTextractFunction = FunctionFactory.CreateCustomFunction("SubmitToTextract")
             .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
