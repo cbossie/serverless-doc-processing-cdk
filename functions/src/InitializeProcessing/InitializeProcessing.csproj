@@ -18,6 +18,8 @@
 	-->
     <!-- Generate ready to run images during publishing to improve cold start time. -->
     <PublishReadyToRun>true</PublishReadyToRun>
+    <!-- Enable This to publish Native AOT-->  
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
   <!-- 
   When publishing Lambda functions for ARM64 to the provided.al2 runtime a newer version of libicu needs to be included
