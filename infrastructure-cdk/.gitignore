@@ -344,5 +344,5 @@ ASALocalRun/
 
 cdk.context.json
 cdk.out/
-
+functions/
 .sarif/
