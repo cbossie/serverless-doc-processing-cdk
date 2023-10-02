@@ -32,6 +32,7 @@ public class ServerlessDocProcessingStack : Stack
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_TRACER_CAPTURE_RESPONSE", $"true");
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_TRACER_CAPTURE_ERROR", $"true");
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract-{EnvironmentName}");
+        CustomFunctionProps.AddGlobalEnvironment("ENVIRONMENT_NAME", EnvironmentName);
 
 
         // Tables
@@ -279,7 +280,7 @@ public class ServerlessDocProcessingStack : Stack
     private string GetBucketName(string baseName) => $"docprocessing-{baseName}-{EnvironmentName}-{Aws.ACCOUNT_ID}-{Aws.REGION}";
     private string GetQueueName(string baseName) => $"docProceesing-{baseName}-{EnvironmentName}-{Aws.ACCOUNT_ID}";
     private string GetTopicname(string baseName) => $"docProcesing{baseName}-{EnvironmentName}-{Aws.ACCOUNT_ID}";
-    private string GetTableName(string baseName) => $"docprocssing-{EnvironmentName}-{baseName}";
+    private string GetTableName(string baseName) => $"{EnvironmentName}-{baseName}";
     private string GetLogGroupName(string baseName) => $"docprocessing-{EnvironmentName}-{baseName}-{Aws.ACCOUNT_ID}";
 }
 
