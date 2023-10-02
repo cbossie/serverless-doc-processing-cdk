@@ -9,4 +9,6 @@ public class ServerlessDocProcessingStackProps : StackProps
     }
 
     public string EnvironmentName { get; set; } = "dev";
+
+    public string FunctionCodeBaseDirectory { get; set; }
 }

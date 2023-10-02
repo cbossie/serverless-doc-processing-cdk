@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 	ProjectSection(SolutionItems) = preProject
 		..\assets\build-process.txt = ..\assets\build-process.txt
 		..\build.bat = ..\build.bat
+		..\cdk.context.json = ..\cdk.context.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocProcessing.Constants", "..\..\functions\src\DocProcessing.Constants\DocProcessing.Constants.csproj", "{F14FCEF3-7471-4EA0-8395-F540E09AA574}"
