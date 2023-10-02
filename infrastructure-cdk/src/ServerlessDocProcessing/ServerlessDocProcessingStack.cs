@@ -222,7 +222,7 @@ public class ServerlessDocProcessingStack : Stack
         Rule rule = new(this, "inputBucketRule", new RuleProps
         {
             Enabled = true,
-            RuleName = "InputBucketRule",
+            RuleName = GetEventbridgeRuleName("input"),
             EventPattern = new EventPattern
             {
 
@@ -275,6 +275,7 @@ public class ServerlessDocProcessingStack : Stack
     }
 
     // Functions to create unique names
+    private string GetEventbridgeRuleName(string basename) => $"docprocessing-{EnvironmentName}";
     private string GetBucketName(string baseName) => $"docprocessing-{baseName}-{EnvironmentName}-{Aws.ACCOUNT_ID}-{Aws.REGION}";
     private string GetQueueName(string baseName) => $"docProceesing-{baseName}-{EnvironmentName}-{Aws.ACCOUNT_ID}";
     private string GetTopicname(string baseName) => $"docProcesing{baseName}-{EnvironmentName}-{Aws.ACCOUNT_ID}";
