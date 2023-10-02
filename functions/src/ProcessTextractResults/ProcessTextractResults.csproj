@@ -19,7 +19,7 @@
     <PublishReadyToRun>true</PublishReadyToRun>
 
     <!-- Enable This to publish Native AOT-->
-    <PublishAot>true</PublishAot>
+    <!--<PublishAot>true</PublishAot>-->
 
   </PropertyGroup>
   <!-- 
