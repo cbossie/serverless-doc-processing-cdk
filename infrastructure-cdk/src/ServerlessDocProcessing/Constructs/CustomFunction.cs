@@ -1,4 +1,5 @@
 ﻿using Amazon.CDK.AWS.GuardDuty;
+using Amazon.CDK.AWS.IAM;
 
 namespace ServerlessDocProcessing.Constructs;
 
@@ -19,6 +20,15 @@ public class CustomFunction : Function
         {
             AddEnvironment(env.Key, env.Value);
         }
+
+        // Allow metrics to be added
+        AddToRolePolicy(new Amazon.CDK.AWS.IAM.PolicyStatement(new PolicyStatementProps
+        {
+            Actions = new[] { "cloudwatch:PutMetricData" },
+            Effect = Effect.ALLOW,
+            Resources = new[] { "*" }
+        }));
+
     }
 
     public CustomFunction AddEnvironmentVariable(string key, string value)

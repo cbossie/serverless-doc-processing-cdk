@@ -34,7 +34,6 @@ public class ServerlessDocProcessingStack : Stack
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract-{EnvironmentName}");
         CustomFunctionProps.AddGlobalEnvironment("ENVIRONMENT_NAME", EnvironmentName);
 
-
         // Tables
         Table configTable = new(this, "queryData", new TableProps
         {

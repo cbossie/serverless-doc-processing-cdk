@@ -43,5 +43,6 @@ public class CustomFunctionProps
 
     public static void AddGlobalEnvironment(string key, string  value) => GlobalEnvironment[key] = value;
 
+    
 
 }
