@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace DocProcessing.Shared.Model.Textract;
+namespace DocProcessing.Shared.Model.Textract.QueryAnalysis;
 
 public class Query
 {

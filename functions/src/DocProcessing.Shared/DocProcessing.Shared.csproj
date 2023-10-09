@@ -21,8 +21,4 @@
     <ProjectReference Include="..\DocProcessing.Constants\DocProcessing.Constants.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Model\Expense\" />
-  </ItemGroup>
-
 </Project>

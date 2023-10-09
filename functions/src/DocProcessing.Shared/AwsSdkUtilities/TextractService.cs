@@ -1,5 +1,7 @@
 ﻿using Amazon.S3;
-using DocProcessing.Shared.Model.Textract;
+using Amazon.S3.Model;
+using DocProcessing.Shared.Model.Textract.Expense;
+using DocProcessing.Shared.Model.Textract.QueryAnalysis;
 using System.Text.Json;
 
 namespace DocProcessing.Shared.AwsSdkUtilities;
@@ -36,4 +38,15 @@ public class TextractService : ITextractService
         }
         return new TextractDataModel(blocks);
     }
+
+    public Task<ExpenseDataModel> GetExpenses(string bucket, string key)
+    {
+        
+    }
+
+    private async Task<IEnumerable<S3Object> GetS3Objects(string bucket, string key)
+        {
+
+
+
 }

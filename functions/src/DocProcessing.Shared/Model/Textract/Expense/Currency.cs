@@ -5,10 +5,9 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace DocProcessing.Shared.Model.Textract;
-
-public class DocumentMetadata
+namespace DocProcessing.Shared.Model.Textract.Expense;
+public class Currency
 {
-    [JsonPropertyName("Pages")]
-    public int? Pages { get; set; }
+    [JsonPropertyName("Code")]
+    public string Code { get; set; }
 }

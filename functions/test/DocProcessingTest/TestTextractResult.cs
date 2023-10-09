@@ -1,4 +1,4 @@
-using DocProcessing.Shared.Model.Textract;
+using DocProcessing.Shared.Model.Textract.Query;
 using System.Text.Json;
 
 

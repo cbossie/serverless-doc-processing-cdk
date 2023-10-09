@@ -128,7 +128,7 @@ public class ServerlessDocProcessingStack : Stack
 
         // Function to initialize the process. It will create the relevant data structures etc.
         var initializeFunction = new CustomFunction(this, "InitializeProcessing", new CustomFunctionProps
-        { 
+        {
             FunctionNameBase = "InitializeProcessing"
         });
 
@@ -180,7 +180,7 @@ public class ServerlessDocProcessingStack : Stack
 
         // All the function ro read from the S3 bucket.
         textractBucket.GrantRead(processTextractResultFunction);
-        
+
         // Function that restarts the step function following the aynchronous completion of Textract
         var restartStepFunction = new CustomFunction(this, "RestartStepFunction", new CustomFunctionProps
         {
@@ -199,7 +199,7 @@ public class ServerlessDocProcessingStack : Stack
         // Add a subscription to the lambda function that will be restarting the step function, to the topic that
         // Textract published to
         textractTopic.AddSubscription(new LambdaSubscription(restartStepFunction));
-             
+
 
         // Step function that coordinates processing
         DocProcessingStepFunction docProcessingStepFunction = new(this, "docProcessing", new DocProcessingStepFunctionProps
@@ -215,9 +215,9 @@ public class ServerlessDocProcessingStack : Stack
             SubmitToTextractFunction = submitToTextractFunction,
             ProcessTextractResultFunction = processTextractResultFunction,
             SendFailureQueue = failureQueue,
-            SendSuccessQueue = successQueue                      
+            SendSuccessQueue = successQueue
         });
-        
+
         // EventBridge Rule that reacts to S3
         Rule rule = new(this, "inputBucketRule", new RuleProps
         {
@@ -229,10 +229,11 @@ public class ServerlessDocProcessingStack : Stack
                 Source = new[] { "aws.s3" },
                 DetailType = new[] { "Object Created" },
                 Detail = new Dictionary<string, object> {
-                     {
-                         "bucket", new Dictionary<string, object> { {"name", new [] {inputBucket.BucketName } }
-                     } }
-            }
+                         {
+                             "bucket", new Dictionary<string, object> { {"name", new [] {inputBucket.BucketName } }
+                         } 
+                    }
+                }
             }
         });
 
@@ -246,19 +247,17 @@ public class ServerlessDocProcessingStack : Stack
 
 
         //Permssions required
-        docProcessingStepFunction.StateMachine.GrantStartExecution(eventRole);  
-        
+        docProcessingStepFunction.StateMachine.GrantStartExecution(eventRole);
+
         // Allow the state machine to write to CloudWatch Logs
         stepFunctionLogGroup.GrantWrite(docProcessingStepFunction.StateMachine);
-                
+
         // Grant permissions to functions to use Object Persistence Model in DynamoDB
         configTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(submitToTextractFunction);
         dataTable.GrantDocumentObjectModelPermissions(restartStepFunction);
         dataTable.GrantDocumentObjectModelPermissions(processTextractResultFunction);
-        
-        
 
         // Outputs
         _ = new CfnOutput(this, "inputBucketOutput", new CfnOutputProps
