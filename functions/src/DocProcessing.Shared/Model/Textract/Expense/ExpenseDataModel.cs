@@ -8,6 +8,7 @@ namespace DocProcessing.Shared.Model.Textract.Expense;
 
 public class ExpenseDataModel
 {
+    
 
     Dictionary<int, ExpenseDocument> ExpenseDocuments { get; }
 

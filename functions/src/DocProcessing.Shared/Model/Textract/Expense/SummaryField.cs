@@ -26,4 +26,7 @@ public class SummaryField
 
     [JsonPropertyName("Currency")]
     public Currency Currency { get; set; }
+
+    public bool HasGroups => GroupProperties?.Any() ?? false;
+
 }
