@@ -27,7 +27,7 @@ public class TextractDataModel
             .GroupBy(a => a.Query.Alias)
             .ToDictionary(a => a.Key, b => b.ToList());
     }
-
+ 
     public Block? GetBlock(string id)
     {
         if (BlockMap.TryGetValue(id, out var block))
@@ -47,7 +47,6 @@ public class TextractDataModel
                 {
                     yield return answerBlock;
                 }
-
             }
 
         }

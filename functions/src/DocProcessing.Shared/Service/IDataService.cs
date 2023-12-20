@@ -1,4 +1,4 @@
-﻿using DocProcessing.Shared.Model.Data;
+﻿using DocProcessing.Shared.Model.Data.Query;
 
 namespace DocProcessing.Shared.Service;
 

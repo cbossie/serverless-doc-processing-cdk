@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocProcessing.Shared", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InitializeProcessing", "src\InitializeProcessing\InitializeProcessing.csproj", "{E3802E1E-93B6-4885-A11B-9DE030A476E6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessTextractResults", "src\ProcessTextractResults\ProcessTextractResults.csproj", "{31A767F1-0AE5-4B86-9CD8-6147C186EBB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessTextractQueryResults", "src\ProcessTextractQueryResults\ProcessTextractQueryResults.csproj", "{31A767F1-0AE5-4B86-9CD8-6147C186EBB3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestartStepFunction", "src\RestartStepFunction\RestartStepFunction.csproj", "{01A89545-73AE-4000-A9C9-CF640EE58A38}"
 EndProject

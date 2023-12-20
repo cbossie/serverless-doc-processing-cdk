@@ -1,4 +1,6 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
+using DocProcessing.Shared.Model.Data.Expense;
+using DocProcessing.Shared.Model.Data.Query;
 using System.Text.Json.Serialization;
 
 namespace DocProcessing.Shared.Model.Data
@@ -28,6 +30,10 @@ namespace DocProcessing.Shared.Model.Data
         [DynamoDBProperty("queries")]
         [JsonPropertyName("queries")]
         public List<DocumentQuery> Queries { get; set; } = new();
+        
+        [DynamoDBProperty("expenseReports")]
+        [JsonPropertyName("expenseReports")]
+        public List<DocumentExpenseReport> ExpenseReports { get; set; } = new();
 
         [DynamoDBProperty("isValid")]
         [JsonPropertyName("isValid")]

@@ -1,7 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.S3;
 using Amazon.S3.Model;
-using DocProcessing.Shared.Model.Textract.Expense;
 using DocProcessing.Shared.Model.Textract.QueryAnalysis;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using System.Net.Sockets;
