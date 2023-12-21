@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocProcessing.Shared.Test",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocProcessing.Constants", "src\DocProcessing.Constants\DocProcessing.Constants.csproj", "{B8FFB062-85A4-441D-8E63-B06C525F6C42}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessTextractExpenseResults", "src\ProcessTextractExpenseResults\ProcessTextractExpenseResults.csproj", "{76A9BD5D-CE26-4E07-B45B-545027360909}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{B8FFB062-85A4-441D-8E63-B06C525F6C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8FFB062-85A4-441D-8E63-B06C525F6C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8FFB062-85A4-441D-8E63-B06C525F6C42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76A9BD5D-CE26-4E07-B45B-545027360909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76A9BD5D-CE26-4E07-B45B-545027360909}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76A9BD5D-CE26-4E07-B45B-545027360909}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76A9BD5D-CE26-4E07-B45B-545027360909}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{715ACF45-05A1-4633-9F0B-9F0E8323025E} = {07FB6C84-9431-4B1F-A8BC-ECAD45DB95F2}
 		{0DF7FB65-B117-4371-8A12-7568847CA17F} = {E9FB3EC2-EB59-48D4-9D86-1029F7A01991}
 		{B8FFB062-85A4-441D-8E63-B06C525F6C42} = {07FB6C84-9431-4B1F-A8BC-ECAD45DB95F2}
+		{76A9BD5D-CE26-4E07-B45B-545027360909} = {07FB6C84-9431-4B1F-A8BC-ECAD45DB95F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3AA2D457-EAC6-45EE-BB19-CD9B61111393}

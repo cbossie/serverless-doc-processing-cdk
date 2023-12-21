@@ -477,3 +477,5 @@ $RECYCLE.BIN/
 *.lnk
 
 .sarif/
+
+serverless.template
