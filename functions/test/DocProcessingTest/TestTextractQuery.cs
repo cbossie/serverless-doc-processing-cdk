@@ -1,4 +1,4 @@
-using DocProcessing.Shared.Model.Textract.Query;
+using DocProcessing.Shared.Model.Textract.QueryAnalysis;
 using System.Text.Json;
 
 
@@ -6,7 +6,7 @@ namespace DocProcessingTest;
 
 [TestClass]
 [DeploymentItem(@"TestAssets\TextractResults.json")]
-public class TestTextractResult
+public class TestTextractQuery
 {
     private TextractDataModel? TextractData { get; set; }
     private TextractAnalysisResult? TextractResult { get; set; }

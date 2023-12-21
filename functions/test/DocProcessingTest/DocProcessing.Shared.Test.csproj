@@ -36,4 +36,10 @@
     <ProjectReference Include="..\..\src\DocProcessing.Shared\DocProcessing.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestAssets\ExpenseAnalysis.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

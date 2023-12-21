@@ -6,6 +6,7 @@ using Amazon.S3;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
+using DocProcessing.Shared.Model.Data.Query;
 
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 

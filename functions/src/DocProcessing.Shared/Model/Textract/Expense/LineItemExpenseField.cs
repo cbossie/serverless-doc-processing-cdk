@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
+
 namespace DocProcessing.Shared.Model.Textract.Expense;
 
 public class LineItemExpenseField

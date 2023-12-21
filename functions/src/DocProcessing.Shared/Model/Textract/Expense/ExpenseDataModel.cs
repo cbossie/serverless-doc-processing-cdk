@@ -21,6 +21,32 @@ public class ExpenseDataModel
         }
     }
 
+    public IEnumerable<int> GetExpenseReportIndexes() => ExpenseDocuments.Keys;
+
+    public IEnumerable<SummaryField> GetScalarSummaryFields(int expenseDocId)
+    {
+        if(!ExpenseDocuments.ContainsKey(expenseDocId))
+        {
+            return Enumerable.Empty<SummaryField>();
+        }
+
+        return ExpenseDocuments[expenseDocId].SummaryFields.Where(g => g.GroupProperties is null);
+    }
+
+    public IEnumerable<string> GetGroupIds(int expenseDocId)
+    {
+        if (!ExpenseDocuments.ContainsKey(expenseDocId))
+        {
+            return Enumerable.Empty<string>();
+        }
+
+        return ExpenseDocuments[expenseDocId].SummaryFields
+            .Where(g => g.GroupProperties is not null)
+            .SelectMany(g => g.GroupProperties)
+            .Select(a => a.Id)
+            .ToHashSet();
+    }
+   
 
     //Initialization
     private void Initialize()
