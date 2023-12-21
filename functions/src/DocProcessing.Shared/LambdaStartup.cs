@@ -15,10 +15,9 @@ using System.Threading.Tasks;
 
 namespace DocProcessing.Shared;
 
-[LambdaStartup]
-public partial class LambdaStartup
+public abstract class StartupBase
 {
-    public void ConfigureServices(IServiceCollection services)
+    public virtual void ConfigureServices(IServiceCollection services)
     {
 
         services.AddTransient<IDataService, DataService>()
