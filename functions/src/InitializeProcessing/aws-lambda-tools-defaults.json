@@ -14,7 +14,7 @@
     "function-timeout"     : 30,
     "function-handler"     : "bootstrap",
     "msbuild-parameters"   : "--self-contained true",
-    "framework"            : "net7.0",
+    "framework"            : "net8.0",
     "function-name"        : "docProcessingstgInitializeProcessing",
     "function-description" : "",
     "package-type"         : "Zip",
