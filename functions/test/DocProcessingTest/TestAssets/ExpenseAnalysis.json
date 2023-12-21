@@ -15680,7 +15680,7 @@
                         {
                             "Id": "b1c3723b-bf53-4d02-8a23-358c63f0a6ae",
                             "Types": [
-                                "RECEIVER_SHIP_TO"
+                                "RECEIVER_SHIP_TO_2"
                             ]
                         }
                     ],
@@ -15755,7 +15755,7 @@
                         {
                             "Id": "b1c3723b-bf53-4d02-8a23-358c63f0a6ae",
                             "Types": [
-                                "RECEIVER_SHIP_TO"
+                                "RECEIVER_SHIP_TO_2"
                             ]
                         }
                     ],
@@ -15800,7 +15800,7 @@
                         {
                             "Id": "b1c3723b-bf53-4d02-8a23-358c63f0a6ae",
                             "Types": [
-                                "RECEIVER_SHIP_TO"
+                                "RECEIVER_SHIP_TO_2"
                             ]
                         }
                     ],
@@ -15845,7 +15845,7 @@
                         {
                             "Id": "b1c3723b-bf53-4d02-8a23-358c63f0a6ae",
                             "Types": [
-                                "RECEIVER_SHIP_TO"
+                                "RECEIVER_SHIP_TO_2"
                             ]
                         }
                     ],
@@ -15890,7 +15890,7 @@
                         {
                             "Id": "b1c3723b-bf53-4d02-8a23-358c63f0a6ae",
                             "Types": [
-                                "RECEIVER_SHIP_TO"
+                                "RECEIVER_SHIP_TO_2"
                             ]
                         }
                     ],
@@ -15935,7 +15935,7 @@
                         {
                             "Id": "b1c3723b-bf53-4d02-8a23-358c63f0a6ae",
                             "Types": [
-                                "RECEIVER_SHIP_TO"
+                                "RECEIVER_SHIP_TO_2"
                             ]
                         }
                     ],
@@ -15980,7 +15980,7 @@
                         {
                             "Id": "b1c3723b-bf53-4d02-8a23-358c63f0a6ae",
                             "Types": [
-                                "RECEIVER_SHIP_TO"
+                                "RECEIVER_SHIP_TO_2"
                             ]
                         }
                     ],
@@ -16025,7 +16025,7 @@
                         {
                             "Id": "95d257f3-3d27-42d1-924f-82d50564af1e",
                             "Types": [
-                                "VENDOR"
+                                "VENDOR_2"
                             ]
                         }
                     ],
@@ -16070,7 +16070,7 @@
                         {
                             "Id": "95d257f3-3d27-42d1-924f-82d50564af1e",
                             "Types": [
-                                "VENDOR"
+                                "VENDOR_2"
                             ]
                         }
                     ],
@@ -16115,7 +16115,7 @@
                         {
                             "Id": "95d257f3-3d27-42d1-924f-82d50564af1e",
                             "Types": [
-                                "VENDOR"
+                                "VENDOR_2"
                             ]
                         }
                     ],
@@ -16160,7 +16160,7 @@
                         {
                             "Id": "95d257f3-3d27-42d1-924f-82d50564af1e",
                             "Types": [
-                                "VENDOR"
+                                "VENDOR_2"
                             ]
                         }
                     ],
@@ -16205,7 +16205,7 @@
                         {
                             "Id": "95d257f3-3d27-42d1-924f-82d50564af1e",
                             "Types": [
-                                "VENDOR"
+                                "VENDOR_2"
                             ]
                         }
                     ],
@@ -16250,7 +16250,7 @@
                         {
                             "Id": "95d257f3-3d27-42d1-924f-82d50564af1e",
                             "Types": [
-                                "VENDOR"
+                                "VENDOR_2"
                             ]
                         }
                     ],
