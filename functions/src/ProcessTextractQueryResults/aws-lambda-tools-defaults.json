@@ -1,0 +1,28 @@
+
+{
+    "Information" : [
+        "This file provides default values for the deployment wizard inside Visual Studio and the AWS Lambda commands added to the .NET Core CLI.",
+        "To learn more about the Lambda commands with the .NET Core CLI execute the following command at the command line in the project root directory.",
+        "dotnet lambda help",
+        "All the command line options for the Lambda command can be specified in this file."
+    ],
+    "profile"     : "default",
+    "region"      : "us-east-2",
+    "configuration" : "Release",
+    "function-runtime" : "provided.al2",
+    "function-memory-size" : 512,
+    "function-timeout"     : 30,
+    "function-handler"     : "bootstrap",
+    "msbuild-parameters"   : "--self-contained true",
+    "framework"            : "net7.0",
+    "function-name"        : "docProcessingstgProcessTextractResults",
+    "function-description" : "",
+    "package-type"         : "Zip",
+    "function-role"        : "arn:aws:iam::425173371283:role/docprocessing-stg-ProcessTextractResultsServiceRol-F75BQET8V07K",
+    "function-architecture" : "x86_64",
+    "function-subnets"      : "",
+    "function-security-groups" : "",
+    "tracing-mode"             : "Active",
+    "environment-variables"    : "\"ENVIRONMENT_NAME\"=\"stg\";\"POWERTOOLS_LOGGER_LOG_EVENT\"=\"true\";\"POWERTOOLS_SERVICE_NAME\"=\"docprocessing-stg\";\"POWERTOOLS_TRACER_CAPTURE_ERROR\"=\"true\";\"POWERTOOLS_LOG_LEVEL\"=\"Debug\";\"POWERTOOLS_METRICS_NAMESPACE\"=\"SubmitToTextract-stg\";\"POWERTOOLS_LOGGER_CASE\"=\"SnakeCase\";\"POWERTOOLS_TRACER_CAPTURE_RESPONSE\"=\"true\";\"POWERTOOLS_TRACE_DISABLED\"=\"false\";\"POWERTOOLS_LOGGER_SAMPLE_RATE\"=\"0\"",
+    "image-tag"                : ""
+}
