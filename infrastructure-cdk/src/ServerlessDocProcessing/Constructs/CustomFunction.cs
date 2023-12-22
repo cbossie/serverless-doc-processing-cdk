@@ -22,7 +22,7 @@ public class CustomFunction : Function
         }
 
         // Allow metrics to be added
-        AddToRolePolicy(new Amazon.CDK.AWS.IAM.PolicyStatement(new PolicyStatementProps
+        AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
         {
             Actions = new[] { "cloudwatch:PutMetricData" },
             Effect = Effect.ALLOW,

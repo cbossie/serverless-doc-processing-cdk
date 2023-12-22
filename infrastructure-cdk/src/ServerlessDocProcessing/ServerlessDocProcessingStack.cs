@@ -17,7 +17,8 @@ public class ServerlessDocProcessingStack : Stack
 {
     public string EnvironmentName { get; set; }
 
-    internal ServerlessDocProcessingStack(Construct scope, string id, ServerlessDocProcessingStackProps props = null) : base(scope, id, props)
+    internal ServerlessDocProcessingStack(Construct scope, string id, ServerlessDocProcessingStackProps props = null) 
+        : base(scope, id, props)
     {
         // Set up the function properties
         EnvironmentName = props.EnvironmentName;
@@ -33,6 +34,7 @@ public class ServerlessDocProcessingStack : Stack
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_TRACER_CAPTURE_ERROR", $"true");
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract-{EnvironmentName}");
         CustomFunctionProps.AddGlobalEnvironment("ENVIRONMENT_NAME", EnvironmentName);
+        CustomFunctionProps.AddGlobalEnvironment("ANNOTATIONS_HANDLER", "FunctionHandler");
 
         // Tables
         Table configTable = new(this, "queryData", new TableProps
@@ -58,13 +60,15 @@ public class ServerlessDocProcessingStack : Stack
             BucketName = GetBucketName("input"),
             EventBridgeEnabled = true,
             RemovalPolicy = RemovalPolicy.DESTROY,
+            AutoDeleteObjects = true
         });
 
         Bucket textractBucket = new(this, "textractBucket", new BucketProps
         {
             Encryption = BucketEncryption.S3_MANAGED,
             BucketName = GetBucketName("textract"),
-            RemovalPolicy = RemovalPolicy.DESTROY
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            AutoDeleteObjects = true
         });
 
         // Messaging (SQS / SNS / Event Bridge)
@@ -173,9 +177,9 @@ public class ServerlessDocProcessingStack : Stack
         submitToTextractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
 
         // Function that process the textract data and outputs results to DynamoDB
-        var processTextractResultFunction = new CustomFunction(this, "ProcessTextractResults", new CustomFunctionProps
+        var processTextractResultFunction = new CustomFunction(this, "ProcessTextractQueryResults", new CustomFunctionProps
         {
-            FunctionNameBase = "ProcessTextractResults"
+            FunctionNameBase = "ProcessTextractQueryResults"
         });
 
         // All the function ro read from the S3 bucket.

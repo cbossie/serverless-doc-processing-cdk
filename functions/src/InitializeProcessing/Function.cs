@@ -16,20 +16,25 @@ namespace InitializeProcessing
 {
     public class Function
     {
-        public Function()
+        public Function(IAmazonS3 s3Client, IDataService dataSvc)
         {
             AWSSDKHandler.RegisterXRayForAllServices();
+            _s3Client = s3Client;
+            _dataSvc = dataSvc;
         }
+
+        private IAmazonS3 _s3Client;
+        private IDataService _dataSvc;
 
         [LambdaFunction()]
         [Tracing]
         [Metrics(CaptureColdStart = true)]
         [Logging(LogEvent = true, ClearState = true)]
-        public async Task<IdMessage> FunctionHandler([FromServices] IAmazonS3 s3Client, [FromServices] IDataService dataSvc, S3ObjectCreateEvent input, ILambdaContext context)
+        public async Task<IdMessage> FunctionHandler(S3ObjectCreateEvent input, ILambdaContext context)
         {
 
             //Initialize the Payload
-            ProcessData pl = new(dataSvc.GenerateId())
+            ProcessData pl = new(_dataSvc.GenerateId())
             {
                 // Get the S3 item to query
                 InputDocKey = input.Detail.Object.Key,
@@ -38,7 +43,7 @@ namespace InitializeProcessing
             pl.FileExtension = Path.GetExtension(pl.InputDocKey);
 
             // Retreive the Tags for the S3 object
-            var data = await s3Client.GetObjectTaggingAsync(new Amazon.S3.Model.GetObjectTaggingRequest
+            var data = await _s3Client.GetObjectTaggingAsync(new Amazon.S3.Model.GetObjectTaggingRequest
             {
                 BucketName = input.Detail.Bucket.Name,
                 Key = input.Detail.Object.Key
@@ -46,7 +51,7 @@ namespace InitializeProcessing
 
             // If there is a tag for queries get them
             var queryTagValue = data.Tagging.GetTagValueList(ConstantValues.QUERY_TAG);
-            var queries = await dataSvc.GetQueries(queryTagValue).ConfigureAwait(false);
+            var queries = await _dataSvc.GetQueries(queryTagValue).ConfigureAwait(false);
 
             pl.Queries.AddRange(queries.Select(q => new DocumentQuery
             {
@@ -61,7 +66,7 @@ namespace InitializeProcessing
 
 
             //Save the payload
-            await dataSvc.SaveData(pl).ConfigureAwait(false);
+            await _dataSvc.SaveData(pl).ConfigureAwait(false);
 
             return IdMessage.Create(pl.Id);
         }

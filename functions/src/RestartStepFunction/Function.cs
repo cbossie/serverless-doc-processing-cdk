@@ -24,8 +24,13 @@ namespace RestartStepFunction
 
     public class Function
     {
-        public Function()
+        private IAmazonStepFunctions _stepFunctionClient;
+        private IDataService _dataService;
+
+        public Function(IAmazonStepFunctions stepFunctionClient, IDataService dataService)
         {
+            _stepFunctionClient = stepFunctionClient;
+            _dataService = dataService;
             AWSSDKHandler.RegisterXRayForAllServices();
         }
 
@@ -33,7 +38,7 @@ namespace RestartStepFunction
         [Metrics(CaptureColdStart = true)]
         [Logging(ClearState = true, LogEvent = true)]
         [LambdaFunction]
-        public async Task FunctionHandler(SNSEvent input, ILambdaContext context, [FromServices] IAmazonStepFunctions stepFunctionCli, [FromServices] IDataService dataSvc)
+        public async Task FunctionHandler(SNSEvent input, ILambdaContext context)
         {
             var record = input.Records.FirstOrDefault();
 
@@ -50,7 +55,7 @@ namespace RestartStepFunction
             Logger.LogInformation(message);
 
             // Get the Task Token
-            var processData = await dataSvc.GetData<ProcessData>(message.JobTag).ConfigureAwait(false);
+            var processData = await _dataService.GetData<ProcessData>(message.JobTag).ConfigureAwait(false);
 
             if (processData.TextractTaskToken is null)
             {
@@ -67,7 +72,7 @@ namespace RestartStepFunction
             if (message.IsSuccess)
             {
                 Logger.LogInformation("Success!");
-                response = await stepFunctionCli.SendTaskSuccessAsync(new()
+                response = await _stepFunctionClient.SendTaskSuccessAsync(new()
                 {
                     TaskToken = processData.TextractTaskToken,
                     Output = JsonSerializer.Serialize(responseMessage)
@@ -76,7 +81,7 @@ namespace RestartStepFunction
             else
             {
                 Logger.LogInformation("Failure!");
-                response = await stepFunctionCli.SendTaskFailureAsync(new()
+                response = await _stepFunctionClient.SendTaskFailureAsync(new()
                 {
                     TaskToken = processData.TextractTaskToken,
                     Error = $"{message.API} {message.Status}",
@@ -96,7 +101,7 @@ namespace RestartStepFunction
                 Logger.LogError(response);
             }
 
-            await dataSvc.SaveData(processData).ConfigureAwait(false);
+            await _dataService.SaveData(processData).ConfigureAwait(false);
         }
     }
 }

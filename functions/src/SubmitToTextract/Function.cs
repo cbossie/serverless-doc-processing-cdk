@@ -18,9 +18,14 @@ using Microsoft.Extensions.DependencyInjection;
 namespace SubmitToTextract
 {
     public class Function
-    {        
-        public Function()
+    {
+        private IAmazonTextract _textractClient;
+        private IDataService _dataService;
+
+        public Function(IAmazonTextract textractClient, IDataService dataService)
         {
+            _textractClient = textractClient;
+            _dataService = dataService;
             AWSSDKHandler.RegisterXRayForAllServices();
         }
 
@@ -28,9 +33,9 @@ namespace SubmitToTextract
         [Metrics(CaptureColdStart = true)]
         [Logging(ClearState = true, LogEvent = true)]
         [LambdaFunction]
-        public async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context, [FromServices]IAmazonTextract textractCli, IDataService dataSvc)
+        public async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
         {
-            var data = await dataSvc.GetData<ProcessData>(input.Id).ConfigureAwait(false);
+            var data = await _dataService.GetData<ProcessData>(input.Id).ConfigureAwait(false);
 
             var textractRequest = new Amazon.Textract.Model.StartDocumentAnalysisRequest
             {
@@ -66,14 +71,14 @@ namespace SubmitToTextract
                 }
             };
 
-            var textractResult = await textractCli.StartDocumentAnalysisAsync(textractRequest).ConfigureAwait(false);
+            var textractResult = await _textractClient.StartDocumentAnalysisAsync(textractRequest).ConfigureAwait(false);
 
             data.TextractJobId = textractResult.JobId;
             data.TextractTaskToken = input.TaskToken;
             data.OutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
             data.OutputBucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY);
 
-            await dataSvc.SaveData(data).ConfigureAwait(false);
+            await _dataService.SaveData(data).ConfigureAwait(false);
 
             return IdMessage.Create(data.Id);
         }

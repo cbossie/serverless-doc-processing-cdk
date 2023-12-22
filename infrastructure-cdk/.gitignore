@@ -346,3 +346,4 @@ cdk.context.json
 cdk.out/
 functions/
 .sarif/
+serverless.template

@@ -5,8 +5,6 @@ using Amazon.S3;
 using Amazon.StepFunctions;
 using Amazon.Textract;
 
-namespace DocProcessing.Shared;
-
 [LambdaStartup]
 public partial class Startup : StartupBase
 {

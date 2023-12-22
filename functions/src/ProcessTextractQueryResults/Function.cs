@@ -20,22 +20,25 @@ namespace ProcessTextractQueryResults
 {
     public class Function
     {
-
-        public Function()
+        private ITextractService _textractService;
+        private IDataService _dataService;
+        public Function(ITextractService textractService, IDataService dataService)
         {
             AWSSDKHandler.RegisterXRayForAllServices();
+            _textractService = textractService;
+            _dataService = dataService;
         }
 
         [Tracing]
         [Metrics(CaptureColdStart = true)]
         [Logging(LogEvent = true)]
         [LambdaFunction]
-        public async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context, [FromServices] ITextractService textractSvc, [FromServices] IDataService dataSvc)
+        public async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
         {
-            var processData = await dataSvc.GetData<ProcessData>(input.Id).ConfigureAwait(false);
+            var processData = await _dataService.GetData<ProcessData>(input.Id).ConfigureAwait(false);
 
             // Get the step functions Result
-            var textractModel = await textractSvc.GetBlocksForAnalysis(processData.OutputBucket, processData.OutputKey).ConfigureAwait(false);
+            var textractModel = await _textractService.GetBlocksForAnalysis(processData.OutputBucket, processData.OutputKey).ConfigureAwait(false);
 
             // Get the query Results
             foreach (var query in processData.Queries)
@@ -54,7 +57,7 @@ namespace ProcessTextractQueryResults
             }
 
             // Save the query results back to the databast
-            await dataSvc.SaveData(processData).ConfigureAwait(false);
+            await _dataService.SaveData(processData).ConfigureAwait(false);
 
             Logger.LogInformation($"Blocks Found = {textractModel.BlockCount}");
 
