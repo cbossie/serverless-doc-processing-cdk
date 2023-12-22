@@ -7,7 +7,7 @@ public interface IDataService
     Task<IEnumerable<DocumentQuery>> GetAllQueries();
     Task<IEnumerable<DocumentQuery>> GetQueries(IEnumerable<string> queryKeys);
 
-    string GenerateId(string? id = null);
+    string GenerateId(string id = null);
 
     Task<T> GetData<T>(string id);
 

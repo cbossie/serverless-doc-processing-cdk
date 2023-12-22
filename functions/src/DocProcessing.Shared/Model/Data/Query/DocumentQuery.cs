@@ -8,11 +8,11 @@ public class DocumentQuery
 {
     [JsonPropertyName("query")]
     [DynamoDBHashKey("query")]
-    public string? QueryId { get; set; }
+    public string QueryId { get; set; }
 
     [DynamoDBProperty("queryText")]
     [JsonPropertyName("queryText")]
-    public virtual string? QueryText { get; set; }
+    public virtual string QueryText { get; set; }
 
     [DynamoDBProperty("result")]
     [JsonPropertyName("result")]

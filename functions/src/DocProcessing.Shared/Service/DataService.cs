@@ -34,7 +34,7 @@ namespace DocProcessing.Shared.Service
 
         }
 
-        public string GenerateId(string? id = null)
+        public string GenerateId(string id = null)
         {
             return id ?? Guid.NewGuid().ToString("N");
         }

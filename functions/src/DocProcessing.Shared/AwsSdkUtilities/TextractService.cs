@@ -53,7 +53,7 @@ public class TextractService : ITextractService
         return new ExpenseDataModel(expenseDocs);
     }
 
-    private async IAsyncEnumerable<TObjectType?> GetS3Objects<TObjectType>(string bucket, string key) 
+    private async IAsyncEnumerable<TObjectType> GetS3Objects<TObjectType>(string bucket, string key) 
     {
         var response = await S3Client.ListObjectsV2Async(new()
         {

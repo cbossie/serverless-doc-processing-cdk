@@ -177,13 +177,20 @@ public class ServerlessDocProcessingStack : Stack
         submitToTextractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
 
         // Function that process the textract data and outputs results to DynamoDB
-        var processTextractResultFunction = new CustomFunction(this, "ProcessTextractQueryResults", new CustomFunctionProps
+        var processTextractQueryResultFunction = new CustomFunction(this, "ProcessTextractQueryResults", new CustomFunctionProps
         {
             FunctionNameBase = "ProcessTextractQueryResults"
         });
 
+        // Function that process the textract Expense data and outputs results to DynamoDB
+        var processTextractExpenseResultFunction = new CustomFunction(this, "ProcessTextractExpenseResults", new CustomFunctionProps
+        {
+            FunctionNameBase = "ProcessTextractExpenseResults"
+        });
+
+
         // All the function ro read from the S3 bucket.
-        textractBucket.GrantRead(processTextractResultFunction);
+        textractBucket.GrantRead(processTextractQueryResultFunction);
 
         // Function that restarts the step function following the aynchronous completion of Textract
         var restartStepFunction = new CustomFunction(this, "RestartStepFunction", new CustomFunctionProps
@@ -217,7 +224,7 @@ public class ServerlessDocProcessingStack : Stack
             },
             InitializeFunction = initializeFunction,
             SubmitToTextractFunction = submitToTextractFunction,
-            ProcessTextractResultFunction = processTextractResultFunction,
+            ProcessTextractResultFunction = processTextractQueryResultFunction,
             SendFailureQueue = failureQueue,
             SendSuccessQueue = successQueue
         });
@@ -261,7 +268,7 @@ public class ServerlessDocProcessingStack : Stack
         dataTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(submitToTextractFunction);
         dataTable.GrantDocumentObjectModelPermissions(restartStepFunction);
-        dataTable.GrantDocumentObjectModelPermissions(processTextractResultFunction);
+        dataTable.GrantDocumentObjectModelPermissions(processTextractQueryResultFunction);
 
         // Outputs
         _ = new CfnOutput(this, "inputBucketOutput", new CfnOutputProps

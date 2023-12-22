@@ -11,12 +11,12 @@ public class IdMessage
     public bool Success { get; set; }
 
     [JsonPropertyName("message")]
-    public string? Message { get; set; }
+    public string Message { get; set; }
 
     [JsonPropertyName("taskToken")]
-    public string? TaskToken { get; set; }
+    public string TaskToken { get; set; }
 
-    public static IdMessage Create(string id, bool success = true, string? message = null) =>
+    public static IdMessage Create(string id, bool success = true, string message = null) =>
         new()
         {
             Id = id,

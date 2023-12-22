@@ -31,7 +31,7 @@ public class TestTextractQuery
     [TestMethod("Test Block Count")]
     public void TestBlockCount()
     {
-        Assert.IsTrue(TextractResult.GetBlockCount() == 1000);
+        Assert.IsTrue(TextractResult?.GetBlockCount() == 1000);
 
     }
 

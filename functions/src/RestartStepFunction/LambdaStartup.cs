@@ -6,7 +6,7 @@ using Amazon.StepFunctions;
 using Amazon.Textract;
 
 [LambdaStartup]
-public partial class Startup : StartupBase
+public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
