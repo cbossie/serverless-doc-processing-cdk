@@ -9,10 +9,10 @@ public class Block : DocProcessing.Shared.Model.Textract.Block
 
 
     [JsonPropertyName("ColumnIndex")]
-    public int ColumnIndex { get; set; }
+    public int? ColumnIndex { get; set; }
 
     [JsonPropertyName("ColumnSpan")]
-    public int ColumnSpan { get; set; }
+    public int? ColumnSpan { get; set; }
 
     [JsonPropertyName("EntityTypes")]
     public List<string> EntityTypes { get; set; } = new();
@@ -21,7 +21,7 @@ public class Block : DocProcessing.Shared.Model.Textract.Block
     public string Hint { get; set; }
 
     [JsonPropertyName("Page")]
-    public int Page { get; set; }
+    public int? Page { get; set; }
 
     [JsonPropertyName("PageClassification")]
     public PageClassification PageClassification { get; set; }
@@ -30,10 +30,10 @@ public class Block : DocProcessing.Shared.Model.Textract.Block
     public Query Query { get; set; } = new();
 
     [JsonPropertyName("RowIndex")]
-    public int RowIndex { get; set; }
+    public int? RowIndex { get; set; }
 
     [JsonPropertyName("RowSpan")]
-    public int RowSpan { get; set; }
+    public int? RowSpan { get; set; }
 
     [JsonPropertyName("SelectionStatus")]
     public string SelectionStatus { get; set; }

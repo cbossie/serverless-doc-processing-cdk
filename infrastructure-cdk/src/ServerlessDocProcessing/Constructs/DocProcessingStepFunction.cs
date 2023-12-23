@@ -1,4 +1,5 @@
-﻿using Amazon.CDK.AWS.StepFunctions;
+﻿using Amazon.CDK.AWS.IAM;
+using Amazon.CDK.AWS.StepFunctions;
 using Amazon.CDK.AWS.StepFunctions.Tasks;
 using System.Collections.Generic;
 
@@ -8,6 +9,7 @@ namespace ServerlessDocProcessing.Constructs
     {
         public StateMachine StateMachine { get; init; }
 
+        public IRole Role => StateMachine?.Role;
         
         public DocProcessingStepFunction(Construct scope, string id, DocProcessingStepFunctionProps props) 
             : base(scope, id)
@@ -76,10 +78,9 @@ namespace ServerlessDocProcessing.Constructs
                 ResultPath = "$.error"
             });
 
-            StateMachine = new StateMachine (this, $"{id}StateMachine", new StateMachineProps
-            { 
-                DefinitionBody = DefinitionBody.FromChainable(initializeState),
-            });
+            // Update the step function body and use the passed in props
+            props.DefinitionBody = DefinitionBody.FromChainable(initializeState);
+            StateMachine = new StateMachine (this, $"{id}StateMachine", props);
          }
     }
 }

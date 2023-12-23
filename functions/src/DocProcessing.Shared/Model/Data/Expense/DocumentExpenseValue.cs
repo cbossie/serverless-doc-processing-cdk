@@ -16,6 +16,6 @@ public class DocumentExpenseValue
 
     [DynamoDBProperty("Confidence")]
     [JsonPropertyName("Confidence")]
-    public double Confidence { get; set; }
+    public double? Confidence { get; set; }
 
 }

@@ -182,15 +182,17 @@ public class ServerlessDocProcessingStack : Stack
             FunctionNameBase = "ProcessTextractQueryResults"
         });
 
+        // The query processing function needs to be able to read from the S3 bucket.
+        textractBucket.GrantRead(processTextractQueryResultFunction);
+
         // Function that process the textract Expense data and outputs results to DynamoDB
         var processTextractExpenseResultFunction = new CustomFunction(this, "ProcessTextractExpenseResults", new CustomFunctionProps
         {
             FunctionNameBase = "ProcessTextractExpenseResults"
         });
 
-
-        // All the function ro read from the S3 bucket.
-        textractBucket.GrantRead(processTextractQueryResultFunction);
+        // The query processing function needs to be able to read from the S3 bucket.
+        textractBucket.GrantRead(processTextractExpenseResultFunction);
 
         // Function that restarts the step function following the aynchronous completion of Textract
         var restartStepFunction = new CustomFunction(this, "RestartStepFunction", new CustomFunctionProps
@@ -216,6 +218,7 @@ public class ServerlessDocProcessingStack : Stack
         DocProcessingStepFunction docProcessingStepFunction = new(this, "docProcessing", new DocProcessingStepFunctionProps
         {
             TracingEnabled = true,
+            StateMachineType = StateMachineType.STANDARD,
             Logs = new LogOptions
             {
                 Destination = stepFunctionLogGroup,
@@ -228,7 +231,7 @@ public class ServerlessDocProcessingStack : Stack
             SendFailureQueue = failureQueue,
             SendSuccessQueue = successQueue
         });
-
+        
         // EventBridge Rule that reacts to S3
         Rule rule = new(this, "inputBucketRule", new RuleProps
         {

@@ -47,7 +47,7 @@ namespace SubmitToTextract
                     SNSTopicArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_TOPIC_KEY),
                     RoleArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_ROLE_KEY),
                 },
-                DocumentLocation = new Amazon.Textract.Model.DocumentLocation
+                DocumentLocation = new DocumentLocation
                 {
                     S3Object = new Amazon.Textract.Model.S3Object
                     {

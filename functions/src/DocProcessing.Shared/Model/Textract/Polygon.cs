@@ -10,8 +10,8 @@ namespace DocProcessing.Shared.Model.Textract;
 public class Polygon
 {
     [JsonPropertyName("X")]
-    public double X { get; set; }
+    public double? X { get; set; }
 
     [JsonPropertyName("Y")]
-    public double Y { get; set; }
+    public double? Y { get; set; }
 }
