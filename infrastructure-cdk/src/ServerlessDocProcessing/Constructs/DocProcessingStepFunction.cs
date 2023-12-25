@@ -29,17 +29,17 @@ namespace ServerlessDocProcessing.Constructs
                 IntegrationPattern = IntegrationPattern.WAIT_FOR_TASK_TOKEN,
                 TaskTimeout = Timeout.Duration(Duration.Seconds(StepFunctionDefaults.TEXTRACT_STEP_TIME_OUT)),
                 LambdaFunction = props.SubmitToTextractFunction,
-                Comment = "Function to send document to textract asynchronously",
+                Comment = "Function to send document to textract asynchronously for query analysis",
                 Payload = TaskInput.FromObject(new Dictionary<string, object> {
                 { "id", JsonPath.StringAt("$.id") },
                 { "taskToken", JsonPath.TaskToken}
                 })
             });
  
-            LambdaInvoke processTextractResultsState = new(this, "processTextractResults", new LambdaInvokeProps
+            LambdaInvoke processTextractResultsState = new(this, "processTextractQueryResults", new LambdaInvokeProps
             {
-                LambdaFunction = props.ProcessTextractResultFunction,
-                Comment = "Function to process textract results asynchronously",
+                LambdaFunction = props.ProcessTextractQueryFunction,
+                Comment = "Function to process textract query results asynchronously",
                 OutputPath = "$.Payload",
             });
 

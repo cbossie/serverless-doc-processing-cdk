@@ -17,7 +17,7 @@ public class ServerlessDocProcessingStack : Stack
 {
     public string EnvironmentName { get; set; }
 
-    internal ServerlessDocProcessingStack(Construct scope, string id, ServerlessDocProcessingStackProps props = null) 
+    internal ServerlessDocProcessingStack(Construct scope, string id, ServerlessDocProcessingStackProps props = null)
         : base(scope, id, props)
     {
         // Set up the function properties
@@ -139,18 +139,21 @@ public class ServerlessDocProcessingStack : Stack
         // Allow the functoin read from the input bucket
         inputBucket.GrantReadWrite(initializeFunction);
 
-        // Function that submits the document to the textract service
-        var submitToTextractFunction = new CustomFunction(this, "SubmitToTextract", new CustomFunctionProps
-        {
-            FunctionNameBase = "SubmitToTextract"
-        })
-            .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
-            .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
-            .AddEnvironment(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_OUTPUT_KEY)
-            .AddEnvironment(ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
 
-        // Allows the function to retrieve the document from S3
-        submitToTextractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
+
+        // Policy that allows a function full access to the textract bucket ARN (Needed for enabling textract to write out results to S3
+        PolicyStatement allowTextractBucketStatement = new(new PolicyStatementProps
+        {
+            Actions = new[] { "s3:Put*", "s3:Get*" },
+            Resources = new[]
+            {
+                textractBucket.BucketArn,
+                textractBucket.ArnForObjects("*")
+            },
+            Effect = Effect.ALLOW
+        });
+
+        PolicyStatement allowInputBucketStatement = new(new PolicyStatementProps
         {
             Actions = new[] { "s3:Get*" },
             Resources = new[]
@@ -159,22 +162,51 @@ public class ServerlessDocProcessingStack : Stack
                 inputBucket.ArnForObjects("*")
             },
             Effect = Effect.ALLOW
-        }));
+        });
+
+
+        // Function that submits the document to the textract service
+        var submitToTextractFunction = new CustomFunction(this, "SubmitToTextract", new CustomFunctionProps
+        {
+            FunctionNameBase = "SubmitToTextract",
+            FunctionCodeDirectory = "SubmitToTextract"
+        })
+            .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
+            .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
+            .AddEnvironment(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_OUTPUT_KEY)
+            .AddEnvironment(ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn)
+            .AddEnvironment("ANNOTATIONS_HANDLER", "SubmitToTextractForStandardAnalysis");
+
+        // Allows the function to retrieve the document from S3
+        submitToTextractFunction.AddToRolePolicy(allowInputBucketStatement);
 
         // Allows textract to write out the data to S3
-        submitToTextractFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
-        {
-            Actions = new[] { "s3:Put*", "s3:Get*" },
-            Resources = new[]
-    {
-                textractBucket.BucketArn,
-                textractBucket.ArnForObjects("*")
-            },
-            Effect = Effect.ALLOW
-        }));
+        submitToTextractFunction.AddToRolePolicy(allowTextractBucketStatement);
 
         // Allow function to call Textract
         submitToTextractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
+
+        // Function that submits the document to the textract service for Expense Analysis
+        var submitToTextractExpenseFunction = new CustomFunction(this, "SubmitToTextractExpense", new CustomFunctionProps
+        {
+            FunctionNameBase = "SubmitToTextract",
+            FunctionCodeDirectory = "SubmitToTextractExpense"
+        })
+            .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
+            .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
+            .AddEnvironment(ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY)
+            .AddEnvironment(ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn)
+            .AddEnvironment("ANNOTATIONS_HANDLER", "SubmitToTextractForExpenseAnalysis");
+
+        // Allows the function to retrieve the document from S3
+        submitToTextractExpenseFunction.AddToRolePolicy(allowInputBucketStatement);
+
+        // Allows textract to write out the data to S3
+        submitToTextractExpenseFunction.AddToRolePolicy(allowTextractBucketStatement);
+
+        // Allow function to call Textract
+        submitToTextractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
+
 
         // Function that process the textract data and outputs results to DynamoDB
         var processTextractQueryResultFunction = new CustomFunction(this, "ProcessTextractQueryResults", new CustomFunctionProps
@@ -227,11 +259,13 @@ public class ServerlessDocProcessingStack : Stack
             },
             InitializeFunction = initializeFunction,
             SubmitToTextractFunction = submitToTextractFunction,
-            ProcessTextractResultFunction = processTextractQueryResultFunction,
+            SubmitToTextractExpenseFunction = submitToTextractExpenseFunction,
+            ProcessTextractQueryFunction = processTextractQueryResultFunction,
+            ProcessTextractExpenseFunction = processTextractExpenseResultFunction,
             SendFailureQueue = failureQueue,
             SendSuccessQueue = successQueue
         });
-        
+
         // EventBridge Rule that reacts to S3
         Rule rule = new(this, "inputBucketRule", new RuleProps
         {
@@ -245,7 +279,7 @@ public class ServerlessDocProcessingStack : Stack
                 Detail = new Dictionary<string, object> {
                          {
                              "bucket", new Dictionary<string, object> { {"name", new [] {inputBucket.BucketName } }
-                         } 
+                         }
                     }
                 }
             }
@@ -270,6 +304,7 @@ public class ServerlessDocProcessingStack : Stack
         configTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(initializeFunction);
         dataTable.GrantDocumentObjectModelPermissions(submitToTextractFunction);
+        dataTable.GrantDocumentObjectModelPermissions(submitToTextractExpenseFunction);
         dataTable.GrantDocumentObjectModelPermissions(restartStepFunction);
         dataTable.GrantDocumentObjectModelPermissions(processTextractQueryResultFunction);
 

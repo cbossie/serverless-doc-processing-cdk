@@ -14,7 +14,9 @@ namespace ServerlessDocProcessing.Constructs
     {
         public Function InitializeFunction { get; init; }
         public Function SubmitToTextractFunction { get; init; }
-        public Function ProcessTextractResultFunction { get; init; }
+        public Function SubmitToTextractExpenseFunction { get; init; }
+        public Function ProcessTextractQueryFunction { get; init; }
+        public Function ProcessTextractExpenseFunction { get; set; }
         public Queue SendFailureQueue { get; init; }
         public Queue SendSuccessQueue { get; init; }
 

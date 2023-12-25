@@ -29,15 +29,15 @@ namespace SubmitToTextract
             AWSSDKHandler.RegisterXRayForAllServices();
         }
 
+
         [Tracing]
         [Metrics(CaptureColdStart = true)]
         [Logging(ClearState = true, LogEvent = true)]
         [LambdaFunction]
-        public async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
+        public async Task<IdMessage> SubmitToTextractForStandardAnalysis(IdMessage input, ILambdaContext context)
         {
             var data = await _dataService.GetData<ProcessData>(input.Id).ConfigureAwait(false);
-
-            var textractRequest = new Amazon.Textract.Model.StartDocumentAnalysisRequest
+            var textractRequest = new StartDocumentAnalysisRequest
             {
                 ClientRequestToken = input.Id,
                 JobTag = input.Id,
@@ -70,9 +70,7 @@ namespace SubmitToTextract
                     S3Prefix = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)
                 }
             };
-
             var textractResult = await _textractClient.StartDocumentAnalysisAsync(textractRequest).ConfigureAwait(false);
-
             data.TextractJobId = textractResult.JobId;
             data.TextractTaskToken = input.TaskToken;
             data.OutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
@@ -82,5 +80,48 @@ namespace SubmitToTextract
 
             return IdMessage.Create(data.Id);
         }
+
+        [Tracing]
+        [Metrics(CaptureColdStart = true)]
+        [Logging(ClearState = true, LogEvent = true)]
+        [LambdaFunction]
+        public async Task<IdMessage> SubmitToTextractForExpenseAnalysis(IdMessage input, ILambdaContext context)
+        {
+            var data = await _dataService.GetData<ProcessData>(input.Id).ConfigureAwait(false);
+
+            var textractRequest = new StartExpenseAnalysisRequest
+            {
+                ClientRequestToken = input.Id,
+                JobTag = input.Id,
+                NotificationChannel = new Amazon.Textract.Model.NotificationChannel
+                {
+                    SNSTopicArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_TOPIC_KEY),
+                    RoleArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_ROLE_KEY),
+                },
+                DocumentLocation = new DocumentLocation
+                {
+                    S3Object = new Amazon.Textract.Model.S3Object
+                    {
+                        Bucket = data.InputDocBucket,
+                        Name = data.InputDocKey
+                    }
+                },
+                OutputConfig = new OutputConfig
+                {
+                    S3Bucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY),
+                    S3Prefix = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY_KEY)
+                }
+            };
+            var textractResult = await _textractClient.StartExpenseAnalysisAsync(textractRequest).ConfigureAwait(false);
+            data.TextractJobId = textractResult.JobId;
+            data.TextractTaskToken = input.TaskToken;
+            data.OutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
+            data.OutputBucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY);
+
+            await _dataService.SaveData(data).ConfigureAwait(false);
+
+            return IdMessage.Create(data.Id);
+        }
+
     }
 }

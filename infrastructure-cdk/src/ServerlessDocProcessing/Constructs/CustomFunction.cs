@@ -28,7 +28,6 @@ public class CustomFunction : Function
             Effect = Effect.ALLOW,
             Resources = new[] { "*" }
         }));
-
     }
 
     public CustomFunction AddEnvironmentVariable(string key, string value)
