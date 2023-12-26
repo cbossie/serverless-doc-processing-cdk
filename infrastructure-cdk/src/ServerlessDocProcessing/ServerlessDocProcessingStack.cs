@@ -189,8 +189,8 @@ public class ServerlessDocProcessingStack : Stack
         // Function that submits the document to the textract service for Expense Analysis
         var submitToTextractExpenseFunction = new CustomFunction(this, "SubmitToTextractExpense", new CustomFunctionProps
         {
-            FunctionNameBase = "SubmitToTextract",
-            FunctionCodeDirectory = "SubmitToTextractExpense"
+            FunctionNameBase = "SubmitToTextractExpense",
+            FunctionCodeDirectory = "SubmitToTextract"
         })
             .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
             .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)

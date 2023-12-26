@@ -56,7 +56,10 @@ namespace ProcessTextractQueryResults
                 }
             }
 
-            // Save the query results back to the databast
+            // Save the query results back to the database, and clear the task token
+            processData.TextractJobId = null;
+            processData.TextractTaskToken = null;
+
             await _dataService.SaveData(processData).ConfigureAwait(false);
 
             Logger.LogInformation($"Blocks Found = {textractModel.BlockCount}");
