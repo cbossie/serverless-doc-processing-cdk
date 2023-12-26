@@ -64,9 +64,12 @@ namespace DocProcessing.Shared.Model.Data
         [JsonPropertyName("outputBucket")]
         public string OutputBucket { get; set; } = string.Empty;
 
-        [DynamoDBProperty("outputKey")]
-        [JsonPropertyName("outputKey")]
-        public string OutputKey { get; set; } = string.Empty;
+        [DynamoDBProperty("textractOutputKey")] 
+        [JsonPropertyName("textractOutputKey")]
+        public string TextractOutputKey { get; set; } = string.Empty;
 
+        [DynamoDBProperty("expenseOutputKey")]
+        [JsonPropertyName("expenseOutputKey")]
+        public string ExpenseOutputKey { get; set; } = string.Empty;
     }
 }

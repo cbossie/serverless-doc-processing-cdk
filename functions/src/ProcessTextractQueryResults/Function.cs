@@ -38,7 +38,7 @@ namespace ProcessTextractQueryResults
             var processData = await _dataService.GetData<ProcessData>(input.Id).ConfigureAwait(false);
 
             // Get the step functions Result
-            var textractModel = await _textractService.GetBlocksForAnalysis(processData.OutputBucket, processData.OutputKey).ConfigureAwait(false);
+            var textractModel = await _textractService.GetBlocksForAnalysis(processData.OutputBucket, processData.TextractOutputKey).ConfigureAwait(false);
 
             // Get the query Results
             foreach (var query in processData.Queries)
@@ -59,7 +59,6 @@ namespace ProcessTextractQueryResults
             // Save the query results back to the database, and clear the task token
             processData.TextractJobId = null;
             processData.TextractTaskToken = null;
-
             await _dataService.SaveData(processData).ConfigureAwait(false);
 
             Logger.LogInformation($"Blocks Found = {textractModel.BlockCount}");

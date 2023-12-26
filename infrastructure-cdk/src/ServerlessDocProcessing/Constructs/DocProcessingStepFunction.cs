@@ -56,9 +56,9 @@ namespace ServerlessDocProcessing.Constructs
                 })
             });
 
-            LambdaInvoke processTextractExpenseResultsState = new(this, "processTextractExpenseQueryResults", new LambdaInvokeProps
+            LambdaInvoke processTextractExpenseResultsState = new(this, "processTextractExpenseResults", new LambdaInvokeProps
             {
-                LambdaFunction = props.ProcessTextractQueryFunction,
+                LambdaFunction = props.ProcessTextractExpenseFunction,
                 Comment = "Function to process textract Expense results asynchronously",
                 OutputPath = "$.Payload",
             });

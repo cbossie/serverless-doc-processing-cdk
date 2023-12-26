@@ -14,7 +14,7 @@ public class CustomFunctionProps
 
     public static string EnvironmentName { get; set; }
 
-    public static string FunctionBaseDirectory { get; set; }
+    public static string FunctionBaseDirectory { get; set; }  
 
     // Per-Instance properties
 
@@ -27,6 +27,8 @@ public class CustomFunctionProps
     public string CodeBaseDirectory { get; set; }
     public string FunctionCodeDirectory { get; set; }    
 
+    public string Description { get; set; }
+
     public string FunctionName => $"docProcessing{FunctionNameBase}{EnvironmentName}";
 
     public FunctionProps FunctionProps => new FunctionProps
@@ -38,7 +40,8 @@ public class CustomFunctionProps
         Runtime = Runtime.PROVIDED_AL2,
         Timeout = Duration.Seconds(Timeout ?? GlobalTimeout),
         MemorySize = Memory ?? GlobalMemory,
-        Code = Code.FromAsset($"{FunctionBaseDirectory}/{FunctionCodeDirectory ?? FunctionNameBase}.zip")
+        Code = Code.FromAsset($"{FunctionBaseDirectory}/{FunctionCodeDirectory ?? FunctionNameBase}.zip"),
+        Description = Description, 
     };
 
     public static void AddGlobalEnvironment(string key, string  value) => GlobalEnvironment[key] = value;

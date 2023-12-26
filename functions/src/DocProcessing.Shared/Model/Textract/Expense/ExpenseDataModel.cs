@@ -41,6 +41,18 @@ public class ExpenseDataModel
         
         return _groupSummaryFields[expenseDocId];
     }
+    
+    // Get a tuple of Groups and Types for a Node
+    public IEnumerable<(string, string)> GetGroupTypes(int expenseDocId)
+    {
+        foreach(string g in GetGroupIds(expenseDocId))
+        {
+            foreach(string t in GetTypesForGroup(expenseDocId, g))
+            {
+                yield return (g, t);
+            }
+        };
+    }
 
     public IEnumerable<string> GetTypesForGroup(int expenseDocId, string groupId)
     {
@@ -56,6 +68,9 @@ public class ExpenseDataModel
             .ToHashSet();            
     }
    
+
+
+
     public IEnumerable<SummaryField> GetGroupSummaryFields(int expenseDocId, string groupId, string type)
     {
         if (!ExpenseDocuments.ContainsKey(expenseDocId) || !GetGroupIds(expenseDocId).Contains(groupId))

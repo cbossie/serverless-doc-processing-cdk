@@ -20,6 +20,7 @@ public class ServerlessDocProcessingStack : Stack
     internal ServerlessDocProcessingStack(Construct scope, string id, ServerlessDocProcessingStackProps props = null)
         : base(scope, id, props)
     {
+
         // Set up the function properties
         EnvironmentName = props.EnvironmentName;
         CustomFunctionProps.EnvironmentName = props.EnvironmentName;
@@ -135,13 +136,12 @@ public class ServerlessDocProcessingStack : Stack
         // Function to initialize the process. It will create the relevant data structures etc.
         var initializeFunction = new CustomFunction(this, "InitializeProcessing", new CustomFunctionProps
         {
-            FunctionNameBase = "InitializeProcessing"
+            FunctionNameBase = "InitializeProcessing",
+            Description = "Initializes the document processing"            
         });
 
         // Allow the functoin read from the input bucket
         inputBucket.GrantReadWrite(initializeFunction);
-
-
 
         // Policy that allows a function full actextcess to the textract bucket ARN (Needed for enabling textract to write out results to S3
         PolicyStatement allowTextractBucketStatement = new(new PolicyStatementProps
@@ -171,7 +171,8 @@ public class ServerlessDocProcessingStack : Stack
         var submitToTextractFunction = new CustomFunction(this, "SubmitToTextract", new CustomFunctionProps
         {
             FunctionNameBase = "SubmitToTextract",
-            FunctionCodeDirectory = "SubmitToTextract"
+            FunctionCodeDirectory = "SubmitToTextract",
+            Description = "Submits the document to Textract for analysis"
         })
             .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
             .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
@@ -192,7 +193,8 @@ public class ServerlessDocProcessingStack : Stack
         var submitToTextractExpenseFunction = new CustomFunction(this, "SubmitToTextractExpense", new CustomFunctionProps
         {
             FunctionNameBase = "SubmitToTextractExpense",
-            FunctionCodeDirectory = "SubmitToTextract"
+            FunctionCodeDirectory = "SubmitToTextract",
+            Description = "Submits the document to Textract for expense analysis"
         })
             .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
             .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
@@ -206,14 +208,15 @@ public class ServerlessDocProcessingStack : Stack
         // Allows textract to write out the data to S3
         submitToTextractExpenseFunction.AddToRolePolicy(allowTextractBucketStatement);
 
-        // Allow function to call Textract
+        // Allow functions to call Textract
         submitToTextractFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
-
+        submitToTextractExpenseFunction.Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonTextractFullAccess"));
 
         // Function that process the textract data and outputs results to DynamoDB
         var processTextractQueryResultFunction = new CustomFunction(this, "ProcessTextractQueryResults", new CustomFunctionProps
         {
-            FunctionNameBase = "ProcessTextractQueryResults"
+            FunctionNameBase = "ProcessTextractQueryResults",
+            Description = "Processes the general Textract results and extracts query information"
         });
 
         // The query processing function needs to be able to read from the S3 bucket.
@@ -222,7 +225,8 @@ public class ServerlessDocProcessingStack : Stack
         // Function that process the textract Expense data and outputs results to DynamoDB
         var processTextractExpenseResultFunction = new CustomFunction(this, "ProcessTextractExpenseResults", new CustomFunctionProps
         {
-            FunctionNameBase = "ProcessTextractExpenseResults"
+            FunctionNameBase = "ProcessTextractExpenseResults",
+            Description = "Processes textract expense results"
         });
 
         // The query processing function needs to be able to read from the S3 bucket.
@@ -308,6 +312,7 @@ public class ServerlessDocProcessingStack : Stack
         dataTable.GrantDocumentObjectModelPermissions(submitToTextractExpenseFunction);
         dataTable.GrantDocumentObjectModelPermissions(restartStepFunction);
         dataTable.GrantDocumentObjectModelPermissions(processTextractQueryResultFunction);
+        dataTable.GrantDocumentObjectModelPermissions(processTextractExpenseResultFunction);
 
         // Outputs
         _ = new CfnOutput(this, "inputBucketOutput", new CfnOutputProps

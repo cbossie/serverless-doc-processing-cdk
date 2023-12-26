@@ -15,8 +15,12 @@ public class DocumentExpenseGroup
     [DynamoDBProperty("group")]
     public string Group { get; set; }
 
-    [JsonPropertyName("values")]
-    [DynamoDBProperty("values")]
-    public List<DocumentExpenseSummary> GroupValues { get; set; } = new();
+    [JsonPropertyName("type")]
+    [DynamoDBProperty("type")]
+    public string Type { get; set; }
+
+    [JsonPropertyName("summaryItems")]
+    [DynamoDBProperty("summaryItems")]
+    public List<DocumentExpenseSummary> GroupSummaryItems { get; set; } = new();
 }
 

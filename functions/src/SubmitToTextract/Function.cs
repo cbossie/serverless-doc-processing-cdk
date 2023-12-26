@@ -41,7 +41,7 @@ namespace SubmitToTextract
             {
                 ClientRequestToken = input.Id,
                 JobTag = input.Id,
-                FeatureTypes = new List<string> { FeatureType.TABLES, FeatureType.QUERIES, FeatureType.FORMS },
+                FeatureTypes = new List<string> { FeatureType.TABLES, FeatureType.FORMS },
                 NotificationChannel = new Amazon.Textract.Model.NotificationChannel
                 {
                     SNSTopicArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_TOPIC_KEY),
@@ -73,6 +73,7 @@ namespace SubmitToTextract
                 : Enumerable.Empty<Query>()).ToList();
             if(queries.Any())
             {
+                textractRequest.FeatureTypes.Add(FeatureType.QUERIES);
                 textractRequest.QueriesConfig = new QueriesConfig
                 {
                     Queries = queries
@@ -87,7 +88,7 @@ namespace SubmitToTextract
             var textractResult = await _textractClient.StartDocumentAnalysisAsync(textractRequest).ConfigureAwait(false);
             data.TextractJobId = textractResult.JobId;
             data.TextractTaskToken = input.TaskToken;
-            data.OutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
+            data.TextractOutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
             data.OutputBucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY);
             await _dataService.SaveData(data).ConfigureAwait(false);
             return IdMessage.Create(data.Id);
@@ -127,7 +128,7 @@ namespace SubmitToTextract
             var textractResult = await _textractClient.StartExpenseAnalysisAsync(textractRequest).ConfigureAwait(false);
             data.TextractJobId = textractResult.JobId;
             data.TextractTaskToken = input.TaskToken;
-            data.OutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
+            data.ExpenseOutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
             data.OutputBucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY);
 
             await _dataService.SaveData(data).ConfigureAwait(false);
