@@ -34,6 +34,8 @@ public class ServerlessDocProcessingStack : Stack
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_TRACER_CAPTURE_ERROR", $"true");
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract-{EnvironmentName}");
         CustomFunctionProps.AddGlobalEnvironment("ENVIRONMENT_NAME", EnvironmentName);
+        
+        // By default, add the default function as "FunctionHandler". Override in individual functions as needed
         CustomFunctionProps.AddGlobalEnvironment("ANNOTATIONS_HANDLER", "FunctionHandler");
 
         // Tables
@@ -141,7 +143,7 @@ public class ServerlessDocProcessingStack : Stack
 
 
 
-        // Policy that allows a function full access to the textract bucket ARN (Needed for enabling textract to write out results to S3
+        // Policy that allows a function full actextcess to the textract bucket ARN (Needed for enabling textract to write out results to S3
         PolicyStatement allowTextractBucketStatement = new(new PolicyStatementProps
         {
             Actions = new[] { "s3:Put*", "s3:Get*" },
@@ -292,7 +294,6 @@ public class ServerlessDocProcessingStack : Stack
             RetryAttempts = 3,
             Role = eventRole,
         }));
-
 
         //Permssions required
         docProcessingStepFunction.StateMachine.GrantStartExecution(eventRole);

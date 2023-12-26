@@ -23,7 +23,7 @@ namespace ServerlessDocProcessing.Constructs
                 Payload = TaskInput.FromJsonPathAt("$"),
             });
 
-
+            // Standard Textract Analysis
             LambdaInvoke textractState = new(this, "textractState", new LambdaInvokeProps
             {
                 IntegrationPattern = IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -40,6 +40,26 @@ namespace ServerlessDocProcessing.Constructs
             {
                 LambdaFunction = props.ProcessTextractQueryFunction,
                 Comment = "Function to process textract query results asynchronously",
+                OutputPath = "$.Payload",
+            });
+
+            // Expense Textract Analysis
+            LambdaInvoke textractExpenseState = new(this, "textractExpenseState", new LambdaInvokeProps
+            {
+                IntegrationPattern = IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+                TaskTimeout = Timeout.Duration(Duration.Seconds(StepFunctionDefaults.TEXTRACT_STEP_TIME_OUT)),
+                LambdaFunction = props.SubmitToTextractExpenseFunction,
+                Comment = "Function to send document to textract asynchronously for expense analysis",
+                Payload = TaskInput.FromObject(new Dictionary<string, object> {
+                { "id", JsonPath.StringAt("$.id") },
+                { "taskToken", JsonPath.TaskToken}
+                })
+            });
+
+            LambdaInvoke processTextractExpenseResultsState = new(this, "processTextractExpenseQueryResults", new LambdaInvokeProps
+            {
+                LambdaFunction = props.ProcessTextractQueryFunction,
+                Comment = "Function to process textract Expense results asynchronously",
                 OutputPath = "$.Payload",
             });
 
@@ -71,8 +91,22 @@ namespace ServerlessDocProcessing.Constructs
                 ResultPath = "$.error"
             });
 
-            processTextractResultsState.Next(sendSuccessState);
+            processTextractResultsState.Next(textractExpenseState);
             processTextractResultsState.AddCatch(sendFailureState, new CatchProps
+            {
+                Errors = new[] { "States.ALL" },
+                ResultPath = "$.error"
+            });
+
+            textractExpenseState.Next(processTextractExpenseResultsState);
+            textractExpenseState.AddCatch(sendFailureState, new CatchProps
+            {
+                Errors = new[] { "States.ALL" },
+                ResultPath = "$.error"
+            });
+
+            processTextractExpenseResultsState.Next(sendSuccessState);
+            processTextractExpenseResultsState.AddCatch(sendFailureState, new CatchProps
             {
                 Errors = new[] { "States.ALL" },
                 ResultPath = "$.error"

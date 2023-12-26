@@ -55,29 +55,41 @@ namespace SubmitToTextract
                         Name = data.InputDocKey
                     }
                 },
-                QueriesConfig = new Amazon.Textract.Model.QueriesConfig
-                {
-                    Queries = data.Queries.Select(q => new Query
-                    {
-                        Alias = q.QueryId,
-                        Pages = new List<string> { "*" },
-                        Text = q.QueryText
-                    }).ToList(),
-                },
                 OutputConfig = new OutputConfig
                 {
                     S3Bucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY),
                     S3Prefix = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)
                 }
             };
+
+            // Add query config if there are some in the DB
+            List<Query> queries = (data.Queries != null 
+                ? data.Queries.Select(q => new Query
+                {
+                    Alias = q.QueryId,
+                    Pages = new List<string> { "*" },
+                    Text = q.QueryText
+                })
+                : Enumerable.Empty<Query>()).ToList();
+            if(queries.Any())
+            {
+                textractRequest.QueriesConfig = new QueriesConfig
+                {
+                    Queries = queries
+                };            
+            }
+            else
+            {
+                Logger.LogInformation("No queries found in the database");
+            }
+                     
+            // Submit to textract for analysis
             var textractResult = await _textractClient.StartDocumentAnalysisAsync(textractRequest).ConfigureAwait(false);
             data.TextractJobId = textractResult.JobId;
             data.TextractTaskToken = input.TaskToken;
             data.OutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
             data.OutputBucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY);
-
             await _dataService.SaveData(data).ConfigureAwait(false);
-
             return IdMessage.Create(data.Id);
         }
 
