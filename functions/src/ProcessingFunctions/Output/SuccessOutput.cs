@@ -10,8 +10,8 @@ public class SuccessOutput : StepFunctionOutputBase
     public override bool Success => true;
 
     [JsonPropertyName("expenseReports")]
-    public List<DocumentExpenseReport> ExpenseReports { get; set; } = new();
+    public List<DocumentExpenseReport> ExpenseReports { get; set; } = [];
 
     [JsonPropertyName("queries")]
-    public List<DocumentQuery> Queries { get; set; } = new();
+    public List<DocumentQuery> Queries { get; set; } = [];
 }

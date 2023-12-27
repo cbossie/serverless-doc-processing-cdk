@@ -2,10 +2,7 @@
 
 namespace InitializeProcessing
 {
-    public class InitializationException : ProcessingExceptionBase
+    public class InitializationException(string docKey, string message) : ProcessingExceptionBase(docKey, message)
     {
-        public InitializationException(string docKey, string message) : base(docKey, message)
-        {
-        }
     }
 }

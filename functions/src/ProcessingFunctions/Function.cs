@@ -28,7 +28,7 @@ public class Function(IAmazonS3 s3Client, IDataService dataSvc)
     private readonly IAmazonS3 _s3Client = s3Client;
     private readonly IDataService _dataSvc = dataSvc;
 
-    [LambdaFunction()]
+    [LambdaFunction]
     [Tracing]
     [Metrics]
     [Logging]
@@ -49,20 +49,20 @@ public class Function(IAmazonS3 s3Client, IDataService dataSvc)
         };
     }
 
-    [LambdaFunction()]
+    [LambdaFunction]
     [Tracing]
     [Metrics]
     [Logging]
     public async Task<FailOutput> FailOutputHandler(ErrorInput error, ILambdaContext _context)
     {
-        var processData = await _dataSvc.GetBySingleIndex<ProcessData>(error.Execution, "executionIndex").ConfigureAwait(false);
+        var processData = (await _dataSvc.GetBySingleIndex<ProcessData>(error.Execution, "executionIndex").ConfigureAwait(false)).FirstOrDefault();
 
         return new FailOutput
         {
             Execution = error.Execution,
-            ExternalId = processData.ExternalId,
-            InputKey = processData.InputDocKey,
-            InputBucket = processData.InputDocBucket,
+            ExternalId = processData?.ExternalId,
+            InputKey = processData?.InputDocKey,
+            InputBucket = processData?.InputDocBucket,
             Error = new ErrorMessage
             {
                 Error = error.Error,
@@ -71,7 +71,7 @@ public class Function(IAmazonS3 s3Client, IDataService dataSvc)
         };
     }
 
-    [LambdaFunction()]
+    [LambdaFunction]
     [Tracing]
     [Metrics]
     [Logging]

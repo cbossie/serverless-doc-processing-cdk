@@ -11,5 +11,5 @@ public class Query
     public string Alias { get; set; } = string.Empty;
 
     [JsonPropertyName("Pages")]
-    public List<string> Pages { get; set; } = new();
+    public List<string> Pages { get; set; } = [];
 }

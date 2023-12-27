@@ -1,8 +1,7 @@
 ﻿namespace DocProcessing.Shared.Exceptions
 {
-    public class FileTypeException : ProcessingExceptionBase
+    public class FileTypeException(string id, string message) : ProcessingExceptionBase(id, message)
     {
-        public FileTypeException(string id, string message) : base(id, message) { }
     }
 }
 

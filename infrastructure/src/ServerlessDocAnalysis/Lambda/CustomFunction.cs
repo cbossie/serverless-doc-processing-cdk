@@ -1,7 +1,7 @@
 ﻿using Amazon.CDK.AWS.GuardDuty;
 using Amazon.CDK.AWS.IAM;
 
-namespace ServerlessDocProcessing.Constructs;
+namespace ServerlessDocProcessing.Lambda;
 
 public class CustomFunction : Function
 {
@@ -15,7 +15,7 @@ public class CustomFunction : Function
         cfnFcn.OverrideLogicalId(props.FunctionName);
 
         // Add Global Environment Variables
-        foreach(var env in CustomFunctionProps.GlobalEnvironment) 
+        foreach (var env in CustomFunctionProps.GlobalEnvironment)
         {
             AddEnvironment(env.Key, env.Value);
         }

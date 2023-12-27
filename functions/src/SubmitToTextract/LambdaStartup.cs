@@ -1,6 +1,8 @@
 ﻿using Amazon.Lambda.Annotations;
 using DocProcessing.Shared;
 
+namespace SubmitToTextract;
+
 [LambdaStartup]
 public class Startup : StartupBase
 {

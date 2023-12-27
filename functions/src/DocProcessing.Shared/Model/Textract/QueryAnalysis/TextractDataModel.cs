@@ -6,11 +6,11 @@ public class TextractDataModel
 
     Dictionary<string, Block> BlockMap { get; }
 
-    private Dictionary<string, List<Block>> Queries = new();
+    private Dictionary<string, List<Block>> Queries = [];
 
     public TextractDataModel(IEnumerable<Block> blocks)
     {
-        BlockMap = blocks.ToDictionary(a => a.Id) ?? new();
+        BlockMap = blocks.ToDictionary(a => a.Id) ?? [];
         if (BlockMap.Count > 0)
         {
             Initialize();

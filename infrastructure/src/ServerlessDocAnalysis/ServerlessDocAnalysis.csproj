@@ -6,6 +6,7 @@
     <!-- Roll forward to future major versions of the netcoreapp as needed -->
     <RollForward>Major</RollForward>
     <NoWarn>CA1861</NoWarn>
+    <AppDesignerFolder>Lambda</AppDesignerFolder>
   </PropertyGroup>
   <ItemGroup>
     <!-- CDK Construct Library dependencies -->
@@ -14,7 +15,7 @@
     <!-- jsii Roslyn analyzers (un-comment to obtain compile-time checks for missing required props
     <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
     -->
-    <Content Include="ServerlessDocProcessingStack.cs" />
+    <Content Include="DocAnalysisStack.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Program.cs" />

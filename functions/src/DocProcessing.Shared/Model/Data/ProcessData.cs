@@ -72,6 +72,7 @@ namespace DocProcessing.Shared.Model.Data
         [JsonPropertyName("expenseOutputKey")]
         public string ExpenseOutputKey { get; set; } = string.Empty;
 
+        [DynamoDBGlobalSecondaryIndexHashKey("executionIndex")]
         [DynamoDBProperty("execution")]
         [JsonPropertyName("execution")]
         public string ExecutionId { get; set; }

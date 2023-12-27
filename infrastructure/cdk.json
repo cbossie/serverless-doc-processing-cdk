@@ -1,5 +1,5 @@
 {
-  "app": "dotnet run --project src/ServerlessDocProcessing/ServerlessDocProcessing.csproj",
+  "app": "dotnet run --project src/ServerlessDocAnalysis/ServerlessDocAnalysis.csproj",
   "watch": {
     "include": [
       "**/*"

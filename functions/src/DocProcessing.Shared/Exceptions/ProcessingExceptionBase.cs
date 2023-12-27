@@ -1,11 +1,6 @@
 ﻿namespace DocProcessing.Shared.Exceptions;
 
-public abstract class ProcessingExceptionBase : Exception
+public abstract class ProcessingExceptionBase(string id, string message) : Exception(message)
 {
-    public string Id { get; set; }
-    public ProcessingExceptionBase(string id, string message)
-        : base(message)
-    {
-        Id = id;
-    }
+    public string Id { get; set; } = id;
 }

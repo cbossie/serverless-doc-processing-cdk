@@ -3,14 +3,9 @@ using DocProcessing.Shared.Model.Data.Query;
 
 namespace DocProcessing.Shared.Service
 {
-    public class DataService : IDataService
+    public class DataService(IDynamoDBContext dbContext) : IDataService
     {
-        IDynamoDBContext DbContext { get; }
-
-        public DataService(IDynamoDBContext dbContext)
-        {
-            DbContext = dbContext;
-        }
+        IDynamoDBContext DbContext { get; } = dbContext;
 
         public async Task<IEnumerable<DocumentQuery>> GetAllQueries()
         {
@@ -53,13 +48,12 @@ namespace DocProcessing.Shared.Service
             return await DbContext.LoadAsync<T>(id).ConfigureAwait(false);
         }
 
-        public async Task<T> GetBySingleIndex<T>(string id, string indexName)
-        {
-            return await DbContext.LoadAsync<T>(id, new DynamoDBOperationConfig
+        public async Task<List<T>> GetBySingleIndex<T>(string id, string indexName)
+        {            
+            return await DbContext.QueryAsync<T>(id, new DynamoDBOperationConfig
             {
-                IndexName = indexName,
-            }).ConfigureAwait(false);
-
+                IndexName = indexName,                                
+            }).GetRemainingAsync().ConfigureAwait(false);
         }
     }
 }

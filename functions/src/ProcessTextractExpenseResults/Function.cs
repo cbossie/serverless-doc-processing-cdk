@@ -27,7 +27,7 @@ public class Function(ITextractService textractService, IDataService dataService
     [Tracing]
     [Metrics]
     [Logging]
-    [LambdaFunction()]
+    [LambdaFunction]
     public async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext _context)
     {
         var processData = await _dataService.GetData<ProcessData>(input.Id).ConfigureAwait(false);

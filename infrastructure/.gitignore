@@ -345,5 +345,6 @@ ASALocalRun/
 cdk.context.json
 cdk.out/
 functions/
+function-output/
 .sarif/
 serverless.template

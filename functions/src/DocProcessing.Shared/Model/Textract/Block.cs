@@ -22,6 +22,6 @@ public class Block
     [JsonPropertyName("Text")]
     public string Text { get; set; }
 
-    public List<string> GetRelationshipsByType(string relationshipType) => Relationships?.Where(r => r.Type == relationshipType).SelectMany(r => r.Ids).ToList() ?? new();
+    public List<string> GetRelationshipsByType(string relationshipType) => Relationships?.Where(r => r.Type == relationshipType).SelectMany(r => r.Ids).ToList() ?? [];
 
 }

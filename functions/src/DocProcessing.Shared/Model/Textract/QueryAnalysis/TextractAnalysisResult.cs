@@ -8,7 +8,7 @@ public class TextractAnalysisResult
     public string AnalyzeDocumentModelVersion { get; set; }
 
     [JsonPropertyName("Blocks")]
-    public List<Block> Blocks { get; set; } = new();
+    public List<Block> Blocks { get; set; } = [];
 
     [JsonPropertyName("DocumentMetadata")]
     public DocumentMetadata DocumentMetadata { get; set; }

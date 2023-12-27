@@ -5,8 +5,6 @@ namespace DocProcessing.Shared.Model.Textract.QueryAnalysis;
 public class Block : DocProcessing.Shared.Model.Textract.Block
 {
 
-
-
     [JsonPropertyName("ColumnIndex")]
     public int? ColumnIndex { get; set; }
 
@@ -14,7 +12,7 @@ public class Block : DocProcessing.Shared.Model.Textract.Block
     public int? ColumnSpan { get; set; }
 
     [JsonPropertyName("EntityTypes")]
-    public List<string> EntityTypes { get; set; } = new();
+    public List<string> EntityTypes { get; set; } = [];
 
     [JsonPropertyName("Hint")]
     public string Hint { get; set; }

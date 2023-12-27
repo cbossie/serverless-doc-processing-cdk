@@ -15,6 +15,6 @@ public class DocumentExpenseGroup
 
     [JsonPropertyName("summaryItems")]
     [DynamoDBProperty("summaryItems")]
-    public List<DocumentExpenseSummary> GroupSummaryItems { get; set; } = new();
+    public List<DocumentExpenseSummary> GroupSummaryItems { get; set; } = [];
 }
 

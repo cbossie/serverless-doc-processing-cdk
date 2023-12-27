@@ -11,7 +11,7 @@ public interface IDataService
 
     string GenerateId(string id = null);
 
-    Task<T> GetBySingleIndex<T>(string id, string indexName);
+    Task<List<T>> GetBySingleIndex<T>(string id, string indexName);
 
     Task<T> GetData<T>(string id);
 

@@ -1,38 +1,30 @@
 ﻿namespace DocProcessing.Shared.Model.Textract.Expense;
 
-public class ExpenseDataModel
+public class ExpenseDataModel(IEnumerable<ExpenseDocument> docs)
 {
-    Dictionary<int, ExpenseDocument> ExpenseDocuments { get; }
-    private Dictionary<int, HashSet<string>> _groupSummaryFields = new();
-
-    public ExpenseDataModel(IEnumerable<ExpenseDocument> docs)
-    {
-        ExpenseDocuments = docs.ToDictionary(a => a.ExpenseIndex.GetValueOrDefault()) ?? new();
-        if (ExpenseDocuments.Count > 0)
-        {
-            Initialize();
-        }
-    }
+    Dictionary<int, ExpenseDocument> ExpenseDocuments { get; } = docs.ToDictionary(a => a.ExpenseIndex.GetValueOrDefault()) ?? [];
+    private readonly Dictionary<int, HashSet<string>> _groupSummaryFields = [];
 
     public IEnumerable<int> GetExpenseReportIndexes() => ExpenseDocuments.Keys;
 
     public IEnumerable<string> GetGroupIds(int expenseDocId)
     {
-        if (!ExpenseDocuments.ContainsKey(expenseDocId))
+        if (!ExpenseDocuments.TryGetValue(expenseDocId, out ExpenseDocument doc))
         {
             return Enumerable.Empty<string>();
         }
 
-        if (!_groupSummaryFields.ContainsKey(expenseDocId))
+        if (!_groupSummaryFields.TryGetValue(expenseDocId, out HashSet<string> value))
         {
-            _groupSummaryFields[expenseDocId] = ExpenseDocuments[expenseDocId].SummaryFields
+            value = doc.SummaryFields
             .Where(g => g.GroupProperties is not null)
             .SelectMany(g => g.GroupProperties)
             .Select(a => a.Id)
             .ToHashSet();
+            _groupSummaryFields[expenseDocId] = value;
         };
 
-        return _groupSummaryFields[expenseDocId];
+        return value;
     }
 
     // Get a tuple of Groups and Types for a Node
@@ -49,12 +41,12 @@ public class ExpenseDataModel
 
     public IEnumerable<string> GetTypesForGroup(int expenseDocId, string groupId)
     {
-        if (!ExpenseDocuments.ContainsKey(expenseDocId) || !GetGroupIds(expenseDocId).Contains(groupId))
+        if (!ExpenseDocuments.TryGetValue(expenseDocId, out ExpenseDocument value) || !GetGroupIds(expenseDocId).Contains(groupId))
         {
             return Enumerable.Empty<string>();
         }
 
-        return ExpenseDocuments[expenseDocId].SummaryFields
+        return value.SummaryFields
             .Where(g => g.GroupProperties is not null && g.GroupProperties.Any(a => a.Id == groupId))
             .SelectMany(g => g.GroupProperties)
             .SelectMany(g => g.Types)
@@ -66,29 +58,23 @@ public class ExpenseDataModel
 
     public IEnumerable<SummaryField> GetGroupSummaryFields(int expenseDocId, string groupId, string type)
     {
-        if (!ExpenseDocuments.ContainsKey(expenseDocId) || !GetGroupIds(expenseDocId).Contains(groupId))
+        if (!ExpenseDocuments.TryGetValue(expenseDocId, out ExpenseDocument value) || !GetGroupIds(expenseDocId).Contains(groupId))
         {
             return Enumerable.Empty<SummaryField>();
         }
 
-        return ExpenseDocuments[expenseDocId].SummaryFields
+        return value.SummaryFields
             .Where(g => g.GroupProperties is not null && g.GroupProperties.Any(a => a.Id == groupId && a.Types.Any(b => b == type)));
     }
 
     public IEnumerable<SummaryField> GetScalarSummaryFields(int expenseDocId)
     {
-        if (!ExpenseDocuments.ContainsKey(expenseDocId))
+        if (!ExpenseDocuments.TryGetValue(expenseDocId, out ExpenseDocument value))
         {
             return Enumerable.Empty<SummaryField>();
         }
 
-        return ExpenseDocuments[expenseDocId].SummaryFields.Where(g => g.GroupProperties is null);
+        return value.SummaryFields.Where(g => g.GroupProperties is null);
     }
 
-    //Initialization
-    private void Initialize()
-    {
-
-
-    }
 }

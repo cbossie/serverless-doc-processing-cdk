@@ -5,19 +5,14 @@ using System.Text.Json;
 
 namespace DocProcessing.Shared.AwsSdkUtilities;
 
-public class TextractService : ITextractService
+public class TextractService(IAmazonS3 s3Client) : ITextractService
 {
-    IAmazonS3 S3Client { get; }
-
-    public TextractService(IAmazonS3 s3Client)
-    {
-        S3Client = s3Client;
-    }
+    IAmazonS3 S3Client { get; } = s3Client;
 
     public async Task<TextractDataModel> GetBlocksForAnalysis(string bucket, string key)
     {
         // Get all of the data and parse to keys
-        List<Block> blocks = new();
+        List<Block> blocks = [];
         // Get the S3 objects
         var objects = GetS3Objects<TextractAnalysisResult>(bucket, key);
 
@@ -34,7 +29,7 @@ public class TextractService : ITextractService
     public async Task<ExpenseDataModel> GetExpenses(string bucket, string key)
     {
         // Get all of the data and parse to keys
-        List<ExpenseDocument> expenseDocs = new();
+        List<ExpenseDocument> expenseDocs = [];
 
         // Get the S3 objects
         var objects = GetS3Objects<ExpenseResult>(bucket, key);
