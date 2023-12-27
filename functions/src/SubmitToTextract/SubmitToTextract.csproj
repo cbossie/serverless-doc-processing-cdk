@@ -9,6 +9,7 @@
     <AssemblyName>bootstrap</AssemblyName>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <PublishReadyToRun>true</PublishReadyToRun>
+    <NoWarn>AWSLambda0103;IDE0060</NoWarn>
   </PropertyGroup>
   <!-- 
   When publishing Lambda functions for ARM64 to the provided.al2 runtime a newer version of libicu needs to be included
@@ -36,7 +37,6 @@
     <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.12.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DocProcessing.Constants\DocProcessing.Constants.csproj" />
     <ProjectReference Include="..\DocProcessing.Shared\DocProcessing.Shared.csproj" />
     <Content Include="Function.cs" />
   </ItemGroup>

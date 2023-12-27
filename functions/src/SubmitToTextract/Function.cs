@@ -13,20 +13,14 @@ using AWS.Lambda.Powertools.Tracing;
 
 namespace SubmitToTextract
 {
-    public class Function
+    public class Function(IAmazonTextract textractClient, IDataService dataService)
     {
-        private IAmazonTextract _textractClient;
-        private IDataService _dataService;
+        private readonly IAmazonTextract _textractClient = textractClient;
+        private readonly IDataService _dataService = dataService;
 
         static Function()
         {
             AWSSDKHandler.RegisterXRayForAllServices();
-        }
-
-        public Function(IAmazonTextract textractClient, IDataService dataService)
-        {
-            _textractClient = textractClient;
-            _dataService = dataService;
         }
 
         [Tracing]
@@ -40,7 +34,7 @@ namespace SubmitToTextract
             {
                 ClientRequestToken = input.Id,
                 JobTag = input.Id,
-                FeatureTypes = new List<string> { FeatureType.TABLES, FeatureType.FORMS },
+                FeatureTypes = [FeatureType.TABLES, FeatureType.FORMS],
                 NotificationChannel = new Amazon.Textract.Model.NotificationChannel
                 {
                     SNSTopicArn = Environment.GetEnvironmentVariable("TEXTRACT_TOPIC"),
@@ -66,11 +60,11 @@ namespace SubmitToTextract
                 ? data.Queries.Select(q => new Query
                 {
                     Alias = q.QueryId,
-                    Pages = new List<string> { "*" },
+                    Pages = ["*"],
                     Text = q.QueryText
                 })
                 : Enumerable.Empty<Query>()).ToList();
-            if (queries.Any())
+            if (queries.Count != 0)
             {
                 textractRequest.FeatureTypes.Add(FeatureType.QUERIES);
                 textractRequest.QueriesConfig = new QueriesConfig
@@ -97,7 +91,7 @@ namespace SubmitToTextract
         [Metrics]
         [Logging]
         [LambdaFunction]
-        public async Task<IdMessage> SubmitToTextractForExpenseAnalysis(IdMessage input, ILambdaContext context)
+        public async Task<IdMessage> SubmitToTextractForExpenseAnalysis(IdMessage input, ILambdaContext _context)
         {
             var data = await _dataService.GetData<ProcessData>(input.Id).ConfigureAwait(false);
 

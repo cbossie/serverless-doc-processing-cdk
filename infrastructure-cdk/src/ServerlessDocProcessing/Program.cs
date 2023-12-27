@@ -8,7 +8,7 @@ string environmentName = $"{app.Node.TryGetContext("environmentName")}" ?? "dev"
 string stackName = $"{app.Node.TryGetContext("stackName")}-{environmentName}";
 string functionBaseDir = $"{app.Node.TryGetContext("functionBaseDirectory")}";
 
-new ServerlessDocProcessingStack(app, "ServerlessDocProcessingStack", new ServerlessDocProcessingStackProps
+_ = new ServerlessDocProcessingStack(app, "ServerlessDocProcessingStack", new ServerlessDocProcessingStackProps
 {
     StackName = stackName ?? "ServerlessDocProcessing",
     EnvironmentName = environmentName ?? "dev",

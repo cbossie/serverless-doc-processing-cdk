@@ -15,7 +15,7 @@
 
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
 
-
+    <NoWarn>AWSLambda0103;IDE0060</NoWarn>
     <!-- This property makes the build directory similar to a publish directory and helps the AWS .NET Lambda Mock Test Tool find project dependencies. -->
     
     <!-- Generate ready to run images during publishing to improve cold start time. -->
@@ -41,7 +41,6 @@
     <PackageReference Include="AWSSDK.XRay" Version="3.7.300.23" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DocProcessing.Constants\DocProcessing.Constants.csproj" />
     <ProjectReference Include="..\DocProcessing.Shared\DocProcessing.Shared.csproj" />  
   </ItemGroup>
 </Project>

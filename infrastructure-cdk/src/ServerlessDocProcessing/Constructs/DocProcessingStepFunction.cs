@@ -54,7 +54,7 @@ namespace ServerlessDocProcessing.Constructs
             LambdaInvoke textractState = new(this, "textractState", new LambdaInvokeProps
             {
                 IntegrationPattern = IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-                TaskTimeout = Timeout.Duration(Duration.Seconds(StepFunctionDefaults.TEXTRACT_STEP_TIME_OUT)),
+                TaskTimeout = Timeout.Duration(Duration.Seconds(30)),
                 LambdaFunction = props.SubmitToTextractFunction,
                 Comment = "Function to send document to textract asynchronously for query analysis",
                 Payload = TaskInput.FromObject(new Dictionary<string, object> {
@@ -74,7 +74,7 @@ namespace ServerlessDocProcessing.Constructs
             LambdaInvoke textractExpenseState = new(this, "textractExpenseState", new LambdaInvokeProps
             {
                 IntegrationPattern = IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-                TaskTimeout = Timeout.Duration(Duration.Seconds(StepFunctionDefaults.TEXTRACT_STEP_TIME_OUT)),
+                TaskTimeout = Timeout.Duration(Duration.Seconds(30)),
                 LambdaFunction = props.SubmitToTextractExpenseFunction,
                 Comment = "Function to send document to textract asynchronously for expense analysis",
                 Payload = TaskInput.FromObject(new Dictionary<string, object> {

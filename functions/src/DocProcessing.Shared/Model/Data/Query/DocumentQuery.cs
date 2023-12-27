@@ -16,7 +16,7 @@ public class DocumentQuery
 
     [DynamoDBProperty("result")]
     [JsonPropertyName("result")]
-    public List<DocumentQueryResult> Result { get; set; } = new();
+    public List<DocumentQueryResult> Result { get; set; } = [];
 
     [DynamoDBProperty("isValid")]
     [JsonPropertyName("isValid")]

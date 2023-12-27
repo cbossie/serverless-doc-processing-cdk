@@ -1,10 +1,5 @@
 ﻿namespace RestartStepFunction.Exceptions;
 
-public class RestartStepFunctionException : Exception
+public class RestartStepFunctionException(string message) : Exception(message)
 {
-    public RestartStepFunctionException(string message)
-        : base(message)
-    {
-
-    }
 }

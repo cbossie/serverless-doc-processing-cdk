@@ -13,28 +13,22 @@ using System.Threading.Tasks;
 
 namespace ProcessTextractExpenseResults;
 
-public class Function
+public class Function(ITextractService textractService, IDataService dataService)
 {
 
-    private ITextractService _textractService;
-    private IDataService _dataService;
+    private readonly ITextractService _textractService = textractService;
+    private readonly IDataService _dataService = dataService;
 
     static Function()
     {
         AWSSDKHandler.RegisterXRayForAllServices();
     }
 
-    public Function(ITextractService textractService, IDataService dataService)
-    {
-        _textractService = textractService;
-        _dataService = dataService;
-    }
-
     [Tracing]
     [Metrics]
     [Logging]
     [LambdaFunction()]
-    public async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
+    public async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext _context)
     {
         var processData = await _dataService.GetData<ProcessData>(input.Id).ConfigureAwait(false);
 

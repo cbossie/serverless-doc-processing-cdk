@@ -8,6 +8,8 @@ using DocProcessing.Shared.AwsSdkUtilities;
 using DocProcessing.Shared.Service;
 using Microsoft.Extensions.DependencyInjection;
 
+namespace DocProcessing.Shared;
+
 public abstract class StartupBase
 {
     public virtual void ConfigureServices(IServiceCollection services)

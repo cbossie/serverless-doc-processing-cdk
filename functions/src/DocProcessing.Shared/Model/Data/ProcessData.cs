@@ -29,11 +29,11 @@ namespace DocProcessing.Shared.Model.Data
 
         [DynamoDBProperty("queries")]
         [JsonPropertyName("queries")]
-        public List<DocumentQuery> Queries { get; set; } = new();
+        public List<DocumentQuery> Queries { get; set; } = [];
 
         [DynamoDBProperty("expenseReports")]
         [JsonPropertyName("expenseReports")]
-        public List<DocumentExpenseReport> ExpenseReports { get; set; } = new();
+        public List<DocumentExpenseReport> ExpenseReports { get; set; } = [];
 
         [DynamoDBProperty("isValid")]
         [JsonPropertyName("isValid")]

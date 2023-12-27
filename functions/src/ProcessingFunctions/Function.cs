@@ -16,31 +16,23 @@ using ProcessingFunctions.Output;
 [assembly: LambdaGlobalProperties(GenerateMain = true)]
 namespace InitializeProcessing;
 
-public class Function
+public class Function(IAmazonS3 s3Client, IDataService dataSvc)
 {
-    readonly List<string> allowedFileExtensions = new List<string>();
+    readonly List<string> allowedFileExtensions = [.. (Environment.GetEnvironmentVariable("ALLOWED_FILE_EXTENSIONS") ?? ".pdf").Split(',')];
 
     static Function()
     {
         AWSSDKHandler.RegisterXRayForAllServices();
     }
 
-    public Function(IAmazonS3 s3Client, IDataService dataSvc)
-    {
-        _s3Client = s3Client;
-        _dataSvc = dataSvc;
-        allowedFileExtensions = (Environment.GetEnvironmentVariable("ALLOWED_FILE_EXTENSIONS") ?? ".pdf").Split(',').ToList();
-
-    }
-
-    private IAmazonS3 _s3Client;
-    private IDataService _dataSvc;
+    private readonly IAmazonS3 _s3Client = s3Client;
+    private readonly IDataService _dataSvc = dataSvc;
 
     [LambdaFunction()]
     [Tracing]
     [Metrics]
     [Logging]
-    public async Task<SuccessOutput> SuccessOutputHandler(IdMessage input, ILambdaContext context)
+    public async Task<SuccessOutput> SuccessOutputHandler(IdMessage input, ILambdaContext _context)
     {
         var processData = await _dataSvc.GetData<ProcessData>(input.Id).ConfigureAwait(false);
         processData.Success = true;
@@ -61,7 +53,7 @@ public class Function
     [Tracing]
     [Metrics]
     [Logging]
-    public async Task<FailOutput> FailOutputHandler(ErrorInput error, ILambdaContext context)
+    public async Task<FailOutput> FailOutputHandler(ErrorInput error, ILambdaContext _context)
     {
         var processData = await _dataSvc.GetBySingleIndex<ProcessData>(error.Execution, "executionIndex").ConfigureAwait(false);
 
@@ -83,7 +75,7 @@ public class Function
     [Tracing]
     [Metrics]
     [Logging]
-    public async Task<IdMessage> InitializeHandler(S3StepFunctionCompositeEvent input, ILambdaContext context)
+    public async Task<IdMessage> InitializeHandler(S3StepFunctionCompositeEvent input, ILambdaContext _context)
     {
 
         //Initialize the Payload

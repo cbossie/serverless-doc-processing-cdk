@@ -20,7 +20,7 @@
 
     <!-- Enable This to publish Native AOT-->
     <!--<PublishAot>true</PublishAot>-->
-
+    <NoWarn>AWSLambda0103;IDE0060</NoWarn>
   </PropertyGroup>
   <!-- 
   When publishing Lambda functions for ARM64 to the provided.al2 runtime a newer version of libicu needs to be included

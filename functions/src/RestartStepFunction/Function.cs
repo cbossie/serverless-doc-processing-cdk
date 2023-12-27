@@ -18,27 +18,21 @@ using System.Text.Json;
 namespace RestartStepFunction
 {
 
-    public class Function
+    public class Function(IAmazonStepFunctions stepFunctionClient, IDataService dataService)
     {
-        private IAmazonStepFunctions _stepFunctionClient;
-        private IDataService _dataService;
+        private readonly IAmazonStepFunctions _stepFunctionClient = stepFunctionClient;
+        private readonly IDataService _dataService = dataService;
 
         static Function()
         {
             AWSSDKHandler.RegisterXRayForAllServices();
         }
 
-        public Function(IAmazonStepFunctions stepFunctionClient, IDataService dataService)
-        {
-            _stepFunctionClient = stepFunctionClient;
-            _dataService = dataService;
-        }
-
         [Tracing]
         [Metrics]
         [Logging]
         [LambdaFunction]
-        public async Task FunctionHandler(SNSEvent input, ILambdaContext context)
+        public async Task FunctionHandler(SNSEvent input, ILambdaContext _context)
         {
             var record = input.Records.FirstOrDefault();
 

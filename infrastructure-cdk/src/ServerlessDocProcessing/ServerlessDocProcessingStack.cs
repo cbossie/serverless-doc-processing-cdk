@@ -106,7 +106,6 @@ public class ServerlessDocProcessingStack : Stack
             EnforceSSL = true,
         });
 
-
         //IAM Roles
         Role eventRole = new(this, "inputEventRole", new RoleProps
         {
@@ -273,10 +272,8 @@ public class ServerlessDocProcessingStack : Stack
         }));
 
 
-        // Add a subscription to the lambda function that will be restarting the step function, to the topic that
-        // Textract published to
+        // Add a subscription to the lambda function that will be restarting the step function, to the topic that Textract published 
         textractTopic.AddSubscription(new LambdaSubscription(restartStepFunction));        
-
 
         // Step function that coordinates processing
         DocProcessingStepFunction docProcessingStepFunction = new(this, "docProcessing", new DocProcessingStepFunctionProps
@@ -359,7 +356,7 @@ public class ServerlessDocProcessingStack : Stack
     }
 
     // Functions to create unique names
-    private string GetEventbridgeRuleName(string basename) => $"docprocessing-{EnvironmentName}";
+    private string GetEventbridgeRuleName(string basename) => $"docprocessing-{basename}-{EnvironmentName}";
     private string GetBucketName(string baseName) => $"docprocessing-{baseName}-{EnvironmentName}-{Aws.ACCOUNT_ID}-{Aws.REGION}";
     private string GetQueueName(string baseName) => $"docProceesing-{baseName}-{EnvironmentName}-{Aws.ACCOUNT_ID}";
     private string GetTopicname(string baseName) => $"docProcesing{baseName}-{EnvironmentName}-{Aws.ACCOUNT_ID}";
