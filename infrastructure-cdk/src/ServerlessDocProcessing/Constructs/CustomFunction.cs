@@ -9,7 +9,6 @@ public class CustomFunction : Function
         : base(scope, id, props.FunctionProps)
     {
 
-
         var cfnFcn = (CfnFunction)Node.DefaultChild;
         // For Future Use with SAM
         cfnFcn.AddMetadata("BuildMethod", props.BuildMethod);
@@ -21,7 +20,7 @@ public class CustomFunction : Function
             AddEnvironment(env.Key, env.Value);
         }
 
-        // Allow metrics to be added
+        // Allow metrics to be added by this function
         AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
         {
             Actions = new[] { "cloudwatch:PutMetricData" },

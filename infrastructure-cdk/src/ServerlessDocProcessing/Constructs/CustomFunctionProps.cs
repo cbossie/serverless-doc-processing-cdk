@@ -31,13 +31,13 @@ public class CustomFunctionProps
     public string Description { get; set; }
     public string FunctionName => $"docProcessing{FunctionNameBase}{EnvironmentName}";
 
-    public FunctionProps FunctionProps => new FunctionProps
+    public FunctionProps FunctionProps => new()
     {
         Tracing = Tracing.ACTIVE,
         Handler = "bootstrap",
         FunctionName = FunctionName,
         Architecture = Architecture.X86_64,
-        Runtime = Runtime.PROVIDED_AL2,
+        Runtime = Runtime.PROVIDED_AL2023,
         Timeout = Duration.Seconds(Timeout ?? GlobalTimeout),
         MemorySize = Memory ?? GlobalMemory,
         Code = Code.FromAsset($"{FunctionBaseDirectory}/{FunctionCodeDirectory ?? FunctionNameBase}.zip"),
