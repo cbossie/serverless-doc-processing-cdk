@@ -30,6 +30,12 @@ public class CustomFunction : Function
         }));
     }
 
+    public CustomFunction AddAnnotationsHandler(string handlername)
+    {
+        AddEnvironment("ANNOTATION_HANDLER", handlername);
+        return this;
+    }
+
     public CustomFunction AddEnvironmentVariable(string key, string value)
     {
         AddEnvironment(key, value);

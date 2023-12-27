@@ -35,8 +35,8 @@ namespace RestartStepFunction
         }
 
         [Tracing]
-        [Metrics(CaptureColdStart = true)]
-        [Logging(ClearState = true, LogEvent = true)]
+        [Metrics]
+        [Logging]
         [LambdaFunction]
         public async Task FunctionHandler(SNSEvent input, ILambdaContext context)
         {

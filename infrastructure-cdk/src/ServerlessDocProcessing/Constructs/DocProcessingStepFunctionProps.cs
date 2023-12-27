@@ -13,6 +13,8 @@ namespace ServerlessDocProcessing.Constructs
     internal class DocProcessingStepFunctionProps : StateMachineProps
     {
         public Function InitializeFunction { get; init; }
+        public Function SuccessFunction { get; set; }
+        public Function FailureFunction { get; set; }
         public Function SubmitToTextractFunction { get; init; }
         public Function SubmitToTextractExpenseFunction { get; init; }
         public Function ProcessTextractQueryFunction { get; init; }

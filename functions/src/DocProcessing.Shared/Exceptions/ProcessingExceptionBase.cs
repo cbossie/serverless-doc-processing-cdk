@@ -2,10 +2,10 @@
 
 public abstract class ProcessingExceptionBase : Exception
 {
-    public string DocKey { get; set; }
-    public ProcessingExceptionBase(string docKey, string message)
+    public string Id { get; set; }
+    public ProcessingExceptionBase(string id, string message)
         : base(message)
     {
-        DocKey = docKey;
+        Id = id;
     }
 }

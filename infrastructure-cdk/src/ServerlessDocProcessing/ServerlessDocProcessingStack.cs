@@ -33,12 +33,10 @@ public class ServerlessDocProcessingStack : Stack
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_TRACE_DISABLED", $"false");
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_TRACER_CAPTURE_RESPONSE", $"true");
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_TRACER_CAPTURE_ERROR", $"true");
-        CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract-{EnvironmentName}");
+        CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract-{EnvironmentName}");        
+
         CustomFunctionProps.AddGlobalEnvironment("ENVIRONMENT_NAME", EnvironmentName);
         
-        // By default, add the default function as "FunctionHandler". Override in individual functions as needed
-        CustomFunctionProps.AddGlobalEnvironment("ANNOTATIONS_HANDLER", "FunctionHandler");
-
         // Tables
         Table configTable = new(this, "queryData", new TableProps
         {
@@ -55,6 +53,15 @@ public class ServerlessDocProcessingStack : Stack
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY
         });
+
+        // Secondary index for querying the table by executionname
+        dataTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        {
+            IndexName = "executionIndex",
+            PartitionKey = new Attribute() { Name = "execution", Type = AttributeType.STRING },
+            ProjectionType = ProjectionType.ALL            
+        });
+
 
         // Buckets
         Bucket inputBucket = new(this, "inputBucket", new BucketProps
@@ -137,10 +144,12 @@ public class ServerlessDocProcessingStack : Stack
         var initializeFunction = new CustomFunction(this, "InitializeProcessing", new CustomFunctionProps
         {
             FunctionNameBase = "InitializeProcessing",
-            Description = "Initializes the document processing"            
-        });
+            Description = "Initializes the document processing",
+            FunctionCodeDirectory = "ProcessingFunctions",
+        }).AddAnnotationsHandler("InitializeHandler")
+          .AddEnvironmentVariable("ALLOWED_FILE_EXTENSIONS", ".pdf");
 
-        // Allow the functoin read from the input bucket
+        // Allow the function read from the input bucket
         inputBucket.GrantReadWrite(initializeFunction);
 
         // Policy that allows a function full actextcess to the textract bucket ARN (Needed for enabling textract to write out results to S3
@@ -166,6 +175,24 @@ public class ServerlessDocProcessingStack : Stack
             Effect = Effect.ALLOW
         });
 
+        // Functions that send a specially formatted message to the SQS queue for both success and failure
+        var successFunction = new CustomFunction(this, "SuccessFunction", new CustomFunctionProps
+        {
+
+            FunctionNameBase = "SuccessFunction",
+            FunctionCodeDirectory = "ProcessingFunctions",
+            Description = "Sends a success message to the SQS queue"
+        }).AddAnnotationsHandler("SuccessOutputHandler");
+
+        // Functions that send a specially formatted message to the SQS queue for both success and failure
+        var failFunction = new CustomFunction(this, "FailFunction", new CustomFunctionProps
+        {
+
+            FunctionNameBase = "FailFunction",
+            FunctionCodeDirectory = "ProcessingFunctions",
+            Description = "Sends a faliure message to the SQS queue"
+        }).AddAnnotationsHandler("FailOutputHandler");
+
 
         // Function that submits the document to the textract service
         var submitToTextractFunction = new CustomFunction(this, "SubmitToTextract", new CustomFunctionProps
@@ -174,11 +201,11 @@ public class ServerlessDocProcessingStack : Stack
             FunctionCodeDirectory = "SubmitToTextract",
             Description = "Submits the document to Textract for analysis"
         })
+            .AddAnnotationsHandler("SubmitToTextractForStandardAnalysis")
             .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
             .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
             .AddEnvironment(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_OUTPUT_KEY)
-            .AddEnvironment(ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn)
-            .AddEnvironment("ANNOTATIONS_HANDLER", "SubmitToTextractForStandardAnalysis");
+            .AddEnvironment(ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
 
         // Allows the function to retrieve the document from S3
         submitToTextractFunction.AddToRolePolicy(allowInputBucketStatement);
@@ -196,11 +223,11 @@ public class ServerlessDocProcessingStack : Stack
             FunctionCodeDirectory = "SubmitToTextract",
             Description = "Submits the document to Textract for expense analysis"
         })
+            .AddAnnotationsHandler("SubmitToTextractForExpenseAnalysis")
             .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
             .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
             .AddEnvironment(ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY)
-            .AddEnvironment(ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn)
-            .AddEnvironment("ANNOTATIONS_HANDLER", "SubmitToTextractForExpenseAnalysis");
+            .AddEnvironment(ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
 
         // Allows the function to retrieve the document from S3
         submitToTextractExpenseFunction.AddToRolePolicy(allowInputBucketStatement);
@@ -249,7 +276,7 @@ public class ServerlessDocProcessingStack : Stack
 
         // Add a subscription to the lambda function that will be restarting the step function, to the topic that
         // Textract published to
-        textractTopic.AddSubscription(new LambdaSubscription(restartStepFunction));
+        textractTopic.AddSubscription(new LambdaSubscription(restartStepFunction));        
 
 
         // Step function that coordinates processing
@@ -268,6 +295,8 @@ public class ServerlessDocProcessingStack : Stack
             SubmitToTextractExpenseFunction = submitToTextractExpenseFunction,
             ProcessTextractQueryFunction = processTextractQueryResultFunction,
             ProcessTextractExpenseFunction = processTextractExpenseResultFunction,
+            SuccessFunction = successFunction,
+            FailureFunction = failFunction,
             SendFailureQueue = failureQueue,
             SendSuccessQueue = successQueue
         });
@@ -313,6 +342,8 @@ public class ServerlessDocProcessingStack : Stack
         dataTable.GrantDocumentObjectModelPermissions(restartStepFunction);
         dataTable.GrantDocumentObjectModelPermissions(processTextractQueryResultFunction);
         dataTable.GrantDocumentObjectModelPermissions(processTextractExpenseResultFunction);
+        dataTable.GrantDocumentObjectModelPermissions(successFunction);
+        dataTable.GrantDocumentObjectModelPermissions(failFunction);
 
         // Outputs
         _ = new CfnOutput(this, "inputBucketOutput", new CfnOutputProps

@@ -71,5 +71,9 @@ namespace DocProcessing.Shared.Model.Data
         [DynamoDBProperty("expenseOutputKey")]
         [JsonPropertyName("expenseOutputKey")]
         public string ExpenseOutputKey { get; set; } = string.Empty;
+
+        [DynamoDBProperty("execution")]
+        [JsonPropertyName("execution")]
+        public string ExecutionId { get; set; }
     }
 }

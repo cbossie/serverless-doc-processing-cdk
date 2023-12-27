@@ -10,7 +10,11 @@ public class CustomFunctionProps
 
     public static int GlobalMemory { get; set; } = 1024;
 
-    public static Dictionary<string, string> GlobalEnvironment { get; } = new();
+    // Default to using FunctionHandler as the Annotations Handler Environment. We will override this as needed
+    public static Dictionary<string, string> GlobalEnvironment { get; } = new()
+    {
+        { "ANNOTATIONS_HANDLER", "FunctionHandler" }
+    };
 
     public static string EnvironmentName { get; set; }
 
@@ -21,14 +25,10 @@ public class CustomFunctionProps
     public int? Memory { get; set; }
     public int? Timeout { get; set; }
     public string BuildMethod { get; set; }
-
     public string FunctionNameBase { get; set; }
-
     public string CodeBaseDirectory { get; set; }
     public string FunctionCodeDirectory { get; set; }    
-
     public string Description { get; set; }
-
     public string FunctionName => $"docProcessing{FunctionNameBase}{EnvironmentName}";
 
     public FunctionProps FunctionProps => new FunctionProps

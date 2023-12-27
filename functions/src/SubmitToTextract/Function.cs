@@ -31,8 +31,8 @@ namespace SubmitToTextract
 
 
         [Tracing]
-        [Metrics(CaptureColdStart = true)]
-        [Logging(ClearState = true, LogEvent = true)]
+        [Metrics]
+        [Logging]
         [LambdaFunction]
         public async Task<IdMessage> SubmitToTextractForStandardAnalysis(IdMessage input, ILambdaContext context)
         {
@@ -95,8 +95,8 @@ namespace SubmitToTextract
         }
 
         [Tracing]
-        [Metrics(CaptureColdStart = true)]
-        [Logging(ClearState = true, LogEvent = true)]
+        [Metrics]
+        [Logging]
         [LambdaFunction]
         public async Task<IdMessage> SubmitToTextractForExpenseAnalysis(IdMessage input, ILambdaContext context)
         {

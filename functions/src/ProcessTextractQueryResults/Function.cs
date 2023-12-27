@@ -30,8 +30,8 @@ namespace ProcessTextractQueryResults
         }
 
         [Tracing]
-        [Metrics(CaptureColdStart = true)]
-        [Logging(LogEvent = true)]
+        [Metrics]
+        [Logging]
         [LambdaFunction]
         public async Task<IdMessage> FunctionHandler(IdMessage input, ILambdaContext context)
         {

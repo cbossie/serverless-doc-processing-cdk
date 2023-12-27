@@ -18,6 +18,8 @@ namespace DocProcessing.Shared.Service
             return await asyncData.GetRemainingAsync().ConfigureAwait(false);
         }
 
+
+
         public async Task<IEnumerable<DocumentQuery>> GetQueries(IEnumerable<string> queryKeys)
         {
             if (queryKeys is null || !queryKeys.Any())
@@ -49,6 +51,15 @@ namespace DocProcessing.Shared.Service
         public async Task<T> GetData<T>(string id)
         {
             return await DbContext.LoadAsync<T>(id).ConfigureAwait(false);
+        }
+
+        public async Task<T> GetBySingleIndex<T>(string id, string indexName)
+        {
+            return await DbContext.LoadAsync<T>(id, new DynamoDBOperationConfig
+            {
+                IndexName = indexName,
+            }).ConfigureAwait(false);
+
         }
     }
 }
