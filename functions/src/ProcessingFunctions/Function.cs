@@ -1,7 +1,5 @@
 using Amazon.Lambda.Annotations;
-using Amazon.Lambda.CloudWatchEvents.S3Events;
 using Amazon.Lambda.Core;
-using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.S3;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
@@ -11,7 +9,6 @@ using AWS.Lambda.Powertools.Tracing;
 using DocProcessing.Shared.Exceptions;
 using DocProcessing.Shared.Model.Data.Query;
 using InitializeProcessing.Input;
-using Microsoft.Extensions.Configuration;
 using ProcessingFunctions.Input;
 using ProcessingFunctions.Output;
 
@@ -23,12 +20,16 @@ public class Function
 {
     readonly List<string> allowedFileExtensions = new List<string>();
 
-    public Function(IAmazonS3 s3Client, IDataService dataSvc)
+    static Function()
     {
         AWSSDKHandler.RegisterXRayForAllServices();
+    }
+
+    public Function(IAmazonS3 s3Client, IDataService dataSvc)
+    {
         _s3Client = s3Client;
         _dataSvc = dataSvc;
-        allowedFileExtensions = Environment.GetEnvironmentVariable("ALLOWED_FILE_EXTENSIONS").Split(',').ToList();
+        allowedFileExtensions = (Environment.GetEnvironmentVariable("ALLOWED_FILE_EXTENSIONS") ?? ".pdf").Split(',').ToList();
 
     }
 
@@ -41,7 +42,7 @@ public class Function
     [Logging]
     public async Task<SuccessOutput> SuccessOutputHandler(IdMessage input, ILambdaContext context)
     {
-        var processData = await _dataSvc.GetData<ProcessData>(input.Id).ConfigureAwait(false);               
+        var processData = await _dataSvc.GetData<ProcessData>(input.Id).ConfigureAwait(false);
         processData.Success = true;
         await _dataSvc.SaveData(processData).ConfigureAwait(false);
 
@@ -103,7 +104,7 @@ public class Function
         }).ConfigureAwait(false);
 
         // If there is a tag for queries get them
-        var queryTagValue = data.Tagging.GetTagValueList(ConstantValues.QUERY_TAG);
+        var queryTagValue = data.Tagging.GetTagValueList("Queries");
         var queries = await _dataSvc.GetQueries(queryTagValue).ConfigureAwait(false);
 
         pl.Queries.AddRange(queries.Select(q => new DocumentQuery
@@ -115,13 +116,13 @@ public class Function
         }));
 
         // If there is a tag for external id, get it. Otherwise, we won't use it
-        pl.ExternalId = data.Tagging.GetTagValue(ConstantValues.ID_TAG) ?? Guid.NewGuid().ToString();
+        pl.ExternalId = data.Tagging.GetTagValue("Id") ?? Guid.NewGuid().ToString();
 
         //Save the payload
         await _dataSvc.SaveData(pl).ConfigureAwait(false);
 
         //Test file extension
-        if(!allowedFileExtensions.Contains(pl.FileExtension))
+        if (!allowedFileExtensions.Contains(pl.FileExtension))
         {
             throw new FileTypeException(pl.Id, $"Invalid file extension: {pl.FileExtension}");
         }

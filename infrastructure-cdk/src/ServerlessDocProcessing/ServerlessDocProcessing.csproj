@@ -16,7 +16,6 @@
     <Content Include="ServerlessDocProcessingStack.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\functions\src\DocProcessing.Constants\DocProcessing.Constants.csproj" />
     <Content Include="Program.cs" />
   </ItemGroup>
 </Project>

@@ -5,12 +5,11 @@ using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
 using DocProcessing.Shared.Model.Data.Expense;
-using System.Linq;
 using System.Threading.Tasks;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-[assembly:LambdaGlobalProperties(GenerateMain = true)]
+[assembly: LambdaGlobalProperties(GenerateMain = true)]
 
 namespace ProcessTextractExpenseResults;
 
@@ -20,11 +19,15 @@ public class Function
     private ITextractService _textractService;
     private IDataService _dataService;
 
+    static Function()
+    {
+        AWSSDKHandler.RegisterXRayForAllServices();
+    }
+
     public Function(ITextractService textractService, IDataService dataService)
     {
         _textractService = textractService;
-        _dataService = dataService;    
-        AWSSDKHandler.RegisterXRayForAllServices();
+        _dataService = dataService;
     }
 
     [Tracing]
@@ -39,12 +42,12 @@ public class Function
         var textractExpenseModel = await _textractService.GetExpenses(processData.OutputBucket, processData.ExpenseOutputKey).ConfigureAwait(false);
 
         // Get Expense Data and save to the DB
-        foreach (var id in textractExpenseModel.GetExpenseReportIndexes()) 
+        foreach (var id in textractExpenseModel.GetExpenseReportIndexes())
         {
             var report = new DocumentExpenseReport();
-            
+
             //Add Scalar Values            
-            foreach(var scalarSummaryField in textractExpenseModel.GetScalarSummaryFields(id))
+            foreach (var scalarSummaryField in textractExpenseModel.GetScalarSummaryFields(id))
             {
                 report.AddScalarExpenseSummaryValue(
                     scalarSummaryField?.Currency?.Code,
@@ -54,17 +57,17 @@ public class Function
             };
 
             // Add Groups
-            foreach(var groupType in textractExpenseModel.GetGroupTypes(id))
+            foreach (var groupType in textractExpenseModel.GetGroupTypes(id))
             {
                 var (group, type) = groupType;
-                var groupSummaryFields = textractExpenseModel.GetGroupSummaryFields(id, group, type );
+                var groupSummaryFields = textractExpenseModel.GetGroupSummaryFields(id, group, type);
 
                 var documentExpenseGroup = new DocumentExpenseGroup
-                { 
+                {
                     Group = group,
                     Type = type
                 };
-                foreach(var groupSummaryField in groupSummaryFields)
+                foreach (var groupSummaryField in groupSummaryFields)
                 {
                     documentExpenseGroup.GroupSummaryItems.Add(new DocumentExpenseSummary
                     {
@@ -82,8 +85,8 @@ public class Function
 
         // Save the query results back to the database, and clear the task token
         processData.TextractJobId = null;
-        processData.TextractTaskToken = null;                
-        await _dataService.SaveData(processData).ConfigureAwait(false);        
+        processData.TextractTaskToken = null;
+        await _dataService.SaveData(processData).ConfigureAwait(false);
         return input;
     }
 }

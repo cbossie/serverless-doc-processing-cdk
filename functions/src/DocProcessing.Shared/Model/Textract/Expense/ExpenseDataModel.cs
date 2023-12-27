@@ -1,11 +1,4 @@
-﻿using Amazon.S3.Model.Internal.MarshallTransformations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DocProcessing.Shared.Model.Textract.Expense;
+﻿namespace DocProcessing.Shared.Model.Textract.Expense;
 
 public class ExpenseDataModel
 {
@@ -38,16 +31,16 @@ public class ExpenseDataModel
             .Select(a => a.Id)
             .ToHashSet();
         };
-        
+
         return _groupSummaryFields[expenseDocId];
     }
-    
+
     // Get a tuple of Groups and Types for a Node
     public IEnumerable<(string, string)> GetGroupTypes(int expenseDocId)
     {
-        foreach(string g in GetGroupIds(expenseDocId))
+        foreach (string g in GetGroupIds(expenseDocId))
         {
-            foreach(string t in GetTypesForGroup(expenseDocId, g))
+            foreach (string t in GetTypesForGroup(expenseDocId, g))
             {
                 yield return (g, t);
             }
@@ -65,9 +58,9 @@ public class ExpenseDataModel
             .Where(g => g.GroupProperties is not null && g.GroupProperties.Any(a => a.Id == groupId))
             .SelectMany(g => g.GroupProperties)
             .SelectMany(g => g.Types)
-            .ToHashSet();            
+            .ToHashSet();
     }
-   
+
 
 
 
@@ -79,7 +72,7 @@ public class ExpenseDataModel
         }
 
         return ExpenseDocuments[expenseDocId].SummaryFields
-            .Where(g => g.GroupProperties is not null && g.GroupProperties.Any(a => a.Id == groupId && a.Types.Any(b => b == type)));         
+            .Where(g => g.GroupProperties is not null && g.GroupProperties.Any(a => a.Id == groupId && a.Types.Any(b => b == type)));
     }
 
     public IEnumerable<SummaryField> GetScalarSummaryFields(int expenseDocId)

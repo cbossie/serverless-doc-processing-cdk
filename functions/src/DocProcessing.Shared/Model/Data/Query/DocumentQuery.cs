@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace DocProcessing.Shared.Model.Data.Query;
 
-[DynamoDBTable(Constants.ResourceNames.QUERY_DATA_TABLE)]
+[DynamoDBTable("QueryData")]
 public class DocumentQuery
 {
     [JsonPropertyName("query")]

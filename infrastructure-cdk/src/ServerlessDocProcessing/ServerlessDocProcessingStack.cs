@@ -33,14 +33,14 @@ public class ServerlessDocProcessingStack : Stack
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_TRACE_DISABLED", $"false");
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_TRACER_CAPTURE_RESPONSE", $"true");
         CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_TRACER_CAPTURE_ERROR", $"true");
-        CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract-{EnvironmentName}");        
-
+        CustomFunctionProps.AddGlobalEnvironment("POWERTOOLS_METRICS_NAMESPACE", $"SubmitToTextract-{EnvironmentName}");
+        CustomFunctionProps.AddGlobalEnvironment("ALLOWED_FILE_EXTENSIONS", $".pdf");
         CustomFunctionProps.AddGlobalEnvironment("ENVIRONMENT_NAME", EnvironmentName);
         
         // Tables
         Table configTable = new(this, "queryData", new TableProps
         {
-            TableName = GetTableName(ResourceNames.QUERY_DATA_TABLE),
+            TableName = GetTableName("QueryData"),
             PartitionKey = new Attribute() { Name = "query", Type = AttributeType.STRING },
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY
@@ -48,7 +48,7 @@ public class ServerlessDocProcessingStack : Stack
 
         Table dataTable = new(this, "dataTable", new TableProps
         {
-            TableName = GetTableName(ResourceNames.PROCESS_DATA_TABLE),
+            TableName = GetTableName("ProcessData"),
             PartitionKey = new Attribute() { Name = "id", Type = AttributeType.STRING },
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY
@@ -146,8 +146,7 @@ public class ServerlessDocProcessingStack : Stack
             FunctionNameBase = "InitializeProcessing",
             Description = "Initializes the document processing",
             FunctionCodeDirectory = "ProcessingFunctions",
-        }).AddAnnotationsHandler("InitializeHandler")
-          .AddEnvironmentVariable("ALLOWED_FILE_EXTENSIONS", ".pdf");
+        }).AddAnnotationsHandler("InitializeHandler");
 
         // Allow the function read from the input bucket
         inputBucket.GrantReadWrite(initializeFunction);
@@ -202,10 +201,10 @@ public class ServerlessDocProcessingStack : Stack
             Description = "Submits the document to Textract for analysis"
         })
             .AddAnnotationsHandler("SubmitToTextractForStandardAnalysis")
-            .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
-            .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
-            .AddEnvironment(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_OUTPUT_KEY)
-            .AddEnvironment(ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
+            .AddEnvironment("TEXTRACT_BUCKET", textractBucket.BucketName)
+            .AddEnvironment("TEXTRACT_TOPIC", textractTopic.TopicArn)
+            .AddEnvironment("TEXTRACT_OUTPUT_KEY", "results")
+            .AddEnvironment("TEXTRACT_ROLE", textractRole.RoleArn);
 
         // Allows the function to retrieve the document from S3
         submitToTextractFunction.AddToRolePolicy(allowInputBucketStatement);
@@ -224,10 +223,10 @@ public class ServerlessDocProcessingStack : Stack
             Description = "Submits the document to Textract for expense analysis"
         })
             .AddAnnotationsHandler("SubmitToTextractForExpenseAnalysis")
-            .AddEnvironment(ConstantValues.TEXTRACT_BUCKET_KEY, textractBucket.BucketName)
-            .AddEnvironment(ConstantValues.TEXTRACT_TOPIC_KEY, textractTopic.TopicArn)
-            .AddEnvironment(ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY_KEY, ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY)
-            .AddEnvironment(ConstantValues.TEXTRACT_ROLE_KEY, textractRole.RoleArn);
+            .AddEnvironment("TEXTRACT_BUCKET", textractBucket.BucketName)
+            .AddEnvironment("TEXTRACT_TOPIC", textractTopic.TopicArn)
+            .AddEnvironment("TEXTRACT_EXPENSE_OUTPUT_KEY", "expensresults")
+            .AddEnvironment("TEXTRACT_ROLE", textractRole.RoleArn);
 
         // Allows the function to retrieve the document from S3
         submitToTextractExpenseFunction.AddToRolePolicy(allowInputBucketStatement);

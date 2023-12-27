@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace DocProcessing.Shared.Model.Data
 {
-    [DynamoDBTable(Constants.ResourceNames.PROCESS_DATA_TABLE)]
+    [DynamoDBTable("ProcessData")]
     public class ProcessData : IdMessage
     {
         public ProcessData(string id)
@@ -30,7 +30,7 @@ namespace DocProcessing.Shared.Model.Data
         [DynamoDBProperty("queries")]
         [JsonPropertyName("queries")]
         public List<DocumentQuery> Queries { get; set; } = new();
-        
+
         [DynamoDBProperty("expenseReports")]
         [JsonPropertyName("expenseReports")]
         public List<DocumentExpenseReport> ExpenseReports { get; set; } = new();
@@ -64,7 +64,7 @@ namespace DocProcessing.Shared.Model.Data
         [JsonPropertyName("outputBucket")]
         public string OutputBucket { get; set; } = string.Empty;
 
-        [DynamoDBProperty("textractOutputKey")] 
+        [DynamoDBProperty("textractOutputKey")]
         [JsonPropertyName("textractOutputKey")]
         public string TextractOutputKey { get; set; } = string.Empty;
 

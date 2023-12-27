@@ -1,14 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
-using Amazon.S3.Model;
-using Amazon.StepFunctions.Model;
-using DocProcessing.Shared.Model.Textract.Expense;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace DocProcessing.Shared.Model.Data.Expense;
 

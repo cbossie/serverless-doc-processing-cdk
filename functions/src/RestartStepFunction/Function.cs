@@ -1,6 +1,5 @@
 using Amazon.Lambda.Annotations;
 using Amazon.Lambda.Core;
-using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.Lambda.SNSEvents;
 using Amazon.Runtime;
@@ -9,9 +8,6 @@ using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
-using DocProcessing.Shared;
-using DocProcessing.Shared.Service;
-using Microsoft.Extensions.DependencyInjection;
 using RestartStepFunction.Exceptions;
 using RestartStepFunction.Model;
 using System.Text.Json;
@@ -27,11 +23,15 @@ namespace RestartStepFunction
         private IAmazonStepFunctions _stepFunctionClient;
         private IDataService _dataService;
 
+        static Function()
+        {
+            AWSSDKHandler.RegisterXRayForAllServices();
+        }
+
         public Function(IAmazonStepFunctions stepFunctionClient, IDataService dataService)
         {
             _stepFunctionClient = stepFunctionClient;
             _dataService = dataService;
-            AWSSDKHandler.RegisterXRayForAllServices();
         }
 
         [Tracing]

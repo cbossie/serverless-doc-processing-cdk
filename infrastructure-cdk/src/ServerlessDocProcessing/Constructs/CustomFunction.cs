@@ -32,7 +32,7 @@ public class CustomFunction : Function
 
     public CustomFunction AddAnnotationsHandler(string handlername)
     {
-        AddEnvironment("ANNOTATION_HANDLER", handlername);
+        AddEnvironment("ANNOTATIONS_HANDLER", handlername);
         return this;
     }
 

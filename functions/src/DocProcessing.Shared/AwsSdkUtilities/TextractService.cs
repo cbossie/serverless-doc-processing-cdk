@@ -1,10 +1,6 @@
-﻿using Amazon.DynamoDBv2;
-using Amazon.S3;
-using Amazon.S3.Model;
+﻿using Amazon.S3;
 using DocProcessing.Shared.Model.Textract.Expense;
 using DocProcessing.Shared.Model.Textract.QueryAnalysis;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using System.Net.Sockets;
 using System.Text.Json;
 
 namespace DocProcessing.Shared.AwsSdkUtilities;
@@ -24,7 +20,7 @@ public class TextractService : ITextractService
         List<Block> blocks = new();
         // Get the S3 objects
         var objects = GetS3Objects<TextractAnalysisResult>(bucket, key);
-        
+
         await foreach (var data in objects)
         {
             if (data != null)
@@ -53,7 +49,7 @@ public class TextractService : ITextractService
         return new ExpenseDataModel(expenseDocs);
     }
 
-    private async IAsyncEnumerable<TObjectType> GetS3Objects<TObjectType>(string bucket, string key) 
+    private async IAsyncEnumerable<TObjectType> GetS3Objects<TObjectType>(string bucket, string key)
     {
         var response = await S3Client.ListObjectsV2Async(new()
         {
@@ -61,7 +57,7 @@ public class TextractService : ITextractService
             Prefix = key
         }).ConfigureAwait(false);
 
-        foreach(var item in response.S3Objects.Where(a => !a.Key.EndsWith("_access_check")))
+        foreach (var item in response.S3Objects.Where(a => !a.Key.EndsWith("_access_check")))
         {
             var s3data = await S3Client.GetObjectAsync(bucket, item.Key).ConfigureAwait(false);
             var data = await JsonSerializer.DeserializeAsync<TObjectType>(new BufferedStream(s3data.ResponseStream)).ConfigureAwait(false);

@@ -1,14 +1,5 @@
 ﻿using DocProcessing.Shared.Model.Textract.Expense;
-using DocProcessing.Shared.Model.Textract.QueryAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Amazon.S3.Model;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace DocProcessingTest;
 
@@ -89,7 +80,7 @@ public class TestTextractExpense
         var groupSummaryFieldsfail1 = ExpenseData?.GetGroupSummaryFields(2, "FailedValue", "FAILED_VALUE");
         Assert.IsTrue(groupSummaryFieldsfail1?.Count() == 0);
 
-        var groupSummaryFieldsfail2 = ExpenseData?.GetGroupSummaryFields(1, "95d257f3-3d27-42d1-924f-82d50564af1e" ,"VENDOR_2");
+        var groupSummaryFieldsfail2 = ExpenseData?.GetGroupSummaryFields(1, "95d257f3-3d27-42d1-924f-82d50564af1e", "VENDOR_2");
         Assert.IsTrue(groupSummaryFieldsfail2?.Count() == 0);
 
         var groupSummaryFieldsfail3 = ExpenseData?.GetGroupSummaryFields(0, "FailedValue", "VENDOR");

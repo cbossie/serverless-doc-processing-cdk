@@ -1,6 +1,5 @@
 using Amazon.Lambda.Annotations;
 using Amazon.Lambda.Core;
-using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.Textract;
 using Amazon.Textract.Model;
@@ -8,9 +7,6 @@ using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
-using DocProcessing.Shared;
-using DocProcessing.Shared.Service;
-using Microsoft.Extensions.DependencyInjection;
 
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 [assembly: LambdaGlobalProperties(GenerateMain = true)]
@@ -22,13 +18,16 @@ namespace SubmitToTextract
         private IAmazonTextract _textractClient;
         private IDataService _dataService;
 
+        static Function()
+        {
+            AWSSDKHandler.RegisterXRayForAllServices();
+        }
+
         public Function(IAmazonTextract textractClient, IDataService dataService)
         {
             _textractClient = textractClient;
             _dataService = dataService;
-            AWSSDKHandler.RegisterXRayForAllServices();
         }
-
 
         [Tracing]
         [Metrics]
@@ -44,8 +43,8 @@ namespace SubmitToTextract
                 FeatureTypes = new List<string> { FeatureType.TABLES, FeatureType.FORMS },
                 NotificationChannel = new Amazon.Textract.Model.NotificationChannel
                 {
-                    SNSTopicArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_TOPIC_KEY),
-                    RoleArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_ROLE_KEY),
+                    SNSTopicArn = Environment.GetEnvironmentVariable("TEXTRACT_TOPIC"),
+                    RoleArn = Environment.GetEnvironmentVariable("TEXTRACT_ROLE"),
                 },
                 DocumentLocation = new DocumentLocation
                 {
@@ -57,13 +56,13 @@ namespace SubmitToTextract
                 },
                 OutputConfig = new OutputConfig
                 {
-                    S3Bucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY),
-                    S3Prefix = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)
+                    S3Bucket = Environment.GetEnvironmentVariable("TEXTRACT_BUCKET"),
+                    S3Prefix = Environment.GetEnvironmentVariable("TEXTRACT_OUTPUT_KEY")
                 }
             };
 
             // Add query config if there are some in the DB
-            List<Query> queries = (data.Queries != null 
+            List<Query> queries = (data.Queries != null
                 ? data.Queries.Select(q => new Query
                 {
                     Alias = q.QueryId,
@@ -71,25 +70,25 @@ namespace SubmitToTextract
                     Text = q.QueryText
                 })
                 : Enumerable.Empty<Query>()).ToList();
-            if(queries.Any())
+            if (queries.Any())
             {
                 textractRequest.FeatureTypes.Add(FeatureType.QUERIES);
                 textractRequest.QueriesConfig = new QueriesConfig
                 {
                     Queries = queries
-                };            
+                };
             }
             else
             {
                 Logger.LogInformation("No queries found in the database");
             }
-                     
+
             // Submit to textract for analysis
             var textractResult = await _textractClient.StartDocumentAnalysisAsync(textractRequest).ConfigureAwait(false);
             data.TextractJobId = textractResult.JobId;
             data.TextractTaskToken = input.TaskToken;
-            data.TextractOutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
-            data.OutputBucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY);
+            data.TextractOutputKey = $"{Environment.GetEnvironmentVariable("TEXTRACT_OUTPUT_KEY")}/{textractResult.JobId}";
+            data.OutputBucket = Environment.GetEnvironmentVariable("TEXTRACT_BUCKET");
             await _dataService.SaveData(data).ConfigureAwait(false);
             return IdMessage.Create(data.Id);
         }
@@ -108,8 +107,8 @@ namespace SubmitToTextract
                 JobTag = input.Id,
                 NotificationChannel = new Amazon.Textract.Model.NotificationChannel
                 {
-                    SNSTopicArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_TOPIC_KEY),
-                    RoleArn = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_ROLE_KEY),
+                    SNSTopicArn = Environment.GetEnvironmentVariable("TEXTRACT_TOPIC"),
+                    RoleArn = Environment.GetEnvironmentVariable("TEXTRACT_ROLE"),
                 },
                 DocumentLocation = new DocumentLocation
                 {
@@ -121,15 +120,15 @@ namespace SubmitToTextract
                 },
                 OutputConfig = new OutputConfig
                 {
-                    S3Bucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY),
-                    S3Prefix = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY_KEY)
+                    S3Bucket = Environment.GetEnvironmentVariable("TEXTRACT_BUCKET"),
+                    S3Prefix = Environment.GetEnvironmentVariable("TEXTRACT_OUTPUT_KEY")
                 }
             };
             var textractResult = await _textractClient.StartExpenseAnalysisAsync(textractRequest).ConfigureAwait(false);
             data.TextractJobId = textractResult.JobId;
             data.TextractTaskToken = input.TaskToken;
-            data.ExpenseOutputKey = $"{Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_EXPENSE_OUTPUT_KEY_KEY)}/{textractResult.JobId}";
-            data.OutputBucket = Environment.GetEnvironmentVariable(ConstantValues.TEXTRACT_BUCKET_KEY);
+            data.ExpenseOutputKey = $"{Environment.GetEnvironmentVariable("TEXTRACT_OUTPUT_KEY")}/{textractResult.JobId}";
+            data.OutputBucket = Environment.GetEnvironmentVariable("TEXTRACT_BUCKET");
 
             await _dataService.SaveData(data).ConfigureAwait(false);
 

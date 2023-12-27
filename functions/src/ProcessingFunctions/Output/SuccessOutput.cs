@@ -1,11 +1,6 @@
 ﻿using DocProcessing.Shared.Model.Data.Expense;
 using DocProcessing.Shared.Model.Data.Query;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace ProcessingFunctions.Output;
 

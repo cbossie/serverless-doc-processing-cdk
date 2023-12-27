@@ -33,10 +33,9 @@ namespace ServerlessDocProcessing.Constructs
                 Comment = "Sends a success message to the SQS Queue",
                 OutputPath = "$.Payload",
                 Payload = TaskInput.FromObject(new Dictionary<string, object> {
-                    { "execution", JsonPath.ExecutionName },
-                    { "error", JsonPath.StringAt("$.error.Error") },
-                    { "cause", JsonPath.StringAt("$.error.Cause") },
+                    { "id", JsonPath.StringAt("$.id") },
                 })
+
             });
 
             LambdaInvoke sendFailure = new(this, "sendFailure", new LambdaInvokeProps
@@ -45,7 +44,9 @@ namespace ServerlessDocProcessing.Constructs
                 Comment = "Sends a failure message to the SQS Queue",
                 OutputPath = "$.Payload",
                 Payload = TaskInput.FromObject(new Dictionary<string, object> {
-                    { "id", JsonPath.StringAt("$.id") },
+                    { "execution", JsonPath.ExecutionName },
+                    { "error", JsonPath.StringAt("$.error.Error") },
+                    { "cause", JsonPath.StringAt("$.error.Cause") },
                 })
             });
 
@@ -139,11 +140,6 @@ namespace ServerlessDocProcessing.Constructs
             });
 
             sendSuccess.Next(sendSuccessQueue);
-            processTextractExpenseResultsState.AddCatch(sendFailureQueue, new CatchProps
-            {
-                Errors = new[] { "States.ALL" },
-                ResultPath = "$.error"
-            });
 
             sendFailure.Next(sendFailureQueue);
 

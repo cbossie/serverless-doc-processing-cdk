@@ -1,9 +1,4 @@
-﻿using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2;
-using Amazon.Lambda.Annotations;
-using Amazon.S3;
-using Amazon.StepFunctions;
-using Amazon.Textract;
+﻿using Amazon.Lambda.Annotations;
 
 [LambdaStartup]
 public class Startup : StartupBase

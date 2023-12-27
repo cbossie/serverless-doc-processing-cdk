@@ -1,18 +1,11 @@
 using Amazon.Lambda.Annotations;
 using Amazon.Lambda.Core;
-using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
-using Amazon.S3;
-using Amazon.Textract;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
-using DocProcessing.Shared;
-using DocProcessing.Shared.AwsSdkUtilities;
 using DocProcessing.Shared.Model.Data.Query;
-using DocProcessing.Shared.Service;
-using Microsoft.Extensions.DependencyInjection;
 
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 [assembly: LambdaGlobalProperties(GenerateMain = true)]
@@ -22,9 +15,14 @@ namespace ProcessTextractQueryResults
     {
         private ITextractService _textractService;
         private IDataService _dataService;
-        public Function(ITextractService textractService, IDataService dataService)
+
+        static Function()
         {
             AWSSDKHandler.RegisterXRayForAllServices();
+        }
+
+        public Function(ITextractService textractService, IDataService dataService)
+        {
             _textractService = textractService;
             _dataService = dataService;
         }
