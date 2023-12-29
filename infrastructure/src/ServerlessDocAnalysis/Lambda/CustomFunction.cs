@@ -1,5 +1,4 @@
-﻿using Amazon.CDK.AWS.GuardDuty;
-using Amazon.CDK.AWS.IAM;
+﻿using Amazon.CDK.AWS.IAM;
 
 namespace ServerlessDocProcessing.Lambda;
 

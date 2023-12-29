@@ -4,13 +4,7 @@ using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.SNS;
 using Amazon.CDK.AWS.SQS;
-using ServerlessDocProcessing.Lambda;
-using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Attribute = Amazon.CDK.AWS.DynamoDB.Attribute;
 using Rule = Amazon.CDK.AWS.Events.Rule;
 
@@ -27,7 +21,7 @@ public class InfrastructureConstruct : Construct
     public Bucket InputBucket { get; init; }
     public Bucket TextractBucket { get; init; }
 
-    public Queue InputDLQ{ get; init; }
+    public Queue InputDLQ { get; init; }
     public Queue SuccessQueue { get; init; }
     public Queue FailureQueue { get; init; }
 
@@ -38,7 +32,7 @@ public class InfrastructureConstruct : Construct
     public Role EventRole { get; init; }
     public Role TextractRole { get; set; }
 
-    public InfrastructureConstruct(Construct scope, string id, InfrastructureProps props) 
+    public InfrastructureConstruct(Construct scope, string id, InfrastructureProps props)
         : base(scope, id)
     {
         EnvironmentName = props.EnvironmentName;
@@ -65,7 +59,7 @@ public class InfrastructureConstruct : Construct
             BillingMode = BillingMode.PAY_PER_REQUEST,
             RemovalPolicy = RemovalPolicy.DESTROY
         });
-        
+
         // Secondary index for querying the table by executionname (needed for the failure step)
         DataTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
         {
@@ -182,7 +176,7 @@ public class InfrastructureConstruct : Construct
         }));
     }
 
-    
+
 
     // Functions to create unique names
     private string GetEventbridgeRuleName(string basename) => $"{ResourceNamePrefix}-{basename}-{EnvironmentName}";

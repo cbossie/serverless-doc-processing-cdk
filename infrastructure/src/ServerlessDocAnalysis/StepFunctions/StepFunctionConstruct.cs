@@ -1,5 +1,4 @@
 ﻿using Amazon.CDK.AWS.Events.Targets;
-using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.StepFunctions;
 using Amazon.CDK.AWS.StepFunctions.Tasks;
@@ -61,7 +60,7 @@ public class StepFunctionConstruct : Construct
         {
             IntegrationPattern = IntegrationPattern.WAIT_FOR_TASK_TOKEN,
             TaskTimeout = Timeout.Duration(Duration.Seconds(600)),
-            
+
             LambdaFunction = props.SubmitToTextractFunction,
             Comment = "Function to send document to textract asynchronously for query analysis",
             Payload = TaskInput.FromObject(new Dictionary<string, object> {
@@ -166,7 +165,8 @@ public class StepFunctionConstruct : Construct
             Comment = "State Machine used to process uploaded PDFs and retrieve Query/Expense data.",
             TracingEnabled = true,
             StateMachineType = StateMachineType.STANDARD,
-            Logs = new LogOptions {
+            Logs = new LogOptions
+            {
                 Destination = stepFunctionLogGroup,
                 IncludeExecutionData = true,
                 Level = LogLevel.ALL

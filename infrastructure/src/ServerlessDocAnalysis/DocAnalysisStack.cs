@@ -1,19 +1,6 @@
-using Amazon.CDK.AWS.CloudWatch;
-using Amazon.CDK.AWS.DynamoDB;
-using Amazon.CDK.AWS.Events;
-using Amazon.CDK.AWS.Events.Targets;
-using Amazon.CDK.AWS.IAM;
-using Amazon.CDK.AWS.Logs;
-using Amazon.CDK.AWS.S3;
-using Amazon.CDK.AWS.SES.Actions;
-using Amazon.CDK.AWS.SNS;
-using Amazon.CDK.AWS.SNS.Subscriptions;
-using Amazon.CDK.AWS.SQS;
-using Amazon.CDK.AWS.StepFunctions;
 using ServerlessDocProcessing.Infrastructure;
 using ServerlessDocProcessing.Lambda;
 using ServerlessDocProcessing.StepFunctions;
-using System.Collections.Generic;
 
 namespace ServerlessDocProcessing;
 
@@ -40,7 +27,7 @@ public class DocAnalysisStack : Stack
         {
             EnvironmentName = props.EnvironmentName,
             ResourceNamePrefix = props.ResourceNamePrefix,
-            FunctionCodeBaseDirectory = props.FunctionCodeBaseDirectory,            
+            FunctionCodeBaseDirectory = props.FunctionCodeBaseDirectory,
             TextractBucket = infrastructure.TextractBucket,
             TextractTopic = infrastructure.TextractTopic,
             TextractRole = infrastructure.TextractRole,
@@ -150,9 +137,9 @@ public class DocAnalysisStack : Stack
     }
 
 
-    
 
 
-    
+
+
 }
 

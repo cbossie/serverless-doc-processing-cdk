@@ -1,14 +1,6 @@
 ﻿using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.IAM;
-using Amazon.CDK.AWS.SES.Actions;
 using Amazon.CDK.AWS.SQS;
-using Amazon.CDK.AWS.StepFunctions;
-using Amazon.CDK.AWS.StepFunctions.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServerlessDocProcessing.StepFunctions;
 

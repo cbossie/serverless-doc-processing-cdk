@@ -2,17 +2,12 @@
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.SNS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServerlessDocProcessing.Lambda
 {
     public class FunctionCollectionProps
     {
-        public string EnvironmentName { get; init; } 
+        public string EnvironmentName { get; init; }
 
         public string ResourceNamePrefix { get; init; }
 

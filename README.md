@@ -69,6 +69,8 @@ This application is self contained. We will refer to an external application tha
 
 11. The `SuccessFunction` Lambda function formats the results from both query and expense analyses, and writes the data to the `SuccessQueue` queue.
 
+_Note: A client application must have permissions access both the `SuccessQueue` and `FailureQueue`. A CloudFormation output is created for each when this application is deployed, `failureQueueOutput` and `successQueueOutput`. These provide example IAM policies that you can use to allow access to the queues._
+
 ## Codebase
 
 This is a brief explanation of the solution's codebase.
@@ -151,7 +153,7 @@ cdk deploy --profile my-profile
 You can remove the infrastructure by using the following command:
 
 ```
-cdk destroy
+cdk destroy --profile my-profile
 ```
 You can also manually delete the CloudFormation stack that was originally created.
 

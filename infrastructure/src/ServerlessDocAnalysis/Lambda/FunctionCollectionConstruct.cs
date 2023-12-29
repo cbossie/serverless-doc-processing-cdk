@@ -1,12 +1,6 @@
-﻿using Amazon.CDK.AWS.AmplifyUIBuilder;
-using Amazon.CDK.AWS.IAM;
+﻿using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.SNS.Subscriptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServerlessDocProcessing.Lambda
 {
@@ -54,7 +48,7 @@ namespace ServerlessDocProcessing.Lambda
 
             // Grant access to the main data table for Object Persistence Model
             props.ProcessDataTable.GrantReadWriteData(InitializeFunction);
-            
+
             // Grant access to the query config data table for Object Persistence Model
             props.QueryConfigTable.GrantReadWriteData(InitializeFunction);
 

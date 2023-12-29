@@ -1,8 +1,7 @@
 ﻿using DocProcessing.Shared.Exceptions;
 
-namespace InitializeProcessing
+namespace InitializeProcessing;
+
+public class InitializationException(string docKey, string message) : ProcessingExceptionBase(docKey, message)
 {
-    public class InitializationException(string docKey, string message) : ProcessingExceptionBase(docKey, message)
-    {
-    }
 }
