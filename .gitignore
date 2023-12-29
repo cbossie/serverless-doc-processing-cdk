@@ -407,6 +407,6 @@ build/
 
 .sarif/
 
-
+.vscode/
 
 
