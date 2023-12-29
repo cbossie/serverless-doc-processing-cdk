@@ -57,17 +57,6 @@ public class DocAnalysisStack : Stack
             EventBridgeRule = infrastructure.InputBucketRule
         });
 
-        // Grant permissions to functions to use Object Persistence Model in DynamoDB
-        //InfrastructureStack.ConfigTable.GrantDocumentObjectModelPermissions(FunctionStack.InitializeFunction);
-        //InfrastructureStack.DataTable.GrantDocumentObjectModelPermissions(FunctionStack.InitializeFunction);
-        //InfrastructureStack.DataTable.GrantDocumentObjectModelPermissions(FunctionStack.SubmitToTextractFunction);
-        //InfrastructureStack.DataTable.GrantDocumentObjectModelPermissions(FunctionStack.SubmitToTextractExpenseFunction);
-        //InfrastructureStack.DataTable.GrantDocumentObjectModelPermissions(FunctionStack.RestartStepFunction);
-        //InfrastructureStack.DataTable.GrantDocumentObjectModelPermissions(FunctionStack.ProcessTextractQueryResultFunction);
-        //InfrastructureStack.DataTable.GrantDocumentObjectModelPermissions(FunctionStack.ProcessTextractExpenseResultFunction);
-        //InfrastructureStack.DataTable.GrantDocumentObjectModelPermissions(FunctionStack.SuccessFunction);
-        //InfrastructureStack.DataTable.GrantDocumentObjectModelPermissions(FunctionStack.FailureFunction);
-
         /// ===================================
         /// Outputs
         /// ===================================
