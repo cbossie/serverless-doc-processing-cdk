@@ -8,7 +8,7 @@ public class DocAnalysisStack : Stack
 {
     public string EnvironmentName { get; set; }
 
-    internal DocAnalysisStack(Construct scope, string id, DocAnalysisStackProps props = null)
+    internal DocAnalysisStack(Construct scope, string id, DocAnalysisStackProps props)
         : base(scope, id, props)
     {
         /// ===================================
